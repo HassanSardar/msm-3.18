@@ -16,14 +16,24 @@
 #include <linux/lcd.h>
 #include <linux/fb.h>
 #include <linux/pm_runtime.h>
+<<<<<<< HEAD
+=======
+#include "../decon_notify.h"
+>>>>>>> origin/3.18.14.x
 
 #include "mdnie.h"
 #ifdef CONFIG_DISPLAY_USE_INFO
 #include "dpui.h"
 #endif
+<<<<<<< HEAD
 #define MDNIE_SYSFS_PREFIX		"/sdcard/mdnie/"
 
 #define IS_MDNIE_ENABLED(_mdnie_)	(!!(_mdnie_)->enable)
+=======
+
+#define MDNIE_SYSFS_PREFIX		"/sdcard/mdnie/"
+
+>>>>>>> origin/3.18.14.x
 #define IS_DMB(idx)				(idx == DMB_NORMAL_MODE)
 #define IS_SCENARIO(idx)		(idx < SCENARIO_MAX && !(idx > VIDEO_NORMAL_MODE && idx < CAMERA_MODE))
 #define IS_ACCESSIBILITY(idx)	(idx && idx < ACCESSIBILITY_MAX)
@@ -38,9 +48,12 @@
 #define GET_LSB_8BIT(x)		((x >> 0) & (BIT(8) - 1))
 
 static struct class *mdnie_class;
+<<<<<<< HEAD
 #ifdef CONFIG_LCD_DOZE_MODE_MDNIE
 struct mdnie_info *doze_mdnie = NULL;
 #endif
+=======
+>>>>>>> origin/3.18.14.x
 
 /* Do not call mdnie write directly */
 static int mdnie_write(struct mdnie_info *mdnie, struct mdnie_table *table, unsigned int num)
@@ -127,7 +140,11 @@ static void mdnie_update_sequence(struct mdnie_info *mdnie, struct mdnie_table *
 	mdnie_write_table(mdnie, table);
 }
 
+<<<<<<< HEAD
 void mdnie_update(struct mdnie_info *mdnie)
+=======
+static void mdnie_update(struct mdnie_info *mdnie)
+>>>>>>> origin/3.18.14.x
 {
 	struct mdnie_table *table = NULL;
 	struct mdnie_scr_info *scr_info = mdnie->tune->scr_info;
@@ -373,7 +390,11 @@ static ssize_t accessibility_store(struct device *dev,
 	mdnie_t *wbuf;
 	struct mdnie_scr_info *scr_info = mdnie->tune->scr_info;
 
+<<<<<<< HEAD
 	ret = sscanf(buf, "%d %x %x %x %x %x %x %x %x %x %x %x %x",
+=======
+	ret = sscanf(buf, "%8d %8x %8x %8x %8x %8x %8x %8x %8x %8x %8x %8x %8x",
+>>>>>>> origin/3.18.14.x
 		&value, &s[0], &s[1], &s[2], &s[3],
 		&s[4], &s[5], &s[6], &s[7], &s[8], &s[9], &s[10], &s[11]);
 
@@ -576,12 +597,20 @@ static ssize_t sensorRGB_store(struct device *dev,
 	int ret;
 	struct mdnie_scr_info *scr_info = mdnie->tune->scr_info;
 
+<<<<<<< HEAD
 	ret = sscanf(buf, "%d %d %d",
+=======
+	ret = sscanf(buf, "%8d %8d %8d",
+>>>>>>> origin/3.18.14.x
 		&white_red, &white_green, &white_blue);
 	if (ret < 0)
 		return ret;
 
 	if (mdnie->enable && (mdnie->accessibility == ACCESSIBILITY_OFF)
+<<<<<<< HEAD
+=======
+		&& (mdnie->ldu == 0)
+>>>>>>> origin/3.18.14.x
 		&& (mdnie->mode == AUTO)
 		&& ((mdnie->scenario == BROWSER_MODE)
 		|| (mdnie->scenario == EBOOK_MODE))) {
@@ -633,7 +662,11 @@ static ssize_t whiteRGB_store(struct device *dev,
 	int ret;
 	struct mdnie_scr_info *scr_info = mdnie->tune->scr_info;
 
+<<<<<<< HEAD
 	ret = sscanf(buf, "%d %d %d",
+=======
+	ret = sscanf(buf, "%8d %8d %8d",
+>>>>>>> origin/3.18.14.x
 		&white_red, &white_green, &white_blue);
 	if (ret < 0)
 		return ret;
@@ -645,14 +678,29 @@ static ssize_t whiteRGB_store(struct device *dev,
 		mutex_lock(&mdnie->lock);
 
 		if(mdnie->mode == AUTO) {
+<<<<<<< HEAD
 			for (scenario = 0; scenario <= SCENARIO_MAX; scenario++) {
+=======
+			if(mdnie->ldu == 0) {
+				mdnie->white_ldu_r = mdnie->white_default_r;
+				mdnie->white_ldu_g = mdnie->white_default_g;
+				mdnie->white_ldu_b = mdnie->white_default_b;
+			}
+			for (scenario = 0; scenario < SCENARIO_MAX; scenario++) {
+>>>>>>> origin/3.18.14.x
 				wbuf = mdnie->tune->main_table[scenario][AUTO].seq[scr_info->index].cmd;
 				if (IS_ERR_OR_NULL(wbuf))
 					continue;
 				if (scenario != EBOOK_MODE) {
+<<<<<<< HEAD
 					wbuf[scr_info->white_r] = (unsigned char)(mdnie->white_default_r + white_red);
 					wbuf[scr_info->white_g] = (unsigned char)(mdnie->white_default_g + white_green);
 					wbuf[scr_info->white_b] = (unsigned char)(mdnie->white_default_b + white_blue);
+=======
+					wbuf[scr_info->white_r] = (unsigned char)(mdnie->white_ldu_r + white_red);
+					wbuf[scr_info->white_g] = (unsigned char)(mdnie->white_ldu_g + white_green);
+					wbuf[scr_info->white_b] = (unsigned char)(mdnie->white_ldu_b + white_blue);
+>>>>>>> origin/3.18.14.x
 					mdnie->white_balance_r = white_red;
 					mdnie->white_balance_g = white_green;
 					mdnie->white_balance_b = white_blue;
@@ -660,9 +708,15 @@ static ssize_t whiteRGB_store(struct device *dev,
 			}
 			wbuf = mdnie->tune->dmb_table[AUTO].seq[scr_info->index].cmd;
 			if (!IS_ERR_OR_NULL(wbuf)) {
+<<<<<<< HEAD
 				wbuf[scr_info->white_r] = (unsigned char)(mdnie->white_default_r + white_red);
 				wbuf[scr_info->white_g] = (unsigned char)(mdnie->white_default_g + white_green);
 				wbuf[scr_info->white_b] = (unsigned char)(mdnie->white_default_b + white_blue);
+=======
+				wbuf[scr_info->white_r] = (unsigned char)(mdnie->white_ldu_r + white_red);
+				wbuf[scr_info->white_g] = (unsigned char)(mdnie->white_ldu_g + white_green);
+				wbuf[scr_info->white_b] = (unsigned char)(mdnie->white_ldu_b + white_blue);
+>>>>>>> origin/3.18.14.x
 				mdnie->white_balance_r = white_red;
 				mdnie->white_balance_g = white_green;
 				mdnie->white_balance_b = white_blue;
@@ -693,7 +747,11 @@ static ssize_t night_mode_store(struct device *dev,
 	mdnie_t *wbuf;
 	struct mdnie_scr_info *scr_info = mdnie->tune->scr_info;
 
+<<<<<<< HEAD
 	ret = sscanf(buf, "%d %d", &enable, &level);
+=======
+	ret = sscanf(buf, "%8d %8d", &enable, &level);
+>>>>>>> origin/3.18.14.x
 
 	if (ret < 0)
 		return ret;
@@ -750,15 +808,35 @@ static ssize_t mdnie_ldu_store(struct device *dev,
 	if ((mdnie->tune->max_adjust_ldu != 0) && (mdnie->tune->adjust_ldu_table != NULL)) {
 		if ((idx >= 0) && (idx < mdnie->tune->max_adjust_ldu)) {
 			mutex_lock(&mdnie->lock);
+<<<<<<< HEAD
+=======
+			mdnie->ldu = idx;
+>>>>>>> origin/3.18.14.x
 			for (mode = 0; mode < MODE_MAX; mode++) {
 				for (scenario = 0; scenario <= EMAIL_MODE; scenario++) {
 					wbuf = mdnie->tune->main_table[scenario][mode].seq[scr_info->index].cmd;
 					if (IS_ERR_OR_NULL(wbuf))
 						continue;
 					if (scenario != EBOOK_MODE) {
+<<<<<<< HEAD
 						wbuf[scr_info->white_r] = mdnie->tune->adjust_ldu_table[mode][idx * 3 + 0];
 						wbuf[scr_info->white_g] = mdnie->tune->adjust_ldu_table[mode][idx * 3 + 1];
 						wbuf[scr_info->white_b] = mdnie->tune->adjust_ldu_table[mode][idx * 3 + 2];
+=======
+						if(mode == AUTO) {
+							wbuf[scr_info->white_r] = mdnie->tune->adjust_ldu_table[mode][idx * 3 + 0] + mdnie->white_balance_r;
+							wbuf[scr_info->white_g] = mdnie->tune->adjust_ldu_table[mode][idx * 3 + 1] + mdnie->white_balance_g;
+							wbuf[scr_info->white_b] = mdnie->tune->adjust_ldu_table[mode][idx * 3 + 2] + mdnie->white_balance_b;
+							mdnie->white_ldu_r = mdnie->tune->adjust_ldu_table[mode][idx * 3 + 0];
+							mdnie->white_ldu_g = mdnie->tune->adjust_ldu_table[mode][idx * 3 + 1];
+							mdnie->white_ldu_b = mdnie->tune->adjust_ldu_table[mode][idx * 3 + 2];
+						}
+						else{
+							wbuf[scr_info->white_r] = mdnie->tune->adjust_ldu_table[mode][idx * 3 + 0];
+							wbuf[scr_info->white_g] = mdnie->tune->adjust_ldu_table[mode][idx * 3 + 1];
+							wbuf[scr_info->white_b] = mdnie->tune->adjust_ldu_table[mode][idx * 3 + 2];
+						}
+>>>>>>> origin/3.18.14.x
 					}
 				}
 			}
@@ -840,6 +918,7 @@ static struct attribute *mdnie_attrs[] = {
 
 ATTRIBUTE_GROUPS(mdnie);
 
+<<<<<<< HEAD
 int mdnie_enable(struct mdnie_info *mdnie)
 {
 	if (IS_MDNIE_ENABLED(mdnie)) {
@@ -878,6 +957,8 @@ int mdnie_disable(struct mdnie_info *mdnie)
 	return 0;
 }
 
+=======
+>>>>>>> origin/3.18.14.x
 static int fb_notifier_callback(struct notifier_block *self,
 				 unsigned long event, void *data)
 {
@@ -889,7 +970,11 @@ static int fb_notifier_callback(struct notifier_block *self,
 	case FB_EVENT_BLANK:
 		break;
 	default:
+<<<<<<< HEAD
 		return 0;
+=======
+		return NOTIFY_DONE;
+>>>>>>> origin/3.18.14.x
 	}
 
 	mdnie = container_of(self, struct mdnie_info, fb_notif);
@@ -900,6 +985,7 @@ static int fb_notifier_callback(struct notifier_block *self,
 
 	if (evdata->info->node != 0)
 		return 0;
+<<<<<<< HEAD
 #ifdef CONFIG_LCD_DOZE_MODE_MDNIE
 	if (fb_blank == FB_BLANK_UNBLANK) {
 		mdnie_update(mdnie);
@@ -911,6 +997,24 @@ static int fb_notifier_callback(struct notifier_block *self,
 		mdnie_disable(mdnie);
 	}
 #endif
+=======
+
+	if (fb_blank == FB_BLANK_UNBLANK) {
+		mutex_lock(&mdnie->lock);
+		mdnie->enable = 1;
+		mutex_unlock(&mdnie->lock);
+
+		mdnie_update(mdnie);
+		if (mdnie->tune->trans_info->enable)
+			mdnie->disable_trans_dimming = 0;
+	} else if (fb_blank == FB_BLANK_POWERDOWN) {
+		mutex_lock(&mdnie->lock);
+		mdnie->enable = 0;
+		if (mdnie->tune->trans_info->enable)
+			mdnie->disable_trans_dimming = 1;
+		mutex_unlock(&mdnie->lock);
+	}
+>>>>>>> origin/3.18.14.x
 
 	return 0;
 }
@@ -919,7 +1023,11 @@ static int mdnie_register_fb(struct mdnie_info *mdnie)
 {
 	memset(&mdnie->fb_notif, 0, sizeof(mdnie->fb_notif));
 	mdnie->fb_notif.notifier_call = fb_notifier_callback;
+<<<<<<< HEAD
 	return fb_register_client(&mdnie->fb_notif);
+=======
+	return decon_register_notifier(&mdnie->fb_notif);
+>>>>>>> origin/3.18.14.x
 }
 
 #ifdef CONFIG_DISPLAY_USE_INFO
@@ -1000,6 +1108,10 @@ int mdnie_register(struct device *p, void *data, mdnie_w w, mdnie_r r, unsigned 
 	mdnie->disable_trans_dimming = 0;
 	mdnie->night_mode = NIGHT_MODE_OFF;
 	mdnie->night_mode_level = 0;
+<<<<<<< HEAD
+=======
+	mdnie->ldu = 0;
+>>>>>>> origin/3.18.14.x
 
 	mdnie->data = data;
 	mdnie->ops.write = w;
@@ -1012,6 +1124,12 @@ int mdnie_register(struct device *p, void *data, mdnie_w w, mdnie_r r, unsigned 
 	mdnie->white_default_r = 255;
 	mdnie->white_default_g = 255;
 	mdnie->white_default_b = 255;
+<<<<<<< HEAD
+=======
+	mdnie->white_ldu_r = 255;
+	mdnie->white_ldu_g = 255;
+	mdnie->white_ldu_b = 255;
+>>>>>>> origin/3.18.14.x
 	mdnie->white_balance_r = 0;
 	mdnie->white_balance_g = 0;
 	mdnie->white_balance_b = 0;
@@ -1025,9 +1143,12 @@ int mdnie_register(struct device *p, void *data, mdnie_w w, mdnie_r r, unsigned 
 #ifdef CONFIG_DISPLAY_USE_INFO
 	mdnie_register_dpui(mdnie);
 #endif
+<<<<<<< HEAD
 #ifdef CONFIG_LCD_DOZE_MODE_MDNIE
 	doze_mdnie = mdnie;
 #endif
+=======
+>>>>>>> origin/3.18.14.x
 	mdnie->enable = 1;
 	mdnie_update(mdnie);
 

@@ -798,9 +798,19 @@ static int cod3026x_mute_mic(struct snd_soc_codec *codec, bool on)
 	if (on) {
 		mutex_lock(&cod3026x->adc_mute_lock);
 		cod3026x_adc_digital_mute(codec, true);
+<<<<<<< HEAD
 		mutex_unlock(&cod3026x->adc_mute_lock);
 	} else {
 		mutex_lock(&cod3026x->adc_mute_lock);
+=======
+		snd_soc_update_bits(cod3026x->codec, COD3026X_12_PD_AD2,
+				PDB_MIC_BST3_MASK, 0);
+		mutex_unlock(&cod3026x->adc_mute_lock);
+	} else {
+		mutex_lock(&cod3026x->adc_mute_lock);
+		snd_soc_update_bits(cod3026x->codec, COD3026X_12_PD_AD2,
+				PDB_MIC_BST3_MASK, PDB_MIC_BST3_MASK);
+>>>>>>> origin/3.18.14.x
 		cod3026x_adc_digital_mute(codec, false);
 		mutex_unlock(&cod3026x->adc_mute_lock);
 	}
@@ -2766,6 +2776,16 @@ static void cod3026x_buttons_work(struct work_struct *work)
 
 	if (!jd->jack_det) {
 		dev_err(cod3026x->dev, "Skip button events for jack_out\n");
+<<<<<<< HEAD
+=======
+		if (jd->privious_button_state == BUTTON_PRESS) {
+			jd->button_det = false;
+			input_report_key(cod3026x->input, jd->button_code, 0);
+			input_sync(cod3026x->input);
+			cod3026x_process_button_ev(cod3026x->codec, jd->button_code, 0);
+			dev_dbg(cod3026x->dev, ":key %d released when jack_out\n", jd->button_code);
+		}
+>>>>>>> origin/3.18.14.x
 		return;
 	}
 	if (!jd->mic_det) {

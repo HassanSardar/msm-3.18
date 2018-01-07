@@ -830,8 +830,60 @@ static int s6e8aa5x01_exit(struct lcd_info *lcd)
 {
 	int ret = 0;
 
+<<<<<<< HEAD
 	dev_info(&lcd->ld->dev, "%s\n", __func__);
 
+=======
+#ifdef CONFIG_DISPLAY_USE_INFO
+	u8 buf;
+	u8 esd_err = 0;
+#endif
+
+	dev_info(&lcd->ld->dev, "%s\n", __func__);
+
+#ifdef CONFIG_DISPLAY_USE_INFO
+	DSI_WRITE(SEQ_TEST_KEY_ON_F0, ARRAY_SIZE(SEQ_TEST_KEY_ON_F0));
+	DSI_WRITE(SEQ_VLIN1_MONITOR_ON, ARRAY_SIZE(SEQ_VLIN1_MONITOR_ON));
+	ret = s6e8aa5x01_read_info(lcd, ERR_READ_REG, sizeof(buf), &buf);
+	if (ret < 0) {
+		dev_err(&lcd->ld->dev, "%s: fail\n", __func__);
+		goto dpui_skip;
+	}
+	inc_dpui_u32_field(DPUI_KEY_PNVLI1E, buf != 0 ? 1 : 0);
+	esd_err |= buf;
+
+	DSI_WRITE(SEQ_ELVDD_MONITOR_ON, ARRAY_SIZE(SEQ_ELVDD_MONITOR_ON));
+	ret = s6e8aa5x01_read_info(lcd, ERR_READ_REG, sizeof(buf), &buf);
+	if (ret < 0) {
+		dev_err(&lcd->ld->dev, "%s: fail\n", __func__);
+		goto dpui_skip;
+	}
+	inc_dpui_u32_field(DPUI_KEY_PNELVDE, buf != 0 ? 1 : 0);
+	esd_err |= buf;
+
+	DSI_WRITE(SEQ_VLOUT3_MONITOR_ON, ARRAY_SIZE(SEQ_VLOUT3_MONITOR_ON));
+	ret = s6e8aa5x01_read_info(lcd, ERR_READ_REG, sizeof(buf), &buf);
+	if (ret < 0) {
+		dev_err(&lcd->ld->dev, "%s: fail\n", __func__);
+		goto dpui_skip;
+	}
+	inc_dpui_u32_field(DPUI_KEY_PNVLO3E, buf != 0 ? 1 : 0);
+	esd_err |= buf;
+
+	inc_dpui_u32_field(DPUI_KEY_PNESDE, esd_err != 0 ? 1 : 0);
+
+	ret = s6e8aa5x01_read_info(lcd, ERR_RDNUMED_REG, sizeof(buf), &buf);
+	if (ret < 0) {
+		dev_err(&lcd->ld->dev, "%s: fail\n", __func__);
+		goto dpui_skip;
+	}
+	inc_dpui_u32_field(DPUI_KEY_PNDSIE, buf);
+
+dpui_skip:
+	DSI_WRITE(SEQ_TEST_KEY_OFF_F0, ARRAY_SIZE(SEQ_TEST_KEY_OFF_F0));
+#endif
+
+>>>>>>> origin/3.18.14.x
 	/* 2. Display Off (28h) */
 	DSI_WRITE(SEQ_DISPLAY_OFF, ARRAY_SIZE(SEQ_DISPLAY_OFF));
 
@@ -861,6 +913,12 @@ exit:
 static int s6e8aa5x01_init(struct lcd_info *lcd)
 {
 	int ret = 0;
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_DISPLAY_USE_INFO
+	u8 buf;
+#endif
+>>>>>>> origin/3.18.14.x
 
 	dev_info(&lcd->ld->dev, "%s\n", __func__);
 
@@ -892,6 +950,17 @@ static int s6e8aa5x01_init(struct lcd_info *lcd)
 	/* 12. Wait 120ms */
 	msleep(120);
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_DISPLAY_USE_INFO
+	ret = s6e8aa5x01_read_info(lcd, ERR_RDDSDR_REG, sizeof(buf), &buf);
+	if (ret < 0) {
+		dev_err(&lcd->ld->dev, "%s: fail\n", __func__);
+	}
+	inc_dpui_u32_field(DPUI_KEY_PNSDRE, buf&0x80 ? 1 : 0);
+#endif
+
+>>>>>>> origin/3.18.14.x
 	/* Test Key Disable */
 	DSI_WRITE(SEQ_TEST_KEY_OFF_F0, ARRAY_SIZE(SEQ_TEST_KEY_OFF_F0));
 

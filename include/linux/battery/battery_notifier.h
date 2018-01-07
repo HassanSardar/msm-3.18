@@ -80,6 +80,10 @@ typedef enum {
 	PDIC_NOTIFY_EVENT_CCIC_ATTACH,
 	PDIC_NOTIFY_EVENT_PD_SINK,
 	PDIC_NOTIFY_EVENT_PD_SOURCE,
+<<<<<<< HEAD
+=======
+	PDIC_NOTIFY_EVENT_PD_SINK_CAP,
+>>>>>>> origin/3.18.14.x
 } pdic_notifier_event_t;
 
 typedef struct _power_list {

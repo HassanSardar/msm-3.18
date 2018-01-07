@@ -273,12 +273,25 @@ static void s2mu005_enable_charger_switch(struct s2mu005_charger_data *charger,
 		pr_info("[DEBUG]%s: turn on charger\n", __func__);
 		s2mu005_update_reg(charger->client, S2MU005_CHG_CTRL0,
 			buck_mode << REG_MODE_SHIFT, REG_MODE_MASK);
+<<<<<<< HEAD
 		msleep(50);
 		s2mu005_update_reg(charger->client, 0x2A, 0 << 3, 0x08); // set async time 150msec
 		s2mu005_update_reg(charger->client, S2MU005_CHG_CTRL0,
 			2 << REG_MODE_SHIFT, REG_MODE_MASK);
 		msleep(150);
 		s2mu005_update_reg(charger->client, 0x2A, 1 << 3, 0x08); // set async time 20msec recover
+=======
+		if(charger->dev_id <= 2) {
+			msleep(50);
+			s2mu005_update_reg(charger->client, 0x2A, 0 << 3, 0x08); // set async time 150msec
+		}
+		s2mu005_update_reg(charger->client, S2MU005_CHG_CTRL0,
+			2 << REG_MODE_SHIFT, REG_MODE_MASK);
+		if(charger->dev_id <= 2) {
+			msleep(150);
+			s2mu005_update_reg(charger->client, 0x2A, 1 << 3, 0x08); // set async time 20msec recover
+		}
+>>>>>>> origin/3.18.14.x
 		s2mu005_wdt_control(charger, 1); //watchdog timer enable
 	} else {
 		pr_info("[DEBUG] %s: turn off charger\n", __func__);
@@ -524,7 +537,13 @@ static bool s2mu005_chg_init(struct s2mu005_charger_data *charger)
 
 	s2mu005_read_reg(charger->client, 0x7B, &temp);
 
+<<<<<<< HEAD
 	s2mu005_update_reg(charger->client, 0x2A, 1 << 3, 0x08); // set async time 20msec recover
+=======
+	if(charger->dev_id <= 2) {
+		s2mu005_update_reg(charger->client, 0x2A, 1 << 3, 0x08); // set async time 20msec recover
+	}
+>>>>>>> origin/3.18.14.x
 
 	charger->fg_clock = temp;
 

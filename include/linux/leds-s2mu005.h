@@ -180,7 +180,11 @@ struct s2mu005_fled_platform_data {
 	unsigned int front_brightness;
 #endif
 };
+<<<<<<< HEAD
 
+=======
+int s2mu005_led_dump_reg(void);
+>>>>>>> origin/3.18.14.x
 #ifdef CONFIG_LEDS_SUPPORT_FRONT_FLASH
 int s2mu005_led_select_ctrl(int ch);
 #endif

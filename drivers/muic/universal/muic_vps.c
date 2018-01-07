@@ -288,7 +288,15 @@ static bool vps_is_1k_mhl_cable(vps_data_t *pmsr)
 
 static bool vps_is_adc(vps_data_t *pmsr, struct vps_tbl_data *pvps)
 {
+<<<<<<< HEAD
 	if (pmsr->t.adc == pvps->adc)
+=======
+#if defined(CONFIG_MUIC_UNIVERSAL_SM5705)
+	if (pmsr->s.adc == pvps->adc)
+#else
+	if (pmsr->t.adc == pvps->adc)
+#endif
+>>>>>>> origin/3.18.14.x
 		return true;
 
 	 return false;
@@ -298,8 +306,16 @@ static bool vps_is_adc(vps_data_t *pmsr, struct vps_tbl_data *pvps)
 static bool vps_is_vbvolt(vps_data_t *pmsr, struct vps_tbl_data *pvps)
 {
 	int attr = pvps->cfg->attr;
+<<<<<<< HEAD
 
 	if (pmsr->t.vbvolt == MATTR_TO_VBUS(attr))
+=======
+#if defined(CONFIG_MUIC_UNIVERSAL_SM5705)
+	if (pmsr->s.vbvolt == MATTR_TO_VBUS(attr))
+#else
+	if (pmsr->t.vbvolt == MATTR_TO_VBUS(attr))
+#endif
+>>>>>>> origin/3.18.14.x
 		return true;
 
 	if (MATTR_TO_VBUS(attr) == VB_ANY)
@@ -326,10 +342,22 @@ int resolve_twin_mdev(int mdev, bool vbus)
 int resolve_dev_based_on_adc_chgtype(muic_data_t *pmuic, vps_data_t *pmsr)
 {
 	int dev_type;
+<<<<<<< HEAD
 
 	pr_info("%s: adc=%02x, chgtyp=%02x\n",__func__, pmsr->t.adc, pmsr->t.chgtyp);
 
 	switch(pmsr->t.adc){
+=======
+#if defined(CONFIG_MUIC_UNIVERSAL_SM5705)
+	pr_info("%s: adc=%02x, chgtyp=%02x\n",__func__, pmsr->s.adc, pmsr->t.chgtyp);
+
+	switch(pmsr->s.adc){
+#else
+	pr_info("%s: adc=%02x, chgtyp=%02x\n",__func__, pmsr->t.adc, pmsr->t.chgtyp);
+
+	switch(pmsr->t.adc){
+#endif
+>>>>>>> origin/3.18.14.x
 	case ADC_OPEN:
 		if(pmsr->t.chgtyp == CHGTYP_DEDICATED_CHARGER)
 			dev_type = ATTACHED_DEV_TA_MUIC;
@@ -418,7 +446,15 @@ int vps_find_attached_dev(muic_data_t *pmuic, muic_attached_dev_t *pdev, int *pi
 	}
 
 	if (mdev == ATTACHED_DEV_NUM) {
+<<<<<<< HEAD
 		if (pmsr->t.vbvolt == VB_HIGH) {
+=======
+#if defined(CONFIG_MUIC_UNIVERSAL_SM5705)
+		if (pmsr->s.vbvolt == VB_HIGH) {
+#else
+		if (pmsr->t.vbvolt == VB_HIGH) {
+#endif
+>>>>>>> origin/3.18.14.x
 			new_dev = ATTACHED_DEV_UNDEFINED_CHARGING_MUIC;
 			pr_info("%s:%s unsupported ID + VB\n", MUIC_DEV_NAME, __func__);
 		}

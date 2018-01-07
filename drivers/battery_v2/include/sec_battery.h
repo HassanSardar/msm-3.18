@@ -307,6 +307,10 @@ struct sec_battery_info {
 	char *data_path;
 #endif
 
+<<<<<<< HEAD
+=======
+	char batt_type[48];
+>>>>>>> origin/3.18.14.x
 	unsigned int full_check_cnt;
 	unsigned int recharge_check_cnt;
 

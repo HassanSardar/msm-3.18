@@ -15,6 +15,10 @@
 #include <asm/cacheflush.h>
 #include <asm/pgtable.h>
 #include <asm/tlbflush.h>
+<<<<<<< HEAD
+=======
+#include <asm/neon.h>
+>>>>>>> origin/3.18.14.x
 
 #include "fimc-is-interface-library.h"
 #include "../fimc-is-device-ischain.h"
@@ -1274,9 +1278,15 @@ int lib_task_init(void)
 			err_lib("failed to create library task_handler(%d)", i);
 			return -ENOMEM;
 		}
+<<<<<<< HEAD
 
 		fpsimd_set_as_user(lib->task_taaisp[i].task);
 
+=======
+#ifdef ENABLE_FPSIMD_FOR_USER
+		fpsimd_set_task_using(lib->task_taaisp[i].task);
+#endif
+>>>>>>> origin/3.18.14.x
 		/* TODO: consider task priority group worker */
 		param.sched_priority = lib_get_task_priority(i);
 		ret = sched_setscheduler_nocheck(lib->task_taaisp[i].task, SCHED_FIFO, &param);
@@ -1622,7 +1632,17 @@ int fimc_is_load_bin(void)
 	}
 
 	/* call start_up function for SDK binary */
+<<<<<<< HEAD
 	((start_up_func_t)lib_isp)((void **)os_system_funcs);
+=======
+#ifdef ENABLE_FPSIMD_FOR_USER
+	fpsimd_get();
+	((start_up_func_t)lib_isp)((void **)os_system_funcs);
+	fpsimd_put();
+#else
+	((start_up_func_t)lib_isp)((void **)os_system_funcs);
+#endif
+>>>>>>> origin/3.18.14.x
 
 	ret = lib_support_init();
 	if (ret < 0) {
@@ -1734,7 +1754,17 @@ int fimc_is_load_bin(void)
 	}
 
 	/* call start_up function for SDK binary */
+<<<<<<< HEAD
 	((start_up_func_t)lib_isp)((void **)os_system_funcs);
+=======
+#ifdef ENABLE_FPSIMD_FOR_USER
+	fpsimd_get();
+	((start_up_func_t)lib_isp)((void **)os_system_funcs);
+	fpsimd_put();
+#else
+	((start_up_func_t)lib_isp)((void **)os_system_funcs);
+#endif
+>>>>>>> origin/3.18.14.x
 
 	ret = lib_support_init();
 	if (ret < 0) {

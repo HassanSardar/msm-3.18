@@ -20,6 +20,17 @@ config CCIC_S2MU004
 	  If you say yes here you will get support for
 	  for the S2MU004 USBPD chip.
 
+<<<<<<< HEAD
+=======
+config CCIC_S2MM005 
+	bool "CCIC S2MM005"
+	depends on I2C 
+	default n
+	help
+	  If you say yes here you will get support for
+	  s2mm005 ccic full version chipset 
+	  
+>>>>>>> origin/3.18.14.x
 config CCIC_NOTIFIER
 	bool "CCIC notifier support"
 	depends on I2C

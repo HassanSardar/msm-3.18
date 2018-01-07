@@ -42,6 +42,10 @@
 #include "dsim.h"
 #include "decon_helper.h"
 #include "panels/dsim_panel.h"
+<<<<<<< HEAD
+=======
+#include "decon_notify.h"
+>>>>>>> origin/3.18.14.x
 #include "../../../../staging/android/sw_sync.h"
 #include "../../../../kernel/irq/internals.h"
 
@@ -764,12 +768,19 @@ static void decon_enable_blocking_mode(struct decon_device *decon,
 #ifdef CONFIG_FB_WINDOW_UPDATE
 static void decon_wait_for_framedone(struct decon_device *decon)
 {
+<<<<<<< HEAD
 	int ret;
+=======
+>>>>>>> origin/3.18.14.x
 	s64 time_ms = ktime_to_ms(ktime_get()) - ktime_to_ms(decon->trig_mask_timestamp);
 
 	if (time_ms < MAX_FRM_DONE_WAIT) {
 		DISP_SS_EVENT_LOG(DISP_EVT_DECON_FRAMEDONE_WAIT, &decon->sd, ktime_set(0, 0));
+<<<<<<< HEAD
 		ret = wait_event_interruptible_timeout(decon->wait_frmdone,
+=======
+		wait_event_interruptible_timeout(decon->wait_frmdone,
+>>>>>>> origin/3.18.14.x
 			(decon->frame_done_cnt_target <= decon->frame_done_cnt_cur),
 		msecs_to_jiffies(MAX_FRM_DONE_WAIT - time_ms));
 	}
@@ -2664,6 +2675,7 @@ static void decon_update_regs(struct decon_device *decon, struct decon_reg_data 
 	int vsync_wait_cnt = 0;
 #endif /* CONFIG_USE_VSYNC_SKIP */
 
+<<<<<<< HEAD
 #ifdef CONFIG_LCD_DOZE_MODE
 	struct dsim_device *dsim = NULL;
 
@@ -2671,6 +2683,8 @@ static void decon_update_regs(struct decon_device *decon, struct decon_reg_data 
 		dsim = container_of(decon->output_sd, struct dsim_device, sd);
 #endif
 
+=======
+>>>>>>> origin/3.18.14.x
 	if (!decon->systrace_pid)
 		decon->systrace_pid = current->pid;
 
@@ -3259,6 +3273,14 @@ static int decon_ioctl(struct fb_info *info, unsigned int cmd,
 	struct decon_win_config_data win_data = { 0 };
 	int ret = 0;
 	u32 crtc;
+<<<<<<< HEAD
+=======
+	struct fb_event v;
+	int blank = 0;
+
+	v.info = info;
+	v.data = &blank;
+>>>>>>> origin/3.18.14.x
 
 	/* enable lpd only when system is ready to interact with driver */
 	decon_lpd_enable();
@@ -3364,6 +3386,11 @@ static int decon_ioctl(struct fb_info *info, unsigned int cmd,
 				decon_err("%s: failed to decon_doze_enable: %d\n", __func__, ret);
 				ret = 0;
 			}
+<<<<<<< HEAD
+=======
+			blank = FB_BLANK_UNBLANK;
+			decon_notifier_call_chain(FB_EVENT_BLANK, &v);
+>>>>>>> origin/3.18.14.x
 			break;
 		case DECON_POWER_MODE_DOZE_SUSPEND:
 			decon_info("%s: DECON_POWER_MODE_DOZE_SUSPEND\n", __func__);
@@ -3372,6 +3399,11 @@ static int decon_ioctl(struct fb_info *info, unsigned int cmd,
 				decon_err("%s: failed to decon_doze_suspend: %d\n", __func__, ret);
 				ret = 0;
 			}
+<<<<<<< HEAD
+=======
+			blank = FB_BLANK_POWERDOWN;
+			decon_notifier_call_chain(FB_EVENT_BLANK, &v);
+>>>>>>> origin/3.18.14.x
 			break;
 		default:
 			decon_info("%s: pwr_mode: %d\n", __func__, decon->pwr_mode);

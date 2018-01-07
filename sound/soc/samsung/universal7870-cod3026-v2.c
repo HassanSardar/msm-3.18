@@ -80,6 +80,10 @@ struct cod3026x_machine_priv {
 	struct universal7870_mic_bias mic_bias;
 	struct universal7870_mic_bias_count mic_bias_count;
 	bool use_external_jd;
+<<<<<<< HEAD
+=======
+	bool is_fm_slave_i2s;
+>>>>>>> origin/3.18.14.x
 };
 
 static const struct snd_soc_component_driver universal7870_cmpnt = {
@@ -255,6 +259,10 @@ static int universal7870_aif4_hw_params(struct snd_pcm_substream *substream,
 	struct snd_soc_pcm_runtime *rtd = substream->private_data;
 	struct snd_soc_card *card = rtd->card;
 	struct snd_soc_dai *amixer_dai = rtd->codec_dais[0];
+<<<<<<< HEAD
+=======
+	struct cod3026x_machine_priv *priv = snd_soc_card_get_drvdata(card);
+>>>>>>> origin/3.18.14.x
 	int bfs, ret;
 
 	dev_info(card->dev, "aif4: %dch, %dHz, %dbytes\n",
@@ -280,8 +288,16 @@ static int universal7870_aif4_hw_params(struct snd_pcm_substream *substream,
 		dev_err(card->dev, "aif4: Failed to configure mixer\n");
 		return ret;
 	}
+<<<<<<< HEAD
 
 	ret = snd_soc_dai_set_fmt(amixer_dai, SND_SOC_DAIFMT_I2S
+=======
+	if (priv->is_fm_slave_i2s)
+		ret = snd_soc_dai_set_fmt(amixer_dai, SND_SOC_DAIFMT_I2S
+						| SND_SOC_DAIFMT_CBM_CFM);
+	else
+		ret = snd_soc_dai_set_fmt(amixer_dai, SND_SOC_DAIFMT_I2S
+>>>>>>> origin/3.18.14.x
 						| SND_SOC_DAIFMT_CBS_CFS);
 	if (ret < 0) {
 		dev_err(card->dev, "aif4: Failed to set Mixer FMT\n");
@@ -1171,6 +1187,14 @@ static int universal7870_audio_probe(struct platform_device *pdev)
 		audmixer_codec_conf[n].of_node = auxdev_np;
 	}
 
+<<<<<<< HEAD
+=======
+	if (of_find_property(np, "fm-slave-i2s", NULL))
+		priv->is_fm_slave_i2s = true;
+	else
+		priv->is_fm_slave_i2s = false;
+
+>>>>>>> origin/3.18.14.x
 	snd_soc_card_set_drvdata(card, priv);
 
 	ret = snd_soc_register_card(card);

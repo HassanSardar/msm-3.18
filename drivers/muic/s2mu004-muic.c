@@ -2279,6 +2279,11 @@ static void s2mu004_muic_handle_detach(struct s2mu004_muic_data *muic_data)
 		pr_info("[muic] %s duplicated(NONE)\n", __func__);
 		break;
 	case ATTACHED_DEV_UNKNOWN_MUIC:
+<<<<<<< HEAD
+=======
+	case ATTACHED_DEV_UNDEFINED_RANGE_MUIC:
+	case ATTACHED_DEV_UNSUPPORTED_ID_VB_MUIC:
+>>>>>>> origin/3.18.14.x
 		pr_info("[muic] %s UNKNOWN\n", __func__);
 		ret = detach_charger(muic_data);
 		muic_data->attached_dev = ATTACHED_DEV_NONE_MUIC;
@@ -2751,8 +2756,17 @@ static void s2mu004_muic_detect_dev(struct s2mu004_muic_data *muic_data)
 			}
 			break;
 		case ADC_JIG_USB_OFF: /* 255k */
+<<<<<<< HEAD
 			if (!vbvolt)
 				break;
+=======
+			if (!vbvolt) {
+				intr = MUIC_INTR_DETACH;
+				new_dev = ATTACHED_DEV_UNKNOWN_MUIC;
+				pr_info("[muic] Unsupported->Discarded.\n");
+				break;
+			}
+>>>>>>> origin/3.18.14.x
 			if (new_dev != ATTACHED_DEV_JIG_USB_OFF_MUIC) {
 				intr = MUIC_INTR_ATTACH;
 				new_dev = ATTACHED_DEV_JIG_USB_OFF_MUIC;
@@ -2803,6 +2817,7 @@ static void s2mu004_muic_detect_dev(struct s2mu004_muic_data *muic_data)
 		case ADC_SMARTDOCK: /* 0x10000 40.2K ohm */
 			/* SMARTDOCK is not supported */
 			/* force not to charge the device with SMARTDOCK */
+<<<<<<< HEAD
 			intr = MUIC_INTR_ATTACH;
 			new_dev = ATTACHED_DEV_UNSUPPORTED_ID_VB_MUIC;
 			pr_info("[muic] %s unsupported ADC(0x%02x) but charging\n",
@@ -2813,11 +2828,37 @@ static void s2mu004_muic_detect_dev(struct s2mu004_muic_data *muic_data)
 			intr = MUIC_INTR_ATTACH;
 			pr_info("[muic] %s unsupported ADC(0x%02x) not charging\n",
 				__func__, adc);
+=======
+			if(vbvolt) {
+				intr = MUIC_INTR_ATTACH;
+				new_dev = ATTACHED_DEV_UNSUPPORTED_ID_VB_MUIC;
+				pr_info("[muic] %s unsupported ADC(0x%02x) but charging\n",
+					__func__, adc);
+			}
+			else {
+				intr = MUIC_INTR_DETACH;
+				new_dev = ATTACHED_DEV_UNKNOWN_MUIC;
+				pr_info("[muic] Unsupported->Discarded.\n");
+			}
+			break;
+		case ADC_HMT: /* 0x10001 49.9K ohm */
+			if(vbvolt) {
+				intr = MUIC_INTR_ATTACH;
+				new_dev = ATTACHED_DEV_UNDEFINED_RANGE_MUIC;
+				pr_info("[muic] %s unsupported ADC(0x%02x)\n",	__func__, adc);
+			}
+			else {
+				intr = MUIC_INTR_DETACH;
+				new_dev = ATTACHED_DEV_UNKNOWN_MUIC;
+				pr_info("[muic] Unsupported->Discarded.\n");
+			}
+>>>>>>> origin/3.18.14.x
 			break;
 		case ADC_AUDIODOCK:
 #ifdef CONFIG_MUIC_S2MU004_SUPPORT_AUDIODOCK
 			intr = MUIC_INTR_ATTACH;
 			new_dev = ATTACHED_DEV_AUDIODOCK_MUIC;
+<<<<<<< HEAD
 #else
 			intr = MUIC_INTR_ATTACH;
 			new_dev = ATTACHED_DEV_UNDEFINED_RANGE_MUIC;
@@ -2829,6 +2870,33 @@ static void s2mu004_muic_detect_dev(struct s2mu004_muic_data *muic_data)
 			intr = MUIC_INTR_ATTACH;
 			pr_info("[muic] %s unsupported ADC(0x%02x) not charging\n",
 				__func__, adc);
+=======
+			pr_info("[muic] ADC AUDIODOCK DETECTED\n");
+#else
+			if(vbvolt) {
+				intr = MUIC_INTR_ATTACH;
+				new_dev = ATTACHED_DEV_UNDEFINED_RANGE_MUIC;
+				pr_info("[muic] ADC AUDIODOCK DETECTED but not supported.\n");
+			}
+			else {
+				intr = MUIC_INTR_DETACH;
+				new_dev = ATTACHED_DEV_UNKNOWN_MUIC;
+				pr_info("[muic] Unsupported->Discarded.\n");
+			}
+#endif
+			break;
+		case ADC_UNIVERSAL_MMDOCK :
+			if(vbvolt) {
+				intr = MUIC_INTR_ATTACH;
+				new_dev = ATTACHED_DEV_UNDEFINED_RANGE_MUIC;
+				pr_info("[muic] %s unsupported ADC(0x%02x)\n",	__func__, adc);
+			}
+			else {
+				intr = MUIC_INTR_DETACH;
+				new_dev = ATTACHED_DEV_UNKNOWN_MUIC;
+				pr_info("[muic] Unsupported->Discarded.\n");
+			}
+>>>>>>> origin/3.18.14.x
 			break;
 		case ADC_OPEN:
 			/* sometimes muic fails to
@@ -2841,10 +2909,23 @@ static void s2mu004_muic_detect_dev(struct s2mu004_muic_data *muic_data)
 			}
 			break;
 		default:
+<<<<<<< HEAD
 			intr = MUIC_INTR_ATTACH;
 			new_dev = ATTACHED_DEV_UNDEFINED_RANGE_MUIC;
 			pr_info("[muic] %s unsupported ADC(0x%02x)\n",
 				__func__, adc);
+=======
+			if(vbvolt) {
+				intr = MUIC_INTR_ATTACH;
+				new_dev = ATTACHED_DEV_UNDEFINED_RANGE_MUIC;
+				pr_info("[muic] %s unsupported ADC(0x%02x)\n",	__func__, adc);
+			}
+			else {
+				intr = MUIC_INTR_DETACH;
+				new_dev = ATTACHED_DEV_UNKNOWN_MUIC;
+				pr_info("[muic] Unsupported->Discarded.\n");
+			}
+>>>>>>> origin/3.18.14.x
 			break;
 		}
 	}
@@ -2877,7 +2958,11 @@ jig:
 			return;
 #ifdef	CONFIG_MUIC_SUPPORT_CCIC
 		if (pmuic->opmode & OPMODE_CCIC) {
+<<<<<<< HEAD
 			if (!mdev_continue_for_TA_USB(pmuic, new_dev))
+=======
+			if (!mdev_continue_for_TA_USB(pmuic, muic_data->attached_dev))
+>>>>>>> origin/3.18.14.x
 				return;
 		}
 #endif
@@ -2961,6 +3046,10 @@ static int s2mu004_muic_reg_init(struct s2mu004_muic_data *muic_data)
 	return ret;
 }
 
+<<<<<<< HEAD
+=======
+#if defined(CONFIG_CCIC_S2MU004)
+>>>>>>> origin/3.18.14.x
 #ifndef CONFIG_SEC_FACTORY
 static int s2mu004_muic_get_otg_state(void)
 {
@@ -2982,6 +3071,10 @@ static int s2mu004_muic_get_otg_state(void)
 	return 0;
 }
 #endif
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> origin/3.18.14.x
 
 static irqreturn_t s2mu004_muic_irq_thread(int irq, void *data)
 {
@@ -3156,8 +3249,13 @@ static irqreturn_t s2mu004_muic_irq_thread(int irq, void *data)
 #else
 #ifndef CONFIG_SEC_FACTORY
 	vbvolt = s2mu004_muic_get_vbus_state(muic_data);
+<<<<<<< HEAD
 	if (!vbvolt) {
 		adc = s2mu004_i2c_read_byte(i2c, S2MU004_REG_MUIC_ADC) & ADC_MASK;
+=======
+	adc = s2mu004_i2c_read_byte(i2c, S2MU004_REG_MUIC_ADC) & ADC_MASK;
+	if (!vbvolt) {
+>>>>>>> origin/3.18.14.x
 		pr_info("%s:%s adc: 0x%X\n", MFD_DEV_NAME, __func__, adc);
 
 		if (IS_AUDIO_ADC(adc) && !muic_data->is_water_wa) {

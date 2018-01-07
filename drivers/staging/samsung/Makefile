@@ -20,7 +20,19 @@ obj-$(CONFIG_SEC_SYSFS)		+= sec_sysfs.o
 # Samsung TN Reset Feature
 obj-$(CONFIG_SEC_REBOOT)	+= sec_reboot.o
 # Samsung TN Debugging Features
+<<<<<<< HEAD
 obj-$(CONFIG_SEC_DEBUG)		+= sec_debug.o sec_getlog.o sec_gaf.o sec_data_param.o
+=======
+obj-$(CONFIG_SEC_DEBUG)			+= sec_debug.o sec_getlog.o sec_gaf.o sec_debug_test.o
+obj-$(CONFIG_SEC_DEBUG)			+= sec_debug_hard_reset_hook.o
+obj-$(CONFIG_SEC_DEBUG_RESET_REASON)	+= sec_debug_reset_reason.o
+obj-$(CONFIG_SEC_DEBUG_EXTRA_INFO)	+= sec_debug_extra_info.o
+obj-$(CONFIG_SEC_DEBUG_HW_PARAM)	+= sec_debug_hw_param.o
+obj-$(CONFIG_SEC_DEBUG_AUTO_SUMMARY)	+= sec_debug_auto_summary.o
+obj-$(CONFIG_SEC_DEBUG_LAST_KMSG)	+= sec_debug_last_kmsg.o
+obj-$(CONFIG_SEC_UPLOAD)		+= sec_upload.o
+
+>>>>>>> origin/3.18.14.x
 # Samsung TN BSP Options
 obj-$(CONFIG_SEC_PARAM)		+= sec_param.o
 obj-$(CONFIG_SEC_BOOTSTAT)	+= sec_bootstat.o

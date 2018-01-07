@@ -99,6 +99,11 @@ enum s5p_mfc_inst_state {
 	MFCINST_ABORT_INST,
 	MFCINST_DPB_FLUSHING,
 	MFCINST_VPS_PARSED_ONLY,
+<<<<<<< HEAD
+=======
+	MFCINST_SPECIAL_PARSING,
+	MFCINST_SPECIAL_PARSING_NAL,
+>>>>>>> origin/3.18.14.x
 };
 
 /**
@@ -791,7 +796,11 @@ struct s5p_mfc_dec {
 	int profile;
 	int is_10bit;
 
+<<<<<<< HEAD
 	unsigned int err_sync_flag;
+=======
+	unsigned int err_reuse_flag;
+>>>>>>> origin/3.18.14.x
 };
 
 struct s5p_mfc_enc {

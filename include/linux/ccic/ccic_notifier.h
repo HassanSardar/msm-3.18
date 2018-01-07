@@ -37,6 +37,11 @@ typedef enum {
 #ifdef CONFIG_USB_TYPEC_MANAGER_NOTIFIER
 	CCIC_NOTIFY_DEV_MANAGER,
 #endif
+<<<<<<< HEAD
+=======
+	CCIC_NOTIFY_DEV_DP,
+	CCIC_NOTIFY_DEV_USB_DP,
+>>>>>>> origin/3.18.14.x
 } ccic_notifier_device_t;
 
 typedef enum {
@@ -49,9 +54,21 @@ typedef enum {
 #endif
 	CCIC_NOTIFY_ID_WATER,
 	CCIC_NOTIFY_ID_VCONN,
+<<<<<<< HEAD
 } ccic_notifier_id_t;
 
 typedef struct {
+=======
+	CCIC_NOTIFY_ID_DP_CONNECT,
+	CCIC_NOTIFY_ID_DP_HPD,
+	CCIC_NOTIFY_ID_DP_LINK_CONF,
+	CCIC_NOTIFY_ID_USB_DP,
+	CCIC_NOTIFY_ID_ROLE_SWAP,
+} ccic_notifier_id_t;
+
+typedef struct
+{
+>>>>>>> origin/3.18.14.x
 	uint64_t src:4;
 	uint64_t dest:4;
 	uint64_t id:8;
@@ -64,7 +81,12 @@ typedef struct {
 } CC_NOTI_TYPEDEF;
 
 /* ID = 1 : Attach */
+<<<<<<< HEAD
 typedef struct {
+=======
+typedef struct
+{
+>>>>>>> origin/3.18.14.x
 	uint64_t src:4;
 	uint64_t dest:4;
 	uint64_t id:8;
@@ -86,8 +108,30 @@ typedef enum {
 	CCIC_NOTIFY_HOST,
 } ccic_notifier_attach_rprd_t;
 
+<<<<<<< HEAD
 /* ID = 2 : RID */
 typedef struct {
+=======
+typedef enum {
+	CCIC_NOTIFY_LOW = 0,
+	CCIC_NOTIFY_HIGH,
+	CCIC_NOTIFY_IRQ,
+} ccic_notifier_dp_hpd_t;
+
+typedef enum {
+	CCIC_NOTIFY_DP_PIN_UNKNOWN =0,
+	CCIC_NOTIFY_DP_PIN_A,
+	CCIC_NOTIFY_DP_PIN_B,
+	CCIC_NOTIFY_DP_PIN_C,
+	CCIC_NOTIFY_DP_PIN_D,
+	CCIC_NOTIFY_DP_PIN_E,
+	CCIC_NOTIFY_DP_PIN_F,
+} ccic_notifier_dp_pinconf_t;
+
+/* ID = 2 : RID */
+typedef struct
+{
+>>>>>>> origin/3.18.14.x
 	uint64_t src:4;
 	uint64_t dest:4;
 	uint64_t id:8;
@@ -111,7 +155,12 @@ typedef enum {
 } ccic_notifier_rid_t;
 
 /* ID = 3 : USB status */
+<<<<<<< HEAD
 typedef struct {
+=======
+typedef struct
+{
+>>>>>>> origin/3.18.14.x
 	uint64_t src:4;
 	uint64_t dest:4;
 	uint64_t id:8;
@@ -123,11 +172,34 @@ typedef struct {
 #endif
 } CC_NOTI_USB_STATUS_TYPEDEF;
 
+<<<<<<< HEAD
 typedef enum {
 	USB_STATUS_NOTIFY_DETACH = 0,
 	USB_STATUS_NOTIFY_ATTACH_DFP = 1, /* Host */
 	USB_STATUS_NOTIFY_ATTACH_UFP = 2, /* Device */
 	USB_STATUS_NOTIFY_ATTACH_DRP = 3, /* Dual role */
+=======
+typedef struct
+{
+	uint64_t src:4;
+	uint64_t dest:4;
+	uint64_t id:8;
+	uint64_t is_connect:16;
+	uint64_t hs_connect:16;
+	uint64_t reserved:16;
+#ifdef CONFIG_USB_TYPEC_MANAGER_NOTIFIER
+	void *pd;
+#endif
+} USB_DP_NOTI_TYPEDEF;
+
+typedef enum
+{
+	USB_STATUS_NOTIFY_DETACH = 0,
+	USB_STATUS_NOTIFY_ATTACH_DFP = 1, // Host
+	USB_STATUS_NOTIFY_ATTACH_UFP = 2, // Device
+	USB_STATUS_NOTIFY_ATTACH_DRP = 3, // Dual role
+	USB_STATUS_NOTIFY_ATTACH_HPD = 4, // DP : Hot Plugged Detect
+>>>>>>> origin/3.18.14.x
 } USB_STATUS;
 
 /* TODO:  */
@@ -140,7 +212,11 @@ struct ccic_notifier_struct {
 	struct notifier_block (name)
 
 extern int ccic_notifier_notify(CC_NOTI_TYPEDEF *, void *, int);
+<<<<<<< HEAD
 /* extern void ccic_notifier_255K_test(void); */
+=======
+//extern void ccic_notifier_255K_test(void);
+>>>>>>> origin/3.18.14.x
 
 /* ccic notifier register/unregister API
  * for used any where want to receive ccic attached device attach/detach. */
@@ -149,10 +225,22 @@ extern int ccic_notifier_register(struct notifier_block *nb,
 extern int ccic_notifier_unregister(struct notifier_block *nb);
 extern int ccic_notifier_init(void);
 
+<<<<<<< HEAD
 extern char CCIC_NOTI_DEST_Print[8][10];
 extern char CCIC_NOTI_ID_Print[7][20];
 extern char CCIC_NOTI_RID_Print[8][15];
 extern char CCIC_NOTI_USB_STATUS_Print[5][20];
+=======
+#define CCIC_NOTI_DEST_NUM	(10)
+#define CCIC_NOTI_ID_NUM	(12)
+#define CCIC_NOTI_RID_NUM	(8)
+#define CCIC_NOTI_USB_STATUS_NUM (5)
+
+extern char CCIC_NOTI_DEST_Print[CCIC_NOTI_DEST_NUM][10];
+extern char CCIC_NOTI_ID_Print[CCIC_NOTI_ID_NUM][20];
+extern char CCIC_NOTI_RID_Print[CCIC_NOTI_RID_NUM][15];
+extern char CCIC_NOTI_USB_STATUS_Print[CCIC_NOTI_USB_STATUS_NUM][20];
+>>>>>>> origin/3.18.14.x
 
 extern void ccic_uevent_work(int id, int state);
 

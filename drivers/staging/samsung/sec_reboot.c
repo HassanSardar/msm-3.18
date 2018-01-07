@@ -161,7 +161,10 @@ static void sec_reboot(enum reboot_mode reboot_mode, const char *cmd)
 
 	/* LPM mode prevention */
 	exynos_pmu_write(EXYNOS_PMU_INFORM2, SEC_POWER_RESET);
+<<<<<<< HEAD
 	exynos_pmu_write(EXYNOS_PMU_INFORM3, SEC_RESET_REASON_UNKNOWN);
+=======
+>>>>>>> origin/3.18.14.x
 
 	if (cmd) {
 		unsigned long value;
@@ -201,6 +204,19 @@ static void sec_reboot(enum reboot_mode reboot_mode, const char *cmd)
 			exynos_pmu_write(EXYNOS_PMU_INFORM3, SEC_RESET_SET_DIAG | (value & 0x1));
 		}
 #endif
+<<<<<<< HEAD
+=======
+		else if (!strncmp(cmd, "panic", 5)) {
+			/*
+			 * This line is intentionally blanked because the INFORM3 is used for upload cause
+			 * in sec_debug_set_upload_cause() only in case of  panic() .
+			 */
+		} else {
+			exynos_pmu_write(EXYNOS_PMU_INFORM3, SEC_RESET_REASON_UNKNOWN);
+		}
+	} else {
+		exynos_pmu_write(EXYNOS_PMU_INFORM3, SEC_RESET_REASON_UNKNOWN);
+>>>>>>> origin/3.18.14.x
 	}
 
 	flush_cache_all();

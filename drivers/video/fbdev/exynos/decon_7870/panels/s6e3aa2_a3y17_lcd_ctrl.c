@@ -17,6 +17,10 @@
 #include "../dsim.h"
 #include "dsim_panel.h"
 #include "../decon.h"
+<<<<<<< HEAD
+=======
+#include "../decon_notify.h"
+>>>>>>> origin/3.18.14.x
 
 #if defined(CONFIG_PANEL_S6E3AA2_A3Y17)
 #include "s6e3aa2_a3y17_param.h"
@@ -164,6 +168,7 @@ static int pinctrl_enable(struct lcd_info *lcd, int enable)
 	return ret;
 }
 
+<<<<<<< HEAD
 static int fb_notifier_callback(struct notifier_block *self,
 			unsigned long event, void *data)
 {
@@ -196,6 +201,8 @@ static int fb_notifier_callback(struct notifier_block *self,
 	return 0;
 }
 
+=======
+>>>>>>> origin/3.18.14.x
 static int dsim_write_hl_data(struct lcd_info *lcd, const u8 *cmd, u32 cmdSize)
 {
 	int ret;
@@ -1101,7 +1108,11 @@ exit:
 
 #ifdef CONFIG_DISPLAY_USE_INFO
 static int panel_dpui_notifier_callback(struct notifier_block *self,
+<<<<<<< HEAD
 				 unsigned long event, void *data)
+=======
+				unsigned long event, void *data)
+>>>>>>> origin/3.18.14.x
 {
 	struct lcd_info *lcd = NULL;
 	struct dpui_info *dpui = data;
@@ -1137,13 +1148,96 @@ static int panel_dpui_notifier_callback(struct notifier_block *self,
 }
 #endif /* CONFIG_DISPLAY_USE_INFO */
 
+<<<<<<< HEAD
+=======
+static int fb_notifier_callback(struct notifier_block *self,
+			unsigned long event, void *data)
+{
+	struct fb_event *evdata = data;
+	struct lcd_info *lcd = NULL;
+	int fb_blank;
+
+	switch (event) {
+	case FB_EVENT_BLANK:
+	case FB_EARLY_EVENT_BLANK:
+		break;
+	default:
+		return NOTIFY_DONE;
+	}
+
+	lcd = container_of(self, struct lcd_info, fb_notifier);
+
+	fb_blank = *(int *)evdata->data;
+
+	dev_info(&lcd->ld->dev, "%s: %02lx, %d\n", __func__, event, fb_blank);
+
+	if (evdata->info->node != 0)
+		return 0;
+
+	if (event == FB_EARLY_EVENT_BLANK && fb_blank == FB_BLANK_POWERDOWN)
+		pinctrl_enable(lcd, 0);
+	else if (event == FB_EVENT_BLANK && fb_blank == FB_BLANK_POWERDOWN)
+		pinctrl_enable(lcd, 0);
+	else if (event == FB_EVENT_BLANK && fb_blank == FB_BLANK_UNBLANK) {
+		pinctrl_enable(lcd, 1);
+		s6e3aa2_displayon(lcd);
+	}
+
+	return 0;
+}
+
+static int s6e3aa2_register_notifier(struct lcd_info *lcd)
+{
+	int ret = 0;
+	struct device_node *np;
+	struct platform_device *pdev;
+
+#ifdef CONFIG_DISPLAY_USE_INFO
+	lcd->dpui_notif.notifier_call = panel_dpui_notifier_callback;
+	ret = dpui_logging_register(&lcd->dpui_notif, DPUI_TYPE_PANEL);
+	if (ret) {
+		dev_err(&lcd->ld->dev, "%s: failed to register dpui notifier callback\n", __func__);
+		goto exit;
+	}
+#endif
+
+	np = of_find_node_with_property(NULL, "lcd_info");
+	np = of_parse_phandle(np, "lcd_info", 0);
+	pdev = of_platform_device_create(np, NULL, lcd->dsim->dev);
+
+	lcd->pins = devm_pinctrl_get(&pdev->dev);
+	if (IS_ERR(lcd->pins)) {
+		dev_info(&lcd->ld->dev, "%s: devm_pinctrl_get\n", __func__);
+		goto exit;
+	}
+
+	lcd->pins_state[0] = pinctrl_lookup_state(lcd->pins, "off");
+	lcd->pins_state[1] = pinctrl_lookup_state(lcd->pins, "on");
+	if (IS_ERR_OR_NULL(lcd->pins_state[0]) || IS_ERR_OR_NULL(lcd->pins_state[1])) {
+		dev_info(&lcd->ld->dev, "%s: pinctrl_lookup_state\n", __func__);
+		goto exit;
+	}
+
+	lcd->fb_notifier.notifier_call = fb_notifier_callback;
+	decon_register_notifier(&lcd->fb_notifier);
+
+	dev_info(&lcd->ld->dev, "%s: done\n", __func__);
+
+exit:
+	return ret;
+}
+
+>>>>>>> origin/3.18.14.x
 static int s6e3aa2_probe(struct dsim_device *dsim)
 {
 	int ret = 0;
 	struct panel_private *priv = &dsim->priv;
 	struct lcd_info *lcd = dsim->priv.par;
+<<<<<<< HEAD
 	struct device_node *np;
 	struct platform_device *pdev;
+=======
+>>>>>>> origin/3.18.14.x
 
 	dev_info(&lcd->ld->dev, "%s: was called\n", __func__);
 
@@ -1178,6 +1272,7 @@ static int s6e3aa2_probe(struct dsim_device *dsim)
 
 	dsim_panel_set_brightness(lcd, 1);
 
+<<<<<<< HEAD
 #ifdef CONFIG_DISPLAY_USE_INFO
 	lcd->dpui_notif.notifier_call = panel_dpui_notifier_callback;
 	ret = dpui_logging_register(&lcd->dpui_notif, DPUI_TYPE_PANEL);
@@ -1207,6 +1302,8 @@ static int s6e3aa2_probe(struct dsim_device *dsim)
 	lcd->fb_notifier.notifier_call = fb_notifier_callback;
 	fb_register_client(&lcd->fb_notifier);
 
+=======
+>>>>>>> origin/3.18.14.x
 	dev_info(&lcd->ld->dev, "%s: done\n", __func__);
 exit:
 	return ret;
@@ -1650,7 +1747,11 @@ static ssize_t dump_register_store(struct device *dev,
 	unsigned int reg, len, offset;
 	int ret;
 
+<<<<<<< HEAD
 	ret = sscanf(buf, "%x %d %d", &reg, &len, &offset);
+=======
+	ret = sscanf(buf, "%8x %8d %8d", &reg, &len, &offset);
+>>>>>>> origin/3.18.14.x
 
 	if (ret == 2)
 		offset = 0;
@@ -1807,6 +1908,12 @@ static ssize_t alpm_doze_store(struct device *dev,
 
 	ret = kstrtouint(buf, 0, &value);
 
+<<<<<<< HEAD
+=======
+	if (ret < 0)
+		return ret;
+
+>>>>>>> origin/3.18.14.x
 	dev_info(dev, "%s: %d\n", __func__, value);
 
 	if (value >= ALPM_MODE_MAX) {
@@ -1832,6 +1939,10 @@ static ssize_t alpm_doze_store(struct device *dev,
 			mutex_unlock(&lcd->lock);
 		}
 		call_panel_ops(dsim, displayon, dsim);
+<<<<<<< HEAD
+=======
+		s6e3aa2_displayon(lcd);
+>>>>>>> origin/3.18.14.x
 		break;
 	case ALPM_ON_LOW:
 	case HLPM_ON_LOW:
@@ -1864,6 +1975,12 @@ static ssize_t alpm_doze_store(struct device *dev,
 
 	ret = kstrtouint(buf, 0, &value);
 
+<<<<<<< HEAD
+=======
+	if (ret < 0)
+		return ret;
+
+>>>>>>> origin/3.18.14.x
 	dev_info(dev, "%s: %d, %d\n", __func__, value, dsim->doze_state);
 
 	if (value >= ALPM_MODE_MAX) {
@@ -1972,7 +2089,16 @@ static void lcd_init_svc(struct lcd_info *lcd)
 	dev_set_name(dev, "OCTA");
 	dev_set_drvdata(dev, lcd);
 	ret = device_register(dev);
+<<<<<<< HEAD
 	ret = device_create_file(dev, &dev_attr_SVC_OCTA);
+=======
+	if (ret) {
+		dev_info(&lcd->ld->dev, "%s: device_register fail\n", __func__);
+		return;
+	}
+
+	device_create_file(dev, &dev_attr_SVC_OCTA);
+>>>>>>> origin/3.18.14.x
 
 	if (kn)
 		kernfs_put(kn);
@@ -2074,6 +2200,11 @@ static int dsim_panel_probe(struct dsim_device *dsim)
 	lcd->mdnie_class = get_mdnie_class();
 #endif
 
+<<<<<<< HEAD
+=======
+	s6e3aa2_register_notifier(lcd);
+
+>>>>>>> origin/3.18.14.x
 	dev_info(&lcd->ld->dev, "%s: %s: done\n", kbasename(__FILE__), __func__);
 probe_err:
 	return ret;
@@ -2095,12 +2226,15 @@ static int dsim_panel_displayon(struct dsim_device *dsim)
 		}
 	}
 
+<<<<<<< HEAD
 	ret = s6e3aa2_displayon(lcd);
 	if (ret) {
 		dev_info(&lcd->ld->dev, "%s: failed to panel display on, %d\n", __func__, ret);
 		goto displayon_err;
 	}
 
+=======
+>>>>>>> origin/3.18.14.x
 displayon_err:
 	mutex_lock(&lcd->lock);
 	lcd->state = PANEL_STATE_RESUMED;

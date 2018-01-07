@@ -184,3 +184,18 @@ config CAMERA_J7VE
         default n
         help
           This camera is j7ve project.
+<<<<<<< HEAD
+=======
+config CAMERA_GTACTIVE2
+        bool "This camera is gtactive2 project"
+        depends on VENDER_MCD
+        default n
+        help
+          This camera is gtactive2 project.
+config CAMERA_GRANDPPIRIS
+        bool "This camera is grandppiris project"
+        depends on VENDER_MCD
+        default n
+        help
+          This camera is grandppiris project.
+>>>>>>> origin/3.18.14.x

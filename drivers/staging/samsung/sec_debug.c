@@ -18,6 +18,7 @@
 #include <linux/kernel_stat.h>
 #include <linux/irq.h>
 #include <linux/tick.h>
+<<<<<<< HEAD
 #include <linux/module.h>
 #include <linux/memblock.h>
 #include <linux/file.h>
@@ -29,10 +30,26 @@
 #include <linux/mount.h>
 
 #include <asm/io.h>
+=======
+#include <linux/sec_ext.h>
+#include <linux/sec_debug.h>
+#include <linux/sec_debug_hard_reset_hook.h>
+#include <linux/slab.h>
+#include <linux/io.h>
+#include <linux/file.h>
+#include <linux/fdtable.h>
+#include <linux/mount.h>
+
+>>>>>>> origin/3.18.14.x
 #include <asm/cacheflush.h>
 
 #include <soc/samsung/exynos-pmu.h>
 
+<<<<<<< HEAD
+=======
+#include <linux/reboot.h>
+
+>>>>>>> origin/3.18.14.x
 #ifdef CONFIG_SEC_DEBUG
 
 extern void (*mach_restart)(int reboot_mode, const char *cmd);
@@ -71,8 +88,13 @@ int sec_debug_get_debug_level(void)
 
 static void sec_debug_user_fault_dump(void)
 {
+<<<<<<< HEAD
 	if (sec_debug_level.en.kernel_fault == 1
 	    && sec_debug_level.en.user_fault == 1)
+=======
+	if (sec_debug_level.en.kernel_fault == 1 &&
+	    sec_debug_level.en.user_fault == 1)
+>>>>>>> origin/3.18.14.x
 		panic("User Fault");
 }
 
@@ -108,6 +130,7 @@ static int __init sec_debug_user_fault_init(void)
 }
 device_initcall(sec_debug_user_fault_init);
 
+<<<<<<< HEAD
 
 /* layout of SDRAM
 	   0: magic (4B)
@@ -117,12 +140,22 @@ device_initcall(sec_debug_user_fault_init);
  */
 #define SEC_DEBUG_MAGIC_PA memblock_start_of_DRAM()
 #define SEC_DEBUG_MAGIC_VA phys_to_virt(SEC_DEBUG_MAGIC_PA)
+=======
+/* layout of SDRAM : First 4KB of DRAM
+*         0x0: magic            (4B)
+*   0x4~0x3FF: panic string     (1020B)
+* 0x400~0x7FF: panic Extra Info (1KB)
+* 0x800~0xFFB: panic dumper log (2KB - 4B)
+*       0xFFC: copy of magic    (4B)
+*/
+>>>>>>> origin/3.18.14.x
 
 enum sec_debug_upload_magic_t {
 	UPLOAD_MAGIC_INIT		= 0x0,
 	UPLOAD_MAGIC_PANIC		= 0x66262564,
 };
 
+<<<<<<< HEAD
 #ifdef CONFIG_SEC_DEBUG_USER_RESET
 enum sec_debug_reset_reason_t {
 	RR_S = 1,
@@ -140,24 +173,49 @@ static unsigned reset_reason = RR_N;
 module_param_named(reset_reason, reset_reason, uint, 0644);
 #endif
 
+=======
+>>>>>>> origin/3.18.14.x
 enum sec_debug_upload_cause_t {
 	UPLOAD_CAUSE_INIT		= 0xCAFEBABE,
 	UPLOAD_CAUSE_KERNEL_PANIC	= 0x000000C8,
 	UPLOAD_CAUSE_FORCED_UPLOAD	= 0x00000022,
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_SEC_UPLOAD
+	UPLOAD_CAUSE_USER_FORCED_UPLOAD	= 0x00000074,
+#endif
+>>>>>>> origin/3.18.14.x
 	UPLOAD_CAUSE_CP_ERROR_FATAL	= 0x000000CC,
 	UPLOAD_CAUSE_USER_FAULT		= 0x0000002F,
 	UPLOAD_CAUSE_HSIC_DISCONNECTED	= 0x000000DD,
 	UPLOAD_CAUSE_POWERKEY_LONG_PRESS = 0x00000085,
+<<<<<<< HEAD
+=======
+	UPLOAD_CAUSE_HARD_RESET	= 0x00000066,
+>>>>>>> origin/3.18.14.x
 };
 
 static void sec_debug_set_upload_magic(unsigned magic, char *str)
 {
 	*(unsigned int *)SEC_DEBUG_MAGIC_VA = magic;
+<<<<<<< HEAD
 	*(unsigned int *)(SEC_DEBUG_MAGIC_VA + SZ_4K -4) = magic;
 
 	if (str)
 		strncpy((char *)SEC_DEBUG_MAGIC_VA + 4, str, SZ_1K - 4);
 	       
+=======
+	*(unsigned int *)(SEC_DEBUG_MAGIC_VA + SZ_4K - 4) = magic;
+
+	if (str) {
+		strncpy((char *)SEC_DEBUG_MAGIC_VA + 4, str, SZ_1K - 4);
+
+#ifdef CONFIG_SEC_DEBUG_EXTRA_INFO
+		sec_debug_set_extra_info_panic(str);
+		sec_debug_finish_extra_info();
+#endif
+	}
+>>>>>>> origin/3.18.14.x
 	pr_emerg("sec_debug: set magic code (0x%x)\n", magic);
 }
 
@@ -170,6 +228,7 @@ static void sec_debug_set_upload_cause(enum sec_debug_upload_cause_t type)
 
 static void sec_debug_kmsg_dump(struct kmsg_dumper *dumper, enum kmsg_dump_reason reason)
 {
+<<<<<<< HEAD
 	char *ptr = (char *)SEC_DEBUG_MAGIC_VA + SZ_1K;
 #if 0
 	int total_chars = SZ_4K - SZ_1K;
@@ -202,12 +261,16 @@ static void sec_debug_kmsg_dump(struct kmsg_dumper *dumper, enum kmsg_dump_reaso
 #endif
 	kmsg_dump_get_buffer(dumper, true, ptr, SZ_4K - SZ_1K, NULL);
 
+=======
+	kmsg_dump_get_buffer(dumper, true, (char *)SEC_DEBUG_DUMPER_LOG_VA, SZ_2K - 4, NULL);
+>>>>>>> origin/3.18.14.x
 }
 
 static struct kmsg_dumper sec_dumper = {
 	.dump = sec_debug_kmsg_dump,
 };
 
+<<<<<<< HEAD
 int __init sec_debug_setup(void)
 {
 	size_t size = SZ_4K;
@@ -343,6 +406,44 @@ static void sec_debug_dump_all_task(void)
 	pr_info("----------------------------------------------------------------------------------------------------------------------------\n");
 }
 #endif
+=======
+static int __init sec_debug_reserved(phys_addr_t base, phys_addr_t size)
+{
+#ifdef CONFIG_NO_BOOTMEM
+	return (memblock_is_region_reserved(base, size) ||
+		memblock_reserve(base, size));
+#else
+	return reserve_bootmem(base, size, BOOTMEM_EXCLUSIVE);
+#endif
+}
+
+int __init sec_debug_setup(void)
+{
+	phys_addr_t size = SZ_4K;
+	phys_addr_t base = 0;
+
+	base = SEC_DEBUG_MAGIC_PA;
+
+	/* clear traps info */
+	memset((void *)SEC_DEBUG_MAGIC_VA + 4, 0, SZ_1K - 4);
+
+	if (!sec_debug_reserved(base, size)) {
+		pr_info("%s: Reserved Mem(0x%llx, 0x%llx) - Success\n",
+			__FILE__, base, size);
+
+		sec_debug_set_upload_magic(UPLOAD_MAGIC_PANIC, NULL);
+	} else {
+		goto out;
+	}
+
+	kmsg_dump_register(&sec_dumper);
+
+	return 0;
+out:
+	pr_err("%s: Reserved Mem(0x%llx, 0x%llx) - Failed\n", __FILE__, base, size);
+	return -ENOMEM;
+}
+>>>>>>> origin/3.18.14.x
 
 #ifndef arch_irq_stat_cpu
 #define arch_irq_stat_cpu(cpu) 0
@@ -407,6 +508,7 @@ static u64 get_iowait_time(int cpu)
 static void sec_debug_dump_cpu_stat(void)
 {
 	int i, j;
+<<<<<<< HEAD
 	unsigned long jif;
 	u64 user, nice, system, idle, iowait, irq, softirq, steal;
 	u64 guest, guest_nice;
@@ -422,11 +524,33 @@ static void sec_debug_dump_cpu_stat(void)
 	getboottime(&boottime);
 	jif = boottime.tv_sec;
 	
+=======
+	u64 user = 0;
+	u64 nice = 0;
+	u64 system = 0;
+	u64 idle = 0;
+	u64 iowait = 0;
+	u64 irq = 0;
+	u64 softirq = 0;
+	u64 steal = 0;
+	u64 guest = 0;
+	u64 guest_nice = 0;
+	u64 sum = 0;
+	u64 sum_softirq = 0;
+	unsigned int per_softirq_sums[NR_SOFTIRQS] = {0};
+
+	char *softirq_to_name[NR_SOFTIRQS] = { "HI", "TIMER", "NET_TX", "NET_RX", "BLOCK", "BLOCK_IOPOLL", "TASKLET", "SCHED", "HRTIMER", "RCU" };
+
+>>>>>>> origin/3.18.14.x
 	for_each_possible_cpu(i) {
 		user	+= kcpustat_cpu(i).cpustat[CPUTIME_USER];
 		nice	+= kcpustat_cpu(i).cpustat[CPUTIME_NICE];
 		system	+= kcpustat_cpu(i).cpustat[CPUTIME_SYSTEM];
+<<<<<<< HEAD
 		idle	+= get_idle_time(i); 
+=======
+		idle	+= get_idle_time(i);
+>>>>>>> origin/3.18.14.x
 		iowait	+= get_iowait_time(i);
 		irq	+= kcpustat_cpu(i).cpustat[CPUTIME_IRQ];
 		softirq	+= kcpustat_cpu(i).cpustat[CPUTIME_SOFTIRQ];
@@ -492,9 +616,25 @@ static void sec_debug_dump_cpu_stat(void)
 	/* sum again ? it could be updated? */
 	for_each_irq_nr(j) {
 		unsigned int irq_stat = kstat_irqs(j);
+<<<<<<< HEAD
 		if (irq_stat) {
 			pr_info("irq-%-4d : %8u %s\n", j, irq_stat,
 					irq_to_desc(j)->action ? irq_to_desc(j)->action->name ? : "???" : "???");
+=======
+
+		if (irq_stat) {
+			struct irq_desc *desc = irq_to_desc(j);
+#if defined(CONFIG_SEC_DEBUG_PRINT_IRQ_PERCPU)
+			pr_info("irq-%-4d : %8u :", j, irq_stat);
+			for_each_possible_cpu(i)
+				pr_info(" %8u", kstat_irqs_cpu(j, i));
+			pr_info(" %s", desc->action ? desc->action->name ? : "???" : "???");
+			pr_info("\n");
+#else
+			pr_info("irq-%-4d : %8u %s\n", j, irq_stat,
+				desc->action ? desc->action->name ? : "???" : "???");
+#endif
+>>>>>>> origin/3.18.14.x
 		}
 	}
 	pr_info("-------------------------------------------------------------------------------------------------------------\n");
@@ -507,7 +647,11 @@ static void sec_debug_dump_cpu_stat(void)
 	pr_info("-------------------------------------------------------------------------------------------------------------\n");
 }
 
+<<<<<<< HEAD
 void sec_debug_reboot_handler()
+=======
+void sec_debug_reboot_handler(void)
+>>>>>>> origin/3.18.14.x
 {
 	/* Clear magic code in normal reboot */
 	sec_debug_set_upload_magic(UPLOAD_MAGIC_INIT, NULL);
@@ -517,6 +661,7 @@ void sec_debug_panic_handler(void *buf, bool dump)
 {
 	/* Set upload cause */
 	sec_debug_set_upload_magic(UPLOAD_MAGIC_PANIC, buf);
+<<<<<<< HEAD
 	if (!strcmp(buf, "User Fault"))
 		sec_debug_set_upload_cause(UPLOAD_CAUSE_USER_FAULT);
 	else if (!strcmp(buf, "Crash Key"))
@@ -524,16 +669,34 @@ void sec_debug_panic_handler(void *buf, bool dump)
 	else if (!strncmp(buf, "CP Crash", 8))
 		sec_debug_set_upload_cause(UPLOAD_CAUSE_CP_ERROR_FATAL);
 	else if (!strcmp(buf, "HSIC Disconnected"))
+=======
+	if (!strncmp(buf, "User Fault", 10))
+		sec_debug_set_upload_cause(UPLOAD_CAUSE_USER_FAULT);
+	else if (is_hard_reset_occurred())
+		sec_debug_set_upload_cause(UPLOAD_CAUSE_HARD_RESET);
+	else if (!strncmp(buf, "Crash Key", 9))
+		sec_debug_set_upload_cause(UPLOAD_CAUSE_FORCED_UPLOAD);
+#ifdef CONFIG_SEC_UPLOAD
+	else if (!strncmp(buf, "User Crash Key", 14))
+		sec_debug_set_upload_cause(UPLOAD_CAUSE_USER_FORCED_UPLOAD);
+#endif
+	else if (!strncmp(buf, "CP Crash", 8))
+		sec_debug_set_upload_cause(UPLOAD_CAUSE_CP_ERROR_FATAL);
+	else if (!strncmp(buf, "HSIC Disconnected", 17))
+>>>>>>> origin/3.18.14.x
 		sec_debug_set_upload_cause(UPLOAD_CAUSE_HSIC_DISCONNECTED);
 	else
 		sec_debug_set_upload_cause(UPLOAD_CAUSE_KERNEL_PANIC);
 
 	/* dump debugging info */
 	if (dump) {
+<<<<<<< HEAD
 #if 0
 		sec_debug_dump_all_task();
 		show_state_filter(TASK_STATE_MAX);
 #endif
+=======
+>>>>>>> origin/3.18.14.x
 		sec_debug_dump_cpu_stat();
 		debug_show_all_locks();
 	}
@@ -546,6 +709,7 @@ void sec_debug_post_panic_handler(void)
 	pr_emerg("sec_debug: rebooting...\n");
 
 	flush_cache_all();
+<<<<<<< HEAD
 	mach_restart(REBOOT_SOFT, "sw reset");
 
 	while (1)
@@ -731,6 +895,42 @@ void sec_debug_print_file_list(void)
 
 			printk(KERN_ERR "[%04d]%s%s\n",i,pRootName==NULL?"null":pRootName,
 							pFileName==NULL?"null":pFileName);
+=======
+}
+
+#ifdef CONFIG_SEC_DEBUG_FILE_LEAK
+void sec_debug_print_file_list(void)
+{
+	int i = 0;
+	unsigned int count = 0;
+	struct file *file = NULL;
+	struct files_struct *files = current->files;
+	const char *p_rootname = NULL;
+	const char *p_filename = NULL;
+
+	count = files->fdt->max_fds;
+
+	pr_err("[Opened file list of process %s(PID:%d, TGID:%d) :: %d]\n",
+	       current->group_leader->comm, current->pid, current->tgid, count);
+
+	for (i = 0; i < count; i++) {
+		rcu_read_lock();
+		file = fcheck_files(files, i);
+
+		p_rootname = NULL;
+		p_filename = NULL;
+
+		if (file) {
+			if (file->f_path.mnt && file->f_path.mnt->mnt_root &&
+			    file->f_path.mnt->mnt_root->d_name.name)
+				p_rootname = file->f_path.mnt->mnt_root->d_name.name;
+
+			if (file->f_path.dentry && file->f_path.dentry->d_name.name)
+				p_filename = file->f_path.dentry->d_name.name;
+
+			pr_err("[%04d]%s%s\n", i, p_rootname ? p_rootname : "null",
+			       p_filename ? p_filename : "null");
+>>>>>>> origin/3.18.14.x
 		}
 		rcu_read_unlock();
 	}
@@ -738,6 +938,7 @@ void sec_debug_print_file_list(void)
 
 void sec_debug_EMFILE_error_proc(unsigned long files_addr)
 {
+<<<<<<< HEAD
 	if (files_addr!=(unsigned long)(current->files)) {
 		printk(KERN_ERR "Too many open files Error at %pS\n"
 						"%s(%d) thread of %s process tried fd allocation by proxy.\n"
@@ -750,20 +951,94 @@ void sec_debug_EMFILE_error_proc(unsigned long files_addr)
 
 	printk(KERN_ERR "Too many open files(%d:%s) at %pS\n",
 		current->tgid, current->group_leader->comm,__builtin_return_address(0));
+=======
+	if (files_addr != (unsigned long)(current->files)) {
+		pr_err("Too many open files Error at %pS\n"
+		       "%s(%d) thread of %s process tried fd allocation by proxy.\n"
+		       "files_addr = 0x%lx, current->files=0x%p\n",
+		       __builtin_return_address(0),
+		       current->comm, current->tgid, current->group_leader->comm,
+		       files_addr, current->files);
+		return;
+	}
+
+	pr_err("Too many open files(%d:%s) at %pS\n",
+	       current->tgid, current->group_leader->comm, __builtin_return_address(0));
+>>>>>>> origin/3.18.14.x
 
 	if (!sec_debug_level.en.kernel_fault)
 		return;
 
 	/* We check EMFILE error in only "system_server","mediaserver" and "surfaceflinger" process.*/
+<<<<<<< HEAD
 	if (!strcmp(current->group_leader->comm, "system_server")
 		||!strcmp(current->group_leader->comm, "mediaserver")
 		||!strcmp(current->group_leader->comm, "surfaceflinger")){
+=======
+	if (!strcmp(current->group_leader->comm, "system_server") ||
+	    !strcmp(current->group_leader->comm, "mediaserver") ||
+	    !strcmp(current->group_leader->comm, "surfaceflinger")) {
+>>>>>>> origin/3.18.14.x
 		sec_debug_print_file_list();
 		panic("Too many open files");
 	}
 }
 #endif /* CONFIG_SEC_DEBUG_FILE_LEAK */
 
+<<<<<<< HEAD
+=======
+/* leave the following definithion of module param call here for the compatibility with other models */
+module_param_call(force_error, sec_debug_force_error, NULL, NULL, 0644);
+
+static struct sec_debug_shared_info *sec_debug_info;
+
+static void sec_debug_init_base_buffer(unsigned long base, unsigned long size)
+{
+	sec_debug_info = (struct sec_debug_shared_info *)phys_to_virt(base);
+
+	if (sec_debug_info) {
+
+		sec_debug_info->magic[0] = SEC_DEBUG_SHARED_MAGIC0;
+		sec_debug_info->magic[1] = SEC_DEBUG_SHARED_MAGIC1;
+		sec_debug_info->magic[2] = SEC_DEBUG_SHARED_MAGIC2;
+		sec_debug_info->magic[3] = SEC_DEBUG_SHARED_MAGIC3;
+
+#ifdef CONFIG_SEC_DEBUG_EXTRA_INFO
+		sec_debug_set_kallsyms_info(sec_debug_info);
+		sec_debug_init_extra_info(sec_debug_info);
+#endif
+	}
+	pr_info("%s, base(virt):0x%lx size:0x%lx\n", __func__, (unsigned long)sec_debug_info, size);
+
+}
+
+static int __init sec_debug_base_setup(char *str)
+{
+	unsigned long size = memparse(str, &str);
+	unsigned long base = 0;
+
+	/* If we encounter any problem parsing str ... */
+	if (!size || *str != '@' || kstrtoul(str + 1, 0, &base)) {
+		pr_err("%s: failed to parse address.\n", __func__);
+		goto out;
+	}
+
+	if (sec_debug_reserved(base, size)) {
+		/* size is not match with -size and size + sizeof(...) */
+		pr_err("%s: failed to reserve size:0x%lx at base 0x%lx\n",
+		       __func__, size, base);
+		goto out;
+	}
+
+	sec_debug_init_base_buffer(base, size);
+
+	pr_info("%s, base(phys):0x%lx size:0x%lx\n", __func__, base, size);
+out:
+	return 0;
+}
+__setup("sec_debug.base=", sec_debug_base_setup);
+
+>>>>>>> origin/3.18.14.x
 #ifdef CONFIG_SEC_HW_REV
 int board_id;
 EXPORT_SYMBOL(board_id);

@@ -165,19 +165,32 @@ config SENSORS_SX9306
 	help
 	 This option enables grip sensors using SemTech sx9306 device driver.
 
+<<<<<<< HEAD
 config SENSORS_SX9306_NORMAL_TOUCH_THRESHOLD
 	int "SX9306 Grip sensor threshold for normal touch"
 	depends on SENSORS_SX9306
 	default "17"
 	help
 	  This value is the standard of normal touch using SemTech sx9306 device driver.
+=======
+config SENSORS_SX9306_SUB
+	depends on I2C
+	tristate "SX9306 sub driver"
+	default n
+	help
+	 This option enables grip sensors using SemTech sx9306 sub device driver.
+>>>>>>> origin/3.18.14.x
 
 config SENSORS_SX9306_WIFI
 	depends on I2C
 	tristate "SX9306 wifi driver"
 	default n
 	help
+<<<<<<< HEAD
 	  This option enables grip sensors using
+=======
+	  This option enables wifi grip sensors using
+>>>>>>> origin/3.18.14.x
 	  SemTech sx9306 wifi device driver.
 
 config SENSORS_SX9310

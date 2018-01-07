@@ -26,6 +26,7 @@ struct ion_device *ion_exynos;
 /* starting from index=1 regarding default index=0 for system heap */
 static int nr_heaps = 1;
 
+<<<<<<< HEAD
 struct exynos_ion_platform_heap {
 	struct ion_platform_heap heap_data;
 	struct reserved_mem *rmem;
@@ -40,6 +41,8 @@ struct exynos_ion_platform_heap {
 	struct ion_heap *heap;
 };
 
+=======
+>>>>>>> origin/3.18.14.x
 static struct ion_platform_heap ion_noncontig_heap = {
 	.name = "ion_noncontig_heap",
 	.type = ION_HEAP_TYPE_SYSTEM,
@@ -125,8 +128,14 @@ int ion_secure_protect(struct ion_buffer *buffer)
 	if (pdata->noprot)
 		return 0;
 
+<<<<<<< HEAD
 	return (pdata->reusable ? __ion_secure_protect_buffer(pdata, buffer) :
 				__ion_secure_protect_region(pdata, buffer));
+=======
+	return (pdata->reusable && !pdata->should_isolate)
+				? __ion_secure_protect_buffer(pdata, buffer)
+				: __ion_secure_protect_region(pdata, buffer);
+>>>>>>> origin/3.18.14.x
 }
 
 static int __ion_secure_unprotect_buffer(struct exynos_ion_platform_heap *pdata,
@@ -189,8 +198,14 @@ int ion_secure_unprotect(struct ion_buffer *buffer)
 	if (pdata->noprot)
 		return 0;
 
+<<<<<<< HEAD
 	return (pdata->reusable ? __ion_secure_unprotect_buffer(pdata, buffer) :
 				__ion_secure_unprotect_region(pdata, buffer));
+=======
+	return (pdata->reusable && !pdata->should_isolate)
+				? __ion_secure_unprotect_buffer(pdata, buffer)
+				: __ion_secure_unprotect_region(pdata, buffer);
+>>>>>>> origin/3.18.14.x
 }
 #else
 int ion_secure_protect(struct ion_buffer *buffer)
@@ -272,6 +287,11 @@ static int __init exynos_ion_reserved_mem_setup(struct reserved_mem *rmem)
 	pdata->secure = !!of_get_flat_dt_prop(rmem->fdt_node, "secure", NULL);
 	pdata->reusable = !!of_get_flat_dt_prop(rmem->fdt_node, "reusable", NULL);
 	pdata->noprot = !!of_get_flat_dt_prop(rmem->fdt_node, "noprot", NULL);
+<<<<<<< HEAD
+=======
+	pdata->should_isolate = !!of_get_flat_dt_prop(
+				rmem->fdt_node, "ion,bulk_reclaim", NULL);
+>>>>>>> origin/3.18.14.x
 
 	prop = of_get_flat_dt_prop(rmem->fdt_node, "id", &len);
 	if (!prop) {

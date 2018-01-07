@@ -188,6 +188,7 @@ sar_mode:
 }
 #endif
 
+<<<<<<< HEAD
 #if defined (CONFIG_VBUS_NOTIFIER) && defined(CONFIG_TOUCHKEY_GRIP)
 static int mip4_tk_vbus_notification(struct notifier_block *nb,
 		unsigned long cmd, void *data)
@@ -198,10 +199,23 @@ static int mip4_tk_vbus_notification(struct notifier_block *nb,
 	int ret;
 
 	printk("%s cmd=%lu, vbus_type=%d\n", __func__, cmd, vbus_type);
+=======
+#if defined (CONFIG_MUIC_NOTIFIER) && defined(CONFIG_TOUCHKEY_GRIP)
+static int mip4_tk_cpuidle_muic_notification(struct notifier_block *nb,
+		unsigned long action, void *data)
+{
+	struct mip4_tk_info *info = container_of(nb, struct mip4_tk_info, cpuidle_muic_nb);
+	muic_attached_dev_t attached_dev = *(muic_attached_dev_t *)data;
+	u8 wbuf[3];	
+	int ret;
+
+	input_info(true, &info->client->dev, "%s action=%lu, attached_dev=%d\n", __func__, action, attached_dev);
+>>>>>>> origin/3.18.14.x
 
 	wbuf[0] = MIP_R0_CTRL;
 	wbuf[1] = MIP_R1_CTRL_CHARGER_MODE;	
 
+<<<<<<< HEAD
 	switch (vbus_type) {
 	case STATUS_VBUS_HIGH:
 		printk("%s : attach\n",__func__);
@@ -216,6 +230,29 @@ static int mip4_tk_vbus_notification(struct notifier_block *nb,
 		ret = mip4_tk_i2c_write(info, wbuf, 3);
 		if (ret < 0)
 			input_err(true, &info->client->dev, "%s TA mode OFF fail(%d)\n", __func__, ret);
+=======
+	switch (attached_dev) {
+	case ATTACHED_DEV_OTG_MUIC:
+	case ATTACHED_DEV_USB_MUIC:
+	case ATTACHED_DEV_TA_MUIC:
+	case ATTACHED_DEV_AFC_CHARGER_PREPARE_MUIC:
+	case ATTACHED_DEV_AFC_CHARGER_9V_MUIC:
+		if (action == MUIC_NOTIFY_CMD_ATTACH) 
+		{
+			input_info(true, &info->client->dev, "%s : attach\n",__func__);
+			wbuf[2] = 1;
+			ret = mip4_tk_i2c_write(info, wbuf, 3);
+			if (ret < 0)
+				input_err(true, &info->client->dev, "%s attach fail(%d)\n", __func__, ret);
+		}
+		else if (action == MUIC_NOTIFY_CMD_DETACH) {
+			input_info(true, &info->client->dev, "%s : detach\n",__func__);
+			wbuf[2] = 0;
+			ret = mip4_tk_i2c_write(info, wbuf, 3);
+			if (ret < 0)
+				input_err(true, &info->client->dev, "%s detach fail(%d)\n", __func__, ret);
+		}
+>>>>>>> origin/3.18.14.x
 		break;
 	default:
 		break;
@@ -1338,6 +1375,11 @@ static int mip4_tk_probe(struct i2c_client *client, const struct i2c_device_id *
 	if (mip4_tk_sysfs_create(info)) {
 		input_err(true, &client->dev,
 				"%s [ERROR] mip4_tk_sysfs_create\n", __func__);
+<<<<<<< HEAD
+=======
+		ret = -EAGAIN;
+		goto err_sysfs_create;
+>>>>>>> origin/3.18.14.x
 	}
 #endif
 
@@ -1347,23 +1389,45 @@ static int mip4_tk_probe(struct i2c_client *client, const struct i2c_device_id *
 		input_err(true, &client->dev,
 				"%s [ERROR] mip4_tk_sysfs_cmd_create\n",
 				__func__);
+<<<<<<< HEAD
 	}
 #endif
 
+=======
+		ret = -EAGAIN;
+		goto err_sysfs_cmd_create;		
+	}
+#endif
+>>>>>>> origin/3.18.14.x
 	/* Create sysfs */
 	if (sysfs_create_group(&client->dev.kobj, &mip4_tk_attr_group)) {
 		input_err(true, &client->dev,
 				"%s [ERROR] sysfs_create_group\n", __func__);
+<<<<<<< HEAD
+=======
+		ret = -EAGAIN;
+		goto err_create_attr_group;
+>>>>>>> origin/3.18.14.x
 	}
 
 	if (sysfs_create_link(&info->key_dev->kobj, &info->input_dev->dev.kobj, "input")) {
 		input_err(true, &client->dev,
 				"%s [ERROR] sysfs_create_link\n", __func__);
+<<<<<<< HEAD
 	}
 
 #if defined (CONFIG_VBUS_NOTIFIER) && defined(CONFIG_TOUCHKEY_GRIP)
 	vbus_notifier_register(&info->vbus_nb, mip4_tk_vbus_notification,
 			       VBUS_NOTIFY_DEV_CHARGER);
+=======
+		ret = -EAGAIN;
+		goto err_create_link;
+	}
+
+#if defined (CONFIG_MUIC_NOTIFIER) && defined(CONFIG_TOUCHKEY_GRIP)
+	muic_notifier_register(&info->cpuidle_muic_nb, mip4_tk_cpuidle_muic_notification,
+			       MUIC_NOTIFY_DEV_CPUIDLE);
+>>>>>>> origin/3.18.14.x
 #endif
 
 #ifdef CONFIG_TOUCHKEY_GRIP
@@ -1382,7 +1446,27 @@ static int mip4_tk_probe(struct i2c_client *client, const struct i2c_device_id *
 
 	return 0;
 
+<<<<<<< HEAD
 err_dev_create:
+=======
+//	sysfs_remove_link(NULL, MIP_DEV_NAME);	
+err_create_link:	
+	sysfs_remove_group(&info->client->dev.kobj, &mip4_tk_attr_group);	
+err_create_attr_group:	
+#if MIP_USE_CMD
+	mip4_tk_sysfs_cmd_remove(info);
+err_sysfs_cmd_create:
+#endif
+#if MIP_USE_SYS
+	mip4_tk_sysfs_remove(info);
+err_sysfs_create:
+#endif	
+	device_destroy(info->class, info->mip4_tk_dev);
+	class_destroy(info->class);
+#if MIP_USE_DEV	
+err_dev_create:
+#endif
+>>>>>>> origin/3.18.14.x
 	disable_irq(info->irq);
 err_req_irq:
 	input_unregister_device(input_dev);
@@ -1512,8 +1596,13 @@ void mip4_tk_shutdown(struct i2c_client *client)
 		return;
 
 	input_err(true, &info->client->dev, "%s\n", __func__);
+<<<<<<< HEAD
 #if defined (CONFIG_VBUS_NOTIFIER) && defined(CONFIG_TOUCHKEY_GRIP)
 	vbus_notifier_unregister(&info->vbus_nb);
+=======
+#if defined (CONFIG_MUIC_NOTIFIER) && defined(CONFIG_TOUCHKEY_GRIP)
+	muic_notifier_unregister(&info->cpuidle_muic_nb);
+>>>>>>> origin/3.18.14.x
 #endif
 #ifdef OPEN_CLOSE_WORK
 	cancel_delayed_work(&info->resume_work);
@@ -1521,6 +1610,12 @@ void mip4_tk_shutdown(struct i2c_client *client)
 
 	free_irq(info->irq, info);
 
+<<<<<<< HEAD
+=======
+#if MIP_USE_CMD
+	mip4_tk_sysfs_cmd_remove(info);
+#endif
+>>>>>>> origin/3.18.14.x
 	input_unregister_device(info->input_dev);
 	info->input_dev = NULL;
 	mutex_destroy(&info->lock);

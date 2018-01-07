@@ -326,7 +326,10 @@ int get_tsp_status(void)
 static void tc300k_early_suspend(struct early_suspend *h);
 static void tc300k_late_resume(struct early_suspend *h);
 #endif
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin/3.18.14.x
 static void tc300k_input_close(struct input_dev *dev);
 static int tc300k_input_open(struct input_dev *dev);
 static int tc300_pinctrl_init(struct tc300k_data *data);
@@ -3529,6 +3532,7 @@ static int __devexit tc300k_remove(struct i2c_client *client)
 
 static void tc300k_shutdown(struct i2c_client *client)
 {
+<<<<<<< HEAD
 	struct tc300k_data *data = i2c_get_clientdata(client);
 
 #ifdef FEATURE_GRIP_FOR_SAR
@@ -3537,6 +3541,9 @@ static void tc300k_shutdown(struct i2c_client *client)
 #endif
 	data->pdata->keyled(false);
 	data->pdata->power(false);
+=======
+	tc300k_remove(client);
+>>>>>>> origin/3.18.14.x
 }
 
 #if defined(CONFIG_PM)

@@ -982,9 +982,61 @@ static int s6e3fa3_init_hbm_interpolation(struct lcd_info *lcd)
 static int s6e3fa3_exit(struct lcd_info *lcd)
 {
 	int ret = 0;
+<<<<<<< HEAD
 
 	dev_info(&lcd->ld->dev, "%s\n", __func__);
 
+=======
+#ifdef CONFIG_DISPLAY_USE_INFO
+	u8 buf;
+	u8 esd_err = 0;
+#endif
+
+	dev_info(&lcd->ld->dev, "%s\n", __func__);
+
+#ifdef CONFIG_DISPLAY_USE_INFO
+	DSI_WRITE(SEQ_TEST_KEY_ON_F0, ARRAY_SIZE(SEQ_TEST_KEY_ON_F0));
+	DSI_WRITE(SEQ_VLIN1_MONITOR_ON, ARRAY_SIZE(SEQ_VLIN1_MONITOR_ON));
+	ret = s6e3fa3_read_info(lcd, ERR_READ_REG, sizeof(buf), &buf);
+	if (ret < 0) {
+		dev_err(&lcd->ld->dev, "%s: fail\n", __func__);
+		goto dpui_skip;
+	}
+	inc_dpui_u32_field(DPUI_KEY_PNVLI1E, buf != 0 ? 1 : 0);
+	esd_err |= buf;
+
+	DSI_WRITE(SEQ_ELVDD_MONITOR_ON, ARRAY_SIZE(SEQ_ELVDD_MONITOR_ON));
+	ret = s6e3fa3_read_info(lcd, ERR_READ_REG, sizeof(buf), &buf);
+	if (ret < 0) {
+		dev_err(&lcd->ld->dev, "%s: fail\n", __func__);
+		goto dpui_skip;
+	}
+	inc_dpui_u32_field(DPUI_KEY_PNELVDE, buf != 0 ? 1 : 0);
+	esd_err |= buf;
+
+	DSI_WRITE(SEQ_VLOUT3_MONITOR_ON, ARRAY_SIZE(SEQ_VLOUT3_MONITOR_ON));
+	ret = s6e3fa3_read_info(lcd, ERR_READ_REG, sizeof(buf), &buf);
+	if (ret < 0) {
+		dev_err(&lcd->ld->dev, "%s: fail\n", __func__);
+		goto dpui_skip;
+	}
+	inc_dpui_u32_field(DPUI_KEY_PNVLO3E, buf != 0 ? 1 : 0);
+	esd_err |= buf;
+
+	inc_dpui_u32_field(DPUI_KEY_PNESDE, esd_err != 0 ? 1 : 0);
+
+	ret = s6e3fa3_read_info(lcd, ERR_RDNUMED_REG, sizeof(buf), &buf);
+	if (ret < 0) {
+		dev_err(&lcd->ld->dev, "%s: fail\n", __func__);
+		goto dpui_skip;
+	}
+	inc_dpui_u32_field(DPUI_KEY_PNDSIE, buf);
+
+dpui_skip:
+	DSI_WRITE(SEQ_TEST_KEY_OFF_F0, ARRAY_SIZE(SEQ_TEST_KEY_OFF_F0));
+#endif
+
+>>>>>>> origin/3.18.14.x
 	/* 2. Display Off (28h) */
 	DSI_WRITE(SEQ_DISPLAY_OFF, ARRAY_SIZE(SEQ_DISPLAY_OFF));
 
@@ -1020,6 +1072,12 @@ exit:
 static int s6e3fa3_init(struct lcd_info *lcd)
 {
 	int ret = 0;
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_DISPLAY_USE_INFO
+	u8 buf;
+#endif
+>>>>>>> origin/3.18.14.x
 
 	dev_info(&lcd->ld->dev, "%s\n", __func__);
 
@@ -1059,6 +1117,16 @@ static int s6e3fa3_init(struct lcd_info *lcd)
 	DSI_WRITE(SEQ_AVC_SETTING_2, ARRAY_SIZE(SEQ_AVC_SETTING_2));
 
 	dsim_panel_set_brightness(lcd, 1);
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_DISPLAY_USE_INFO
+	ret = s6e3fa3_read_info(lcd, ERR_RDDSDR_REG, sizeof(buf), &buf);
+	if (ret < 0) {
+		dev_err(&lcd->ld->dev, "%s: fail\n", __func__);
+	}
+	inc_dpui_u32_field(DPUI_KEY_PNSDRE, buf&0x80 ? 1 : 0);
+#endif
+>>>>>>> origin/3.18.14.x
 	/* Test Key Disable */
 	DSI_WRITE(SEQ_TEST_KEY_OFF_F0, ARRAY_SIZE(SEQ_TEST_KEY_OFF_F0));
 	DSI_WRITE(SEQ_TEST_KEY_OFF_FC, ARRAY_SIZE(SEQ_TEST_KEY_OFF_FC));
@@ -1632,7 +1700,11 @@ static ssize_t dump_register_store(struct device *dev,
 	unsigned int reg, len, offset;
 	int ret;
 
+<<<<<<< HEAD
 	ret = sscanf(buf, "%x %d %d", &reg, &len, &offset);
+=======
+	ret = sscanf(buf, "%8x %8d %8d", &reg, &len, &offset);
+>>>>>>> origin/3.18.14.x
 
 	if (ret == 2)
 		offset = 0;
@@ -1789,6 +1861,12 @@ static ssize_t alpm_doze_store(struct device *dev,
 
 	ret = kstrtouint(buf, 0, &value);
 
+<<<<<<< HEAD
+=======
+	if (ret < 0)
+		return ret;
+
+>>>>>>> origin/3.18.14.x
 	dev_info(dev, "%s: %d\n", __func__, value);
 
 	if (value >= ALPM_MODE_MAX) {
@@ -1814,6 +1892,10 @@ static ssize_t alpm_doze_store(struct device *dev,
 			mutex_unlock(&lcd->lock);
 		}
 		call_panel_ops(dsim, displayon, dsim);
+<<<<<<< HEAD
+=======
+		s6e3fa3_displayon(lcd);
+>>>>>>> origin/3.18.14.x
 		break;
 	case ALPM_ON_LOW:
 	case HLPM_ON_LOW:
@@ -1846,6 +1928,12 @@ static ssize_t alpm_doze_store(struct device *dev,
 
 	ret = kstrtouint(buf, 0, &value);
 
+<<<<<<< HEAD
+=======
+	if (ret < 0)
+		return ret;
+
+>>>>>>> origin/3.18.14.x
 	dev_info(dev, "%s: %d, %d\n", __func__, value, dsim->doze_state);
 
 	if (value >= ALPM_MODE_MAX) {
@@ -1954,7 +2042,15 @@ static void lcd_init_svc(struct lcd_info *lcd)
 	dev_set_name(dev, "OCTA");
 	dev_set_drvdata(dev, lcd);
 	ret = device_register(dev);
+<<<<<<< HEAD
 	ret = device_create_file(dev, &dev_attr_SVC_OCTA);
+=======
+	if (ret) {
+		dev_info(&lcd->ld->dev, "%s: device_register fail\n", __func__);
+		return;
+	}
+	device_create_file(dev, &dev_attr_SVC_OCTA);
+>>>>>>> origin/3.18.14.x
 
 	if (kn)
 		kernfs_put(kn);
@@ -2103,11 +2199,14 @@ static int dsim_panel_displayon(struct dsim_device *dsim)
 		goto displayon_err;
 	}
 
+<<<<<<< HEAD
 #ifdef CONFIG_LCD_DOZE_MODE_MDNIE
 	if(doze_mdnie)
 		mdnie_enable(doze_mdnie);
 #endif
 
+=======
+>>>>>>> origin/3.18.14.x
 displayon_err:
 	mutex_lock(&lcd->lock);
 	lcd->state = PANEL_STATE_RESUMED;
@@ -2131,11 +2230,14 @@ static int dsim_panel_suspend(struct dsim_device *dsim)
 
 	lcd->state = PANEL_STATE_SUSPENDING;
 
+<<<<<<< HEAD
 #ifdef CONFIG_LCD_DOZE_MODE_MDNIE
 	if(doze_mdnie)
 		mdnie_disable(doze_mdnie);
 #endif
 
+=======
+>>>>>>> origin/3.18.14.x
 	ret = s6e3fa3_exit(lcd);
 	if (ret) {
 		dev_info(&lcd->ld->dev, "%s: failed to panel exit\n", __func__);
@@ -2178,11 +2280,14 @@ static int dsim_panel_enteralpm(struct dsim_device *dsim)
 		goto exit;
 	}
 
+<<<<<<< HEAD
 #ifdef CONFIG_LCD_DOZE_MODE_MDNIE
 	if(doze_mdnie)
 		mdnie_update(doze_mdnie);
 #endif
 
+=======
+>>>>>>> origin/3.18.14.x
 	dev_info(&lcd->ld->dev, "-%s: %d\n", __func__, priv->lcdConnected);
 exit:
 	return ret;
@@ -2196,11 +2301,14 @@ static int dsim_panel_exitalpm(struct dsim_device *dsim)
 
 	dev_info(&lcd->ld->dev, "+%s: %d\n", __func__, lcd->state);
 
+<<<<<<< HEAD
 #ifdef CONFIG_LCD_DOZE_MODE_MDNIE
 	if(doze_mdnie)
 		mdnie_disable(doze_mdnie);
 #endif
 
+=======
+>>>>>>> origin/3.18.14.x
 	if (lcd->state == PANEL_STATE_SUSPENED) {
 		ret = s6e3fa3_init(lcd);
 		if (ret) {

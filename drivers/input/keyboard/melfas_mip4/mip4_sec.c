@@ -307,6 +307,55 @@ error:
 	return snprintf(buf, PAGE_SIZE, "NG\n");
 }
 
+<<<<<<< HEAD
+=======
+static ssize_t mip4_tk_cmd_key_recal(struct device *dev, struct device_attribute *attr, const char *buf, size_t count)
+{
+	struct mip4_tk_info *info = dev_get_drvdata(dev);
+	u8 wbuf[3];
+	int buff;
+	int ret;
+
+#ifdef CONFIG_TOUCHKEY_GRIP	
+	if(info->sar_mode == 1)
+	{
+		input_err(true,&info->client->dev, "%s [ERROR] sar only mode \n", __func__);
+		goto error;
+	}
+#endif
+
+	ret = sscanf(buf, "%d", &buff);
+	if (ret != 1) {
+		input_err(true,&info->client->dev,  "%s: cmd read err\n", __func__);
+		return count;
+	}	
+
+	input_info(true,&info->client->dev,"%s (%d)\n", __func__, buff);	
+	
+	if (!(buff >= 0 && buff <= 1)) {
+		input_err(true,&info->client->dev,  "%s: wrong command(%d)\n",
+			__func__, buff);
+		return count;
+	}	
+	
+	wbuf[0] = MIP_R0_CTRL;
+	wbuf[1] = MIP_R1_CTRL_REBASELINE_KEY;
+	wbuf[2] = 1;
+
+	if (mip4_tk_i2c_write(info, wbuf, 3)) {
+		input_err(true,&info->client->dev, "%s [ERROR] mip4_tk_i2c_write\n", __func__);
+		goto error;
+	}
+
+	return count;
+
+error:
+	input_err(true,&info->client->dev, "%s [ERROR]\n", __func__);
+	return count;
+}
+
+
+>>>>>>> origin/3.18.14.x
 #ifdef MIP_USE_LED
 /**
 * Store LED on/off
@@ -798,21 +847,33 @@ static ssize_t touchkey_sar_enable(struct device *dev, struct device_attribute *
 	struct mip4_tk_info *info = dev_get_drvdata(dev);
 	u8 wbuf[3];
 	int buff;
+<<<<<<< HEAD
 	int data;
 	int ret;
 	bool on;
 	u8 rf_band;
 
 	ret = sscanf(buf, "%d", &data);	
+=======
+	int ret;
+	bool on;
+
+	ret = sscanf(buf, "%d", &buff);	
+>>>>>>> origin/3.18.14.x
 	if (ret != 1) {
 		input_err(true,&info->client->dev, "%s: cmd read err\n", __func__);
 		return count;
 	}	
 
+<<<<<<< HEAD
 	input_info(true,&info->client->dev,"%s (%d)\n", __func__, data);	
 
 	buff = data & 0x0F;
 	rf_band = data & 0xF0;
+=======
+	input_info(true,&info->client->dev,"%s (%d)\n", __func__, buff);	
+
+>>>>>>> origin/3.18.14.x
 	if (!(buff >= 0 && buff <= 3)) {
 		input_err(true,&info->client->dev, "%s: wrong command(%d)\n",
 				__func__, buff);
@@ -859,7 +920,11 @@ static ssize_t touchkey_sar_enable(struct device *dev, struct device_attribute *
 	} else {
 		on = false;
 	}
+<<<<<<< HEAD
 	wbuf[2] = rf_band | on;
+=======
+	wbuf[2] = on;
+>>>>>>> origin/3.18.14.x
 
 	if (mip4_tk_i2c_write(info, wbuf, 3)) {
 		input_err(true,&info->client->dev, "%s [ERROR] mip4_tk_i2c_write\n", __func__);
@@ -1189,6 +1254,10 @@ static DEVICE_ATTR(touchkey_recent_raw, S_IRUGO, mip4_tk_cmd_image, NULL);
 static DEVICE_ATTR(touchkey_back, S_IRUGO, mip4_tk_cmd_image, NULL);
 static DEVICE_ATTR(touchkey_back_raw, S_IRUGO, mip4_tk_cmd_image, NULL);
 static DEVICE_ATTR(touchkey_threshold, S_IRUGO, mip4_tk_cmd_threshold, NULL);
+<<<<<<< HEAD
+=======
+static DEVICE_ATTR(touchkey_earjack, S_IWUSR | S_IWGRP, NULL, mip4_tk_cmd_key_recal);
+>>>>>>> origin/3.18.14.x
 static DEVICE_ATTR(touchkey_recal, S_IRUGO | S_IWUSR | S_IWGRP, mip4_tk_cmd_recal_show, mip4_tk_cmd_recal_store);
 static DEVICE_ATTR(touchkey_enable, S_IRUGO | S_IWUSR | S_IWGRP, mip4_tk_cmd_enable_show, mip4_tk_cmd_enable_store);
 #ifdef CONFIG_TOUCHKEY_GRIP
@@ -1228,6 +1297,10 @@ static struct attribute *mip_cmd_key_attr[] = {
 	&dev_attr_touchkey_back.attr,
 	&dev_attr_touchkey_back_raw.attr,
 	&dev_attr_touchkey_threshold.attr,
+<<<<<<< HEAD
+=======
+	&dev_attr_touchkey_earjack.attr,	
+>>>>>>> origin/3.18.14.x
 	&dev_attr_touchkey_recal.attr,
 	&dev_attr_touchkey_enable.attr,
 #ifdef CONFIG_TOUCHKEY_GRIP	
@@ -1291,6 +1364,11 @@ int mip4_tk_sysfs_cmd_create(struct mip4_tk_info *info)
 void mip4_tk_sysfs_cmd_remove(struct mip4_tk_info *info)
 {
 //	device_destroy(sec_class,  0);
+<<<<<<< HEAD
+=======
+	sysfs_remove_group(&info->key_dev->kobj, &mip_cmd_key_attr_group);
+
+>>>>>>> origin/3.18.14.x
 	return;
 }
 

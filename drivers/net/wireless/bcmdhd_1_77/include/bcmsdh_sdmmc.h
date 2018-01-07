@@ -59,7 +59,11 @@
 /* private bus modes */
 #define SDIOH_MODE_SD4		2
 #define CLIENT_INTR			0x100	/* Get rid of this! */
+<<<<<<< HEAD
 #define SDIOH_SDMMC_MAX_SG_ENTRIES	(SDPCM_MAXGLOM_SIZE + 2)
+=======
+#define SDIOH_SDMMC_MAX_SG_ENTRIES (SDPCM_MAXGLOM_SIZE + 2)
+>>>>>>> origin/3.18.14.x
 
 struct sdioh_info {
 	osl_t		*osh;			/* osh handler */

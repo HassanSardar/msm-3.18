@@ -39,7 +39,11 @@
 #include <linux/vbus_notifier.h>
 #endif /* CONFIG_VBUS_NOTIFIER */
 
+<<<<<<< HEAD
 #if defined (CONFIG_OF)
+=======
+#if defined(CONFIG_OF)
+>>>>>>> origin/3.18.14.x
 #include <linux/of_device.h>
 #include <linux/of_gpio.h>
 #endif /* CONFIG_OF */
@@ -70,10 +74,17 @@ static void muic_handle_attach(muic_data_t *pmuic,
 	pr_info("%s:%s attached_dev:%d new_dev:%d adc:0x%02x, vbvolt:%02x\n",
 		MUIC_DEV_NAME, __func__, pmuic->attached_dev, new_dev, adc, vbvolt);
 
+<<<<<<< HEAD
 	if((new_dev == pmuic->attached_dev) &&
 		(new_dev != ATTACHED_DEV_JIG_UART_OFF_MUIC)) {
 		pr_info("%s:%s Duplicated device %d just ignore\n",
 				MUIC_DEV_NAME, __func__,pmuic->attached_dev);
+=======
+	if ((new_dev == pmuic->attached_dev) &&
+		(new_dev != ATTACHED_DEV_JIG_UART_OFF_MUIC)) {
+		pr_info("%s:%s Duplicated device %d just ignore\n",
+				MUIC_DEV_NAME, __func__, pmuic->attached_dev);
+>>>>>>> origin/3.18.14.x
 		return;
 	}
 	switch (pmuic->attached_dev) {
@@ -144,12 +155,20 @@ static void muic_handle_attach(muic_data_t *pmuic,
 			else
 				ret = detach_jig_uart_boot_on(pmuic);
 
+<<<<<<< HEAD
 			muic_set_wakeup_noti(pmuic->is_factory_start ? 1: 0);
+=======
+			muic_set_wakeup_noti(pmuic->is_factory_start ? 1 : 0);
+>>>>>>> origin/3.18.14.x
 		}
 		break;
 	case ATTACHED_DEV_DESKDOCK_MUIC:
 	case ATTACHED_DEV_DESKDOCK_VB_MUIC:
+<<<<<<< HEAD
 		if (new_dev == ATTACHED_DEV_DESKDOCK_MUIC || 
+=======
+		if (new_dev == ATTACHED_DEV_DESKDOCK_MUIC ||
+>>>>>>> origin/3.18.14.x
 				new_dev == ATTACHED_DEV_DESKDOCK_VB_MUIC) {
 			pr_warn("%s:%s new(%d)!=attached(%d), assume same device\n",
 					MUIC_DEV_NAME, __func__, new_dev,
@@ -204,6 +223,11 @@ static void muic_handle_attach(muic_data_t *pmuic,
 		break;
 	case ATTACHED_DEV_TA_MUIC:
 		attach_ta(pmuic);
+<<<<<<< HEAD
+=======
+		if (pmuic->is_camera_on)
+			pmuic->is_afc_5v = 1;
+>>>>>>> origin/3.18.14.x
 		pmuic->attached_dev = new_dev;
 		break;
 	case ATTACHED_DEV_JIG_UART_OFF_MUIC:
@@ -218,7 +242,11 @@ static void muic_handle_attach(muic_data_t *pmuic,
 		else
 			ret = attach_jig_uart_boot_on(pmuic, new_dev);
 
+<<<<<<< HEAD
 		muic_set_wakeup_noti(pmuic->is_factory_start ? 1: 0);
+=======
+		muic_set_wakeup_noti(pmuic->is_factory_start ? 1 : 0);
+>>>>>>> origin/3.18.14.x
 		break;
 	case ATTACHED_DEV_JIG_USB_OFF_MUIC:
 		ret = attach_jig_usb_boot_off(pmuic, vbvolt);
@@ -272,10 +300,18 @@ static void muic_handle_detach(muic_data_t *pmuic)
 
 	ret = com_to_open_with_vbus(pmuic);
 #if defined(CONFIG_MUIC_UNIVERSAL_SM5705)
+<<<<<<< HEAD
 	// ENAFC set '0'
 	pmuic->regmapdesc->afcops->afc_ctrl_reg(pmuic->regmapdesc, AFCCTRL_ENAFC, 0);
 #endif
 	//muic_enable_accdet(pmuic);
+=======
+	/* ENAFC set '0' */
+	pmuic->regmapdesc->afcops->afc_ctrl_reg(pmuic->regmapdesc, AFCCTRL_ENAFC, 0);
+#endif
+	pmuic->is_afc_5v = 0;
+	pmuic->check_charger_lcd_on = false;
+>>>>>>> origin/3.18.14.x
 
 	switch (pmuic->attached_dev) {
 	case ATTACHED_DEV_JIG_USB_OFF_MUIC:
@@ -303,7 +339,11 @@ static void muic_handle_detach(muic_data_t *pmuic)
 		else
 			ret = detach_jig_uart_boot_on(pmuic);
 
+<<<<<<< HEAD
 		muic_set_wakeup_noti(pmuic->is_factory_start ? 1: 0);
+=======
+		muic_set_wakeup_noti(pmuic->is_factory_start ? 1 : 0);
+>>>>>>> origin/3.18.14.x
 		break;
 	case ATTACHED_DEV_DESKDOCK_MUIC:
 	case ATTACHED_DEV_DESKDOCK_VB_MUIC:

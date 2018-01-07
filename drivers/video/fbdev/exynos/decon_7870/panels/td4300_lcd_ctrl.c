@@ -19,6 +19,10 @@
 #include "../decon.h"
 #include "../decon_board.h"
 #include "dsim_panel.h"
+<<<<<<< HEAD
+=======
+#include "../decon_notify.h"
+>>>>>>> origin/3.18.14.x
 
 #include "td4300_param.h"
 
@@ -208,7 +212,17 @@ static int dsim_read_hl_data(struct lcd_info *lcd, u8 addr, u32 size, u8 *buf)
 
 	DSI_WRITE_G(SEQ_TD4300_B0, ARRAY_SIZE(SEQ_TD4300_B0));
 try_read:
+<<<<<<< HEAD
 	ret = dsim_read_data(lcd->dsim, MIPI_DSI_GENERIC_READ_REQUEST_1_PARAM, (u32)addr, size, buf);
+=======
+
+	/* Panel ID register should be read by DCS_READ */
+	if (addr == 0xDA || addr == 0xDB || addr == 0xDC)
+		ret = dsim_read_data(lcd->dsim, MIPI_DSI_DCS_READ, (u32)addr, size, buf);
+	else
+		ret = dsim_read_data(lcd->dsim, MIPI_DSI_GENERIC_READ_REQUEST_1_PARAM, (u32)addr, size, buf);
+
+>>>>>>> origin/3.18.14.x
 	dev_info(&lcd->ld->dev, "%s: addr: %x, ret: %d\n", __func__, addr, ret);
 	if (ret != size) {
 		if (--retry)
@@ -312,6 +326,33 @@ read_exit:
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static int td4300_read_id(struct lcd_info *lcd)
+{
+	int ret = 0;
+	u8 buf[3] = {0, };
+	struct panel_private *priv = &lcd->dsim->priv;
+
+	priv->lcdConnected = PANEL_CONNECTED;
+
+	ret = dsim_read_hl_data(lcd, TD4300_ID_REG, 1, (u8 *)&buf[0]);
+	ret = dsim_read_hl_data(lcd, TD4300_ID_REG + 1, 1, (u8 *)&buf[1]);
+	ret = dsim_read_hl_data(lcd, TD4300_ID_REG + 2, 1, (u8 *)&buf[2]);
+
+	if (ret <= 0)
+		priv->lcdConnected = PANEL_DISCONNEDTED;
+
+	lcd->id[0] = buf[0];
+	lcd->id[1] = buf[1];
+	lcd->id[2] = buf[2];
+
+	dsim_info("%s %d : 0x%02x 0x%02x 0x%02x\n", __func__, ret, lcd->id[0], lcd->id[1], lcd->id[2]);
+
+	return ret;
+}
+
+>>>>>>> origin/3.18.14.x
 static int td4300_displayon(struct lcd_info *lcd)
 {
 	int ret = 0;
@@ -363,6 +404,18 @@ static int td4300_init(struct lcd_info *lcd)
 
 	dev_info(&lcd->ld->dev, "%s: ++\n", __func__);
 
+<<<<<<< HEAD
+=======
+	// Read REQ packet is sent by LPDT
+	dsim_reg_set_standby(0, 0);
+	dsim_reg_set_cmd_transfer_mode(0, 1);
+	dsim_reg_set_standby(0, 1);
+	td4300_read_id(lcd);
+	dsim_reg_set_standby(0, 0);
+	dsim_reg_set_cmd_transfer_mode(0, 0);
+	dsim_reg_set_standby(0, 1);
+
+>>>>>>> origin/3.18.14.x
 	DSI_WRITE_G(SEQ_TD4300_B0, ARRAY_SIZE(SEQ_TD4300_B0));
 	DSI_WRITE_G(SEQ_TD4300_B3, ARRAY_SIZE(SEQ_TD4300_B3));
 	DSI_WRITE_G(SEQ_TD4300_B4, ARRAY_SIZE(SEQ_TD4300_B4));
@@ -482,7 +535,11 @@ static int td4300_probe(struct dsim_device *dsim)
 
 	memset(&lcd->fb_notif_panel, 0, sizeof(lcd->fb_notif_panel));
 	lcd->fb_notif_panel.notifier_call = fb_notifier_callback;
+<<<<<<< HEAD
 	fb_register_client(&lcd->fb_notif_panel);
+=======
+	decon_register_notifier(&lcd->fb_notif_panel);
+>>>>>>> origin/3.18.14.x
 
 #if defined(CONFIG_SEC_INCELL)
 	incell_data.blank_unblank = incell_blank_unblank;
@@ -555,7 +612,11 @@ static ssize_t dump_register_show(struct device *dev,
 	struct lcd_info *lcd = dev_get_drvdata(dev);
 	char *pos = buf;
 	u8 reg, len, table;
+<<<<<<< HEAD
 	int ret, i;
+=======
+	int i;
+>>>>>>> origin/3.18.14.x
 	u8 *dump = NULL;
 
 	reg = lcd->dump_info[0];
@@ -568,7 +629,11 @@ static ssize_t dump_register_show(struct device *dev,
 	dump = kcalloc(len, sizeof(u8), GFP_KERNEL);
 
 	if (lcd->state == PANEL_STATE_RESUMED) {
+<<<<<<< HEAD
 		ret = dsim_read_hl_data(lcd, reg, len, dump);
+=======
+		dsim_read_hl_data(lcd, reg, len, dump);
+>>>>>>> origin/3.18.14.x
 	}
 
 	pos += sprintf(pos, "+ [%02X]\n", reg);
@@ -593,7 +658,11 @@ static ssize_t dump_register_store(struct device *dev,
 	unsigned int reg, len, offset;
 	int ret;
 
+<<<<<<< HEAD
 	ret = sscanf(buf, "%x %d %d", &reg, &len, &offset);
+=======
+	ret = sscanf(buf, "%8x %8d %8d", &reg, &len, &offset);
+>>>>>>> origin/3.18.14.x
 
 	if (ret == 2)
 		offset = 0;
@@ -637,7 +706,11 @@ static ssize_t read_show(struct kobject *kobj,
 	struct lcd_info *lcd = container_of(attr, struct lcd_info, dsi_access_r);
 	char *pos = buf;
 	u8 reg, len, param;
+<<<<<<< HEAD
 	int ret, i;
+=======
+	int i;
+>>>>>>> origin/3.18.14.x
 	u8 *dump = NULL;
 	unsigned int data_type;
 
@@ -652,7 +725,11 @@ static ssize_t read_show(struct kobject *kobj,
 	dump = kcalloc(len, sizeof(u8), GFP_KERNEL);
 
 	if (lcd->state == PANEL_STATE_RESUMED) {
+<<<<<<< HEAD
 		ret = dsim_read_data(lcd->dsim, data_type, reg, len, dump);
+=======
+		dsim_read_data(lcd->dsim, data_type, reg, len, dump);
+>>>>>>> origin/3.18.14.x
 	}
 
 	for (i = 0; i < len; i++)
@@ -677,7 +754,11 @@ static ssize_t read_store(struct kobject *kobj,
 	unsigned int data_type, return_packet_type;
 	int ret;
 
+<<<<<<< HEAD
 	ret = sscanf(buf, "%x %x %x %x %x", &data_type, &reg, &param, &return_packet_type, &len);
+=======
+	ret = sscanf(buf, "%8x %8x %8x %8x %8x", &data_type, &reg, &param, &return_packet_type, &len);
+>>>>>>> origin/3.18.14.x
 
 	if (ret != 5)
 		return -EINVAL;

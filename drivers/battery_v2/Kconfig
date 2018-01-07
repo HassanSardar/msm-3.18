@@ -240,8 +240,21 @@ config FUELGAUGE_SM5703
 	 help
 	  Say Y to include support SM5703 FUELGAUGE.
 	  Using coulomb counting.
+<<<<<<< HEAD
 
 
+=======
+ 
+config FUELGAUGE_SM5705
+	tristate "Siliconmitus SM5705 Fuel Gauge"
+	default n
+	depends on BATTERY_SAMSUNG
+	help
+	  SM5705 is fuel-gauge systems for lithium-ion (Li+) batteries
+	  in handheld and portable equipment. The SM5705 is configured
+	  to operate with a single lithium cell
+ 
+>>>>>>> origin/3.18.14.x
 # Charger
 
 config CHARGER_DUMMY
@@ -384,6 +397,14 @@ config CHARGER_SM5703
 	  SM5703 incluse led, flash driver.
 	  You have to define MFD_SM5703
 
+<<<<<<< HEAD
+=======
+config CHARGER_SM5705
+	tristate "SM5705 battery charger support"
+	depends on MFD_SM5705 && I2C
+	help
+	  Say Y here to enable support for the SM5705 charger
+>>>>>>> origin/3.18.14.x
 
 config CHARGER_SM5703_SOFT_START_CHARGING
 	bool "SM5703 soft step charging"

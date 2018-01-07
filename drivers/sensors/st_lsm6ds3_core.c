@@ -2777,7 +2777,11 @@ static ssize_t st_lsm6ds3_vendor_show(struct device *dev,
 static ssize_t st_lsm6ds3_name_show(struct device *dev,
 		struct device_attribute *attr, char *buf)
 {
+<<<<<<< HEAD
 	return snprintf(buf, PAGE_SIZE, "%s\n", LSM6DS3_DEV_NAME);
+=======
+	return snprintf(buf, PAGE_SIZE, "%s\n", DEV_NAME);
+>>>>>>> origin/3.18.14.x
 }
 
 static int st_lsm6ds3_set_lpf(struct lsm6ds3_data *cdata, int onoff)
@@ -3354,7 +3358,11 @@ int st_lsm6ds3_common_probe(struct lsm6ds3_data *cdata, int irq)
 
 	if (cdata->irq > 0) {
 		wake_lock_init(&cdata->sa_wake_lock, WAKE_LOCK_SUSPEND,
+<<<<<<< HEAD
 		       LSM6DS3_DEV_NAME "_sa_wake_lock");
+=======
+			DEV_NAME "_sa_wake_lock");
+>>>>>>> origin/3.18.14.x
 
 		INIT_WORK(&cdata->data_work, st_lsm6ds3_irq_management);
 		INIT_DELAYED_WORK(&cdata->sa_irq_work, st_lsm6ds3_sa_irq_work);

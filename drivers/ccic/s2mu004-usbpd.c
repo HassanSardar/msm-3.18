@@ -75,8 +75,15 @@ static int s2mu004_set_detach(struct s2mu004_usbpd_data *pdic_data, u8 mode);
 static void s2mu004_usbpd_check_rid(struct s2mu004_usbpd_data *pdic_data);
 static int s2mu004_usbpd_read_reg(struct i2c_client *i2c, u8 reg, u8 *dest);
 static int s2mu004_usbpd_write_reg(struct i2c_client *i2c, u8 reg, u8 value);
+<<<<<<< HEAD
 static void s2mu004_usbpd_set_threshold(struct s2mu004_usbpd_data *pdic_data,
 			CCIC_RP_RD_SEL port_sel, CCIC_THRESHOLD_SEL threshold_sel);
+=======
+#ifndef CONFIG_SEC_FACTORY
+static void s2mu004_usbpd_set_threshold(struct s2mu004_usbpd_data *pdic_data,
+			CCIC_RP_RD_SEL port_sel, CCIC_THRESHOLD_SEL threshold_sel);
+#endif
+>>>>>>> origin/3.18.14.x
 static void s2mu004_usbpd_detach_init(struct s2mu004_usbpd_data *pdic_data,
 							CCIC_DETACH_TYPE det_type);
 
@@ -922,7 +929,11 @@ static int s2mu004_set_check_msg_pass(void *_data, int val)
 
 	return 0;
 }
+<<<<<<< HEAD
 
+=======
+#ifndef CONFIG_SEC_FACTORY
+>>>>>>> origin/3.18.14.x
 static void s2mu004_usbpd_set_threshold(struct s2mu004_usbpd_data *pdic_data,
 			CCIC_RP_RD_SEL port_sel, CCIC_THRESHOLD_SEL threshold_sel)
 {
@@ -941,7 +952,10 @@ static void s2mu004_usbpd_set_threshold(struct s2mu004_usbpd_data *pdic_data,
 	}
 }
 
+<<<<<<< HEAD
 #ifndef CONFIG_SEC_FACTORY
+=======
+>>>>>>> origin/3.18.14.x
 static void s2mu004_usbpd_set_rp_scr_sel(struct s2mu004_usbpd_data *pdic_data,
 							CCIC_RP_SCR_SEL scr_sel)
 {
@@ -1320,12 +1334,18 @@ static int type3_handle_notification(struct notifier_block *nb,
 		if (pdic_data->is_otg_reboost) {
 			/* todo : over current event to platform */
 			pr_info("%s, CHECK_OCP, Can't afford it(OVERCURRENT)\n", __func__);
+<<<<<<< HEAD
 #if 0
+=======
+>>>>>>> origin/3.18.14.x
 			if (o_notify) {
 				send_otg_notify(o_notify, NOTIFY_EVENT_OVERCURRENT, 0);
 				o_notify->hw_param[USB_CCIC_OVC_COUNT]++;
 			}
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> origin/3.18.14.x
 			goto EOH;
 		}
 		ccic_event_work(pdic_data,

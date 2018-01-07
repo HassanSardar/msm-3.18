@@ -850,6 +850,12 @@ struct sec_battery_platform_data {
 	int max_input_voltage;
 	int max_input_current;
 	int pre_afc_work_delay;
+<<<<<<< HEAD
+=======
+	
+	/* if siop level 0, set minimum fast charging current */
+	int minimum_charging_current_by_siop_0;
+>>>>>>> origin/3.18.14.x
 
 	sec_charger_functions_t chg_functions_setting;
 

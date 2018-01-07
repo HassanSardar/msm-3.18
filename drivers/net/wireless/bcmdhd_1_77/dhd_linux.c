@@ -409,16 +409,26 @@ extern int dhd_adps_mode_from_file(dhd_pub_t *dhd);
 #endif
 #endif /* CUSTOMER_HW4 */
 
+<<<<<<< HEAD
 #ifdef ARGOS_CPU_SCHEDULER
+=======
+#if defined(ARGOS_CPU_SCHEDULER) && defined(CONFIG_SCHED_HMP)
+>>>>>>> origin/3.18.14.x
 extern int argos_task_affinity_setup_label(struct task_struct *p, const char *label,
 	struct cpumask * affinity_cpu_mask, struct cpumask * default_cpu_mask);
 extern struct cpumask hmp_slow_cpu_mask;
 extern struct cpumask hmp_fast_cpu_mask;
 extern void set_irq_cpucore(unsigned int irq, cpumask_var_t default_cpu_mask,
 	cpumask_var_t affinity_cpu_mask);
+<<<<<<< HEAD
 #endif /* ARGOS_CPU_SCHEDULER */
 
 #if defined(ARGOS_CPU_SCHEDULER) && defined(ARGOS_RPS_CPU_CTL)
+=======
+#endif /* ARGOS_CPU_SCHEDULER && CONFIG_SCHED_HMP */
+
+#if defined(ARGOS_CPU_SCHEDULER)
+>>>>>>> origin/3.18.14.x
 int argos_register_notifier_init(struct net_device *net);
 int argos_register_notifier_deinit(void);
 
@@ -440,9 +450,22 @@ typedef struct {
 } argos_rps_ctrl;
 
 argos_rps_ctrl argos_rps_ctrl_data;
+<<<<<<< HEAD
 #define RPS_TPUT_THRESHOLD		300
 #define DELAY_TO_CLEAR_RPS_CPUS		300
 #endif /* ARGOS_RPS_CPU_CTL && ARGOS_CPU_SCHEDULER */
+=======
+#ifdef BCMPCIE
+#define RPS_TPUT_THRESHOLD		300
+#else
+#define RPS_TPUT_THRESHOLD		150
+#endif
+#define DELAY_TO_CLEAR_RPS_CPUS		300
+#else
+#define argos_register_notifier_init(net)
+#define argos_register_notifier_deinit()
+#endif /* ARGOS_CPU_SCHEDULER */
+>>>>>>> origin/3.18.14.x
 
 #if defined(BT_OVER_SDIO)
 extern void wl_android_set_wifi_on_flag(bool enable);
@@ -609,6 +632,10 @@ typedef struct dhd_info {
 	struct tasklet_struct tasklet;
 	spinlock_t	sdlock;
 	spinlock_t	txqlock;
+<<<<<<< HEAD
+=======
+	spinlock_t	rxqlock;
+>>>>>>> origin/3.18.14.x
 	spinlock_t	dhd_lock;
 
 	struct semaphore sdsem;
@@ -3020,6 +3047,12 @@ static inline int dhd_rxf_enqueue(dhd_pub_t *dhdp, void* skb)
 	dhd_os_rxflock(dhdp);
 	store_idx = dhdp->store_idx;
 	sent_idx = dhdp->sent_idx;
+<<<<<<< HEAD
+=======
+	if(((struct sk_buff *)skb)->dev == 0) {
+		printf("[DBG] %s: skb->dev is NULL, store(%d), sent(%d)\n", __func__, store_idx, sent_idx);
+	}
+>>>>>>> origin/3.18.14.x
 	if (dhdp->skbbuf[store_idx] != NULL) {
 		/* Make sure the previous packets are processed */
 		dhd_os_rxfunlock(dhdp);
@@ -3053,6 +3086,12 @@ static inline void* dhd_rxf_dequeue(dhd_pub_t *dhdp)
 	store_idx = dhdp->store_idx;
 	sent_idx = dhdp->sent_idx;
 	skb = dhdp->skbbuf[sent_idx];
+<<<<<<< HEAD
+=======
+	if (((struct sk_buff *)skb)->dev == 0) {
+		printf("[DBG] %s: skb->dev is NULL, store(%d), sent(%d)\n", __func__, store_idx, sent_idx);
+	}
+>>>>>>> origin/3.18.14.x
 
 	if (skb == NULL) {
 		dhd_os_rxfunlock(dhdp);
@@ -5829,12 +5868,19 @@ dhd_rx_frame(dhd_pub_t *dhdp, int ifidx, void *pktbuf, int numpkt, uint8 chan)
 				bcm_object_trace_opr(skb, BCM_OBJDBG_REMOVE,
 					__FUNCTION__, __LINE__);
 
+<<<<<<< HEAD
 #if defined(ARGOS_RPS_CPU_CTL) && defined(ARGOS_CPU_SCHEDULER)
 		argos_register_notifier_deinit();
 #endif /* ARGOS_RPS_CPU_CTL && ARGOS_CPU_SCHEDULER */
 #if defined(BCMPCIE) && defined(DHDTCPACK_SUPPRESS)
 		dhd_tcpack_suppress_set(&dhd->pub, TCPACK_SUP_OFF);
 #endif /* BCMPCIE && DHDTCPACK_SUPPRESS */
+=======
+		argos_register_notifier_deinit();
+#ifdef DHDTCPACK_SUPPRESS
+		dhd_tcpack_suppress_set(&dhd->pub, TCPACK_SUP_OFF);
+#endif /* DHDTCPACK_SUPPRESS */
+>>>>>>> origin/3.18.14.x
 #if defined(DHD_LB_RXP)
 				DHD_PERIM_UNLOCK_ALL((dhd->fwder_unit % FWDER_MAX_UNIT));
 				netif_receive_skb(skb);
@@ -6146,10 +6192,17 @@ exit:
 static int
 dhd_dpc_thread(void *data)
 {
+<<<<<<< HEAD
 #ifdef ARGOS_CPU_SCHEDULER
 	int ret = 0;
 	unsigned long flags;
 #endif /* ARGOS_CPU_SCHEDULER */
+=======
+#if defined(ARGOS_CPU_SCHEDULER) && defined(CONFIG_SCHED_HMP)
+	int ret = 0;
+	unsigned long flags;
+#endif /* ARGOS_CPU_SCHEDULER && CONFIG_SCHED_HMP */
+>>>>>>> origin/3.18.14.x
 	tsk_ctl_t *tsk = (tsk_ctl_t *)data;
 	dhd_info_t *dhd = (dhd_info_t *)tsk->parent;
 
@@ -6163,7 +6216,11 @@ dhd_dpc_thread(void *data)
 		setScheduler(current, SCHED_FIFO, &param);
 	}
 
+<<<<<<< HEAD
 #ifdef ARGOS_CPU_SCHEDULER
+=======
+#if defined(ARGOS_CPU_SCHEDULER) && defined(CONFIG_SCHED_HMP)
+>>>>>>> origin/3.18.14.x
 	if (!zalloc_cpumask_var(&dhd->pub.default_cpu_mask, GFP_KERNEL)) {
 		DHD_ERROR(("dpc_thread, zalloc_cpumask_var error\n"));
 		dhd->pub.affinity_isdpc = FALSE;
@@ -6213,7 +6270,11 @@ dhd_dpc_thread(void *data)
 #ifdef CUSTOM_SET_CPUCORE
 	dhd->pub.current_dpc = current;
 #endif /* CUSTOM_SET_CPUCORE */
+<<<<<<< HEAD
 #endif /* ARGOS_CPU_SCHEDULER */
+=======
+#endif /* ARGOS_CPU_SCHEDULER && CONFIG_SCHED_HMP */
+>>>>>>> origin/3.18.14.x
 	/* Run until signal received */
 	while (1) {
 		if (!binary_sema_down(tsk)) {
@@ -6271,10 +6332,17 @@ dhd_rxf_thread(void *data)
 {
 	tsk_ctl_t *tsk = (tsk_ctl_t *)data;
 	dhd_info_t *dhd = (dhd_info_t *)tsk->parent;
+<<<<<<< HEAD
 #ifdef ARGOS_CPU_SCHEDULER
 	int ret = 0;
 	unsigned long flags;
 #endif /* ARGOS_CPU_SCHEDULER */
+=======
+#if defined(ARGOS_CPU_SCHEDULER) && defined(CONFIG_SCHED_HMP)
+	int ret = 0;
+	unsigned long flags;
+#endif /* ARGOS_CPU_SCHEDULER && CONFIG_SCHED_HMP */
+>>>>>>> origin/3.18.14.x
 #if defined(WAIT_DEQUEUE)
 #define RXF_WATCHDOG_TIME 250 /* BARK_TIME(1000) /  */
 	ulong watchdogTime = OSL_SYSUPTIME(); /* msec */
@@ -6291,7 +6359,11 @@ dhd_rxf_thread(void *data)
 		setScheduler(current, SCHED_FIFO, &param);
 	}
 
+<<<<<<< HEAD
 #ifdef ARGOS_CPU_SCHEDULER
+=======
+#if defined(ARGOS_CPU_SCHEDULER) && defined(CONFIG_SCHED_HMP)
+>>>>>>> origin/3.18.14.x
 	if (!zalloc_cpumask_var(&dhd->pub.rxf_affinity_cpu_mask, GFP_KERNEL)) {
 		DHD_ERROR(("rxthread zalloc_cpumask_var error\n"));
 		dhd->pub.affinity_isrxf = FALSE;
@@ -6315,7 +6387,11 @@ dhd_rxf_thread(void *data)
 #ifdef CUSTOM_SET_CPUCORE
 	dhd->pub.current_rxf = current;
 #endif /* CUSTOM_SET_CPUCORE */
+<<<<<<< HEAD
 #endif /* ARGOS_CPU_SCHEDULER */
+=======
+#endif /* ARGOS_CPU_SCHEDULER && CONFIG_SCHED_HMP */
+>>>>>>> origin/3.18.14.x
 	/* Run until signal received */
 	while (1) {
 		if (down_interruptible(&tsk->sema) == 0) {
@@ -7774,9 +7850,13 @@ dhd_stop(struct net_device *net)
 #endif /* DHD_LB_TXP */
 		}
 
+<<<<<<< HEAD
 #if defined(ARGOS_RPS_CPU_CTL) && defined(ARGOS_CPU_SCHEDULER)
 		argos_register_notifier_deinit();
 #endif /* ARGOS_RPS_CPU_CTL && ARGOS_CPU_SCHEDULER */
+=======
+		argos_register_notifier_deinit();
+>>>>>>> origin/3.18.14.x
 #ifdef DHDTCPACK_SUPPRESS
 		dhd_tcpack_suppress_set(&dhd->pub, TCPACK_SUP_OFF);
 #endif /* DHDTCPACK_SUPPRESS */
@@ -8132,6 +8212,7 @@ dhd_open(struct net_device *net)
 #endif /* CONFIG_IPV6 && IPV6_NDO_SUPPORT */
 		}
 
+<<<<<<< HEAD
 #if defined(ARGOS_CPU_SCHEDULER) && defined(ARGOS_RPS_CPU_CTL)
 		argos_register_notifier_init(net);
 #endif /* ARGOS_CPU_SCHEDULER && ARGOS_RPS_CPU_CTL */
@@ -8141,6 +8222,11 @@ dhd_open(struct net_device *net)
 #else
 		dhd_tcpack_suppress_set(&dhd->pub, TCPACK_SUP_HOLD);
 #endif /* ARGOS_CPU_SCHEDULER && ARGOS_RPS_CPU_CTL */
+=======
+		argos_register_notifier_init(net);
+#if defined(DHDTCPACK_SUPPRESS)
+		dhd_tcpack_suppress_set(&dhd->pub, TCPACK_SUP_DEFAULT);
+>>>>>>> origin/3.18.14.x
 #endif /* BCMPCIE && DHDTCPACK_SUPPRESS */
 #if defined(NUM_SCB_MAX_PROBE)
 		dhd_set_scb_probe(&dhd->pub);
@@ -8452,11 +8538,17 @@ dhd_remove_if(dhd_pub_t *dhdpub, int ifidx, bool need_rtnl_lock)
 #if defined(SET_RPS_CPUS)
 				custom_rps_map_clear(ifp->net->_rx);
 #endif /* SET_RPS_CPUS */
+<<<<<<< HEAD
 #if (defined(SET_RPS_CPUS) || defined(ARGOS_RPS_CPU_CTL))
 #if (defined(DHDTCPACK_SUPPRESS) && defined(BCMPCIE))
 				dhd_tcpack_suppress_set(dhdpub, TCPACK_SUP_OFF);
 #endif /* DHDTCPACK_SUPPRESS && BCMPCIE */
 #endif /* SET_RPS_CPUS || ARGOS_RPS_CPU_CTL */
+=======
+#ifdef DHDTCPACK_SUPPRESS
+				dhd_tcpack_suppress_set(dhdpub, TCPACK_SUP_DEFAULT);
+#endif /* DHDTCPACK_SUPPRESS */
+>>>>>>> origin/3.18.14.x
 				if (need_rtnl_lock)
 					unregister_netdev(ifp->net);
 				else
@@ -8918,6 +9010,10 @@ dhd_attach(osl_t *osh, struct dhd_bus *bus, uint bus_hdrlen)
 	/* Initialize the spinlocks */
 	spin_lock_init(&dhd->sdlock);
 	spin_lock_init(&dhd->txqlock);
+<<<<<<< HEAD
+=======
+	spin_lock_init(&dhd->rxqlock);
+>>>>>>> origin/3.18.14.x
 	spin_lock_init(&dhd->dhd_lock);
 	spin_lock_init(&dhd->rxf_lock);
 #ifdef WLTDLS
@@ -9067,7 +9163,12 @@ dhd_attach(osl_t *osh, struct dhd_bus *bus, uint bus_hdrlen)
 			goto fail;
 		}
 	} else {
+<<<<<<< HEAD
 #if defined(ARGOS_CPU_SCHEDULER) && defined(ARGOS_DPC_TASKLET_CTL)
+=======
+#if defined(ARGOS_CPU_SCHEDULER) && defined(ARGOS_DPC_TASKLET_CTL) && \
+	defined(CONFIG_SCHED_HMP)
+>>>>>>> origin/3.18.14.x
 		if (!zalloc_cpumask_var(&dhd->pub.default_cpu_mask, GFP_KERNEL)) {
 			DHD_ERROR(("dpc tasklet, zalloc_cpumask_var error\n"));
 			dhd->pub.affinity_isdpc = FALSE;
@@ -9099,7 +9200,11 @@ dhd_attach(osl_t *osh, struct dhd_bus *bus, uint bus_hdrlen)
 				dhd->pub.affinity_isdpc = TRUE;
 			}
 		}
+<<<<<<< HEAD
 #endif /* ARGOS_CPU_SCHEDULER && ARGOS_DPC_TASKLET_CTL */
+=======
+#endif /* ARGOS_CPU_SCHEDULER && ARGOS_DPC_TASKLET_CTL && CONFIG_SCHED_HMP */
+>>>>>>> origin/3.18.14.x
 		/*  use tasklet for dpc */
 		tasklet_init(&dhd->tasklet, dhd_dpc, (ulong)dhd);
 		dhd->thr_dpc_ctl.thr_pid = -1;
@@ -9155,6 +9260,7 @@ dhd_attach(osl_t *osh, struct dhd_bus *bus, uint bus_hdrlen)
 	cpufreq_register_notifier(&dhd->freq_trans, CPUFREQ_TRANSITION_NOTIFIER);
 #endif
 #ifdef DHDTCPACK_SUPPRESS
+<<<<<<< HEAD
 #ifdef BCMSDIO
 	dhd_tcpack_suppress_set(&dhd->pub, TCPACK_SUP_DELAYTX);
 #elif defined(BCMPCIE)
@@ -9162,6 +9268,9 @@ dhd_attach(osl_t *osh, struct dhd_bus *bus, uint bus_hdrlen)
 #else
 	dhd_tcpack_suppress_set(&dhd->pub, TCPACK_SUP_OFF);
 #endif /* BCMSDIO */
+=======
+	dhd_tcpack_suppress_set(&dhd->pub, TCPACK_SUP_DEFAULT);
+>>>>>>> origin/3.18.14.x
 #endif /* DHDTCPACK_SUPPRESS */
 
 #if defined(BCM_DNGL_EMBEDIMAGE) || defined(BCM_REQUEST_FW)
@@ -10182,6 +10291,7 @@ dhd_preinit_ioctls(dhd_pub_t *dhd)
 #ifndef PCIE_FULL_DONGLE
 	uint32 wl_ap_isolate;
 #endif /* PCIE_FULL_DONGLE */
+<<<<<<< HEAD
 
 #if defined(BCMSDIO) || defined(DISABLE_FRAMEBURST)
 	/* default frame burst enabled for PCIe, disabled for SDIO dongles and media targets */
@@ -10191,6 +10301,10 @@ dhd_preinit_ioctls(dhd_pub_t *dhd)
 #endif /* BCMSDIO */
 	uint wnm_bsstrans_resp = 0;
 
+=======
+	uint32 frameburst = CUSTOM_FRAMEBURST_SET;
+	uint wnm_bsstrans_resp = 0;
+>>>>>>> origin/3.18.14.x
 #ifdef DHD_ENABLE_LPC
 	uint32 lpc = 1;
 #endif /* DHD_ENABLE_LPC */
@@ -11985,9 +12099,15 @@ dhd_register_if(dhd_pub_t *dhdp, int ifidx, bool need_rtnl_lock)
 			dhd_event_logtrace_flush_queue(dhdp);
 #endif /* SHOW_LOGTRACE */
 
+<<<<<<< HEAD
 #if defined(BCMPCIE) && defined(DHDTCPACK_SUPPRESS)
 			dhd_tcpack_suppress_set(dhdp, TCPACK_SUP_OFF);
 #endif /* BCMPCIE && DHDTCPACK_SUPPRESS */
+=======
+#ifdef DHDTCPACK_SUPPRESS
+			dhd_tcpack_suppress_set(dhdp, TCPACK_SUP_OFF);
+#endif /* DHDTCPACK_SUPPRESS */
+>>>>>>> origin/3.18.14.x
 			dhd_net_bus_devreset(net, TRUE);
 #ifdef BCMLXSDMMC
 			dhd_net_bus_suspend(net);
@@ -12193,9 +12313,13 @@ void dhd_detach(dhd_pub_t *dhdp)
 			if (ifp->net->reg_state == NETREG_UNINITIALIZED) {
 				free_netdev(ifp->net);
 			} else {
+<<<<<<< HEAD
 #if defined(ARGOS_CPU_SCHEDULER) && defined(ARGOS_RPS_CPU_CTL)
 				argos_register_notifier_deinit();
 #endif /*  ARGOS_CPU_SCHEDULER && ARGOS_RPS_CPU_CTL */
+=======
+				argos_register_notifier_deinit();
+>>>>>>> origin/3.18.14.x
 #ifdef SET_RPS_CPUS
 				custom_rps_map_clear(ifp->net->_rx);
 #endif /* SET_RPS_CPUS */
@@ -13116,11 +13240,25 @@ dhd_os_sdunlock_txq(dhd_pub_t *pub)
 void
 dhd_os_sdlock_rxq(dhd_pub_t *pub)
 {
+<<<<<<< HEAD
+=======
+	dhd_info_t *dhd;
+
+	dhd = (dhd_info_t *)(pub->info);
+	spin_lock_bh(&dhd->rxqlock);
+>>>>>>> origin/3.18.14.x
 }
 
 void
 dhd_os_sdunlock_rxq(dhd_pub_t *pub)
 {
+<<<<<<< HEAD
+=======
+	dhd_info_t *dhd;
+
+	dhd = (dhd_info_t *)(pub->info);
+	spin_unlock_bh(&dhd->rxqlock);
+>>>>>>> origin/3.18.14.x
 }
 
 static void
@@ -17517,7 +17655,11 @@ void custom_rps_map_clear(struct netdev_rx_queue *queue)
 }
 #endif /* SET_RPS_CPUS || ARGOS_RPS_CPU_CTL */
 
+<<<<<<< HEAD
 #if defined(ARGOS_CPU_SCHEDULER) && defined(ARGOS_RPS_CPU_CTL)
+=======
+#if defined(ARGOS_CPU_SCHEDULER)
+>>>>>>> origin/3.18.14.x
 int
 argos_register_notifier_init(struct net_device *net)
 {
@@ -17569,9 +17711,15 @@ argos_register_notifier_deinit(void)
 		DHD_ERROR(("DHD: primary_net_dev is null %s: \n", __FUNCTION__));
 		return -1;
 	}
+<<<<<<< HEAD
 #ifndef DHD_LB
 	custom_rps_map_clear(argos_rps_ctrl_data.wlan_primary_netdev->_rx);
 #endif /* !DHD_LB */
+=======
+#if !defined(DHD_LB) && defined(ARGOS_RPS_CPU_CTL)
+	custom_rps_map_clear(argos_rps_ctrl_data.wlan_primary_netdev->_rx);
+#endif /* !DHD_LB && ARGOS_RPS_CPU_CTL */
+>>>>>>> origin/3.18.14.x
 
 	if (argos_p2p.notifier_call) {
 		sec_argos_unregister_notifier(&argos_p2p, ARGOS_P2P_TABLE_LABEL);
@@ -17618,7 +17766,11 @@ argos_status_notifier_wifi_cb(struct notifier_block *notifier,
 			/* It does not need to configre rps_cpus
 			 * if Load Balance is enabled
 			 */
+<<<<<<< HEAD
 #ifndef DHD_LB
+=======
+#if !defined(DHD_LB) && defined(ARGOS_RPS_CPU_CTL)
+>>>>>>> origin/3.18.14.x
 			int err = 0;
 
 			if (cpu_online(RPS_CPUS_WLAN_CORE_ID)) {
@@ -17637,6 +17789,7 @@ argos_status_notifier_wifi_cb(struct notifier_block *notifier,
 					"speed=%ld, error=%d\n",
 					__FUNCTION__, speed, err));
 			} else {
+<<<<<<< HEAD
 #endif /* !DHD_LB */
 #if (defined(DHDTCPACK_SUPPRESS) && defined(BCMPCIE))
 				DHD_TRACE(("%s : set ack suppress. TCPACK_SUP_HOLD\n",
@@ -17662,13 +17815,44 @@ argos_status_notifier_wifi_cb(struct notifier_block *notifier,
 			}
 #endif /* DHDTCPACK_SUPPRESS && BCMPCIE */
 #ifndef DHD_LB
+=======
+#endif /* !DHD_LB && ARGOS_RPS_CPU_CTL */
+#ifdef DHDTCPACK_SUPPRESS
+				DHD_TRACE(("%s : set ack suppress. TCPACK_SUP_ON(%d)\n",
+					__FUNCTION__, TCPACK_SUP_ON));
+				if (dhdp->tcpack_sup_mode != TCPACK_SUP_ON) {
+					dhd_tcpack_suppress_set(dhdp, TCPACK_SUP_ON);
+				}
+#endif /* DHDTCPACK_SUPPRESS */
+				argos_rps_ctrl_data.argos_rps_cpus_enabled = 1;
+#if !defined(DHD_LB) && defined(ARGOS_RPS_CPU_CTL)
+				DHD_ERROR(("DHD: %s: Set RPS_CPUs, speed=%ld\n",
+					__FUNCTION__, speed));
+			}
+#endif /* !DHD_LB && ARGOS_RPS_CPU_CTL */
+		}
+	} else {
+		if (argos_rps_ctrl_data.argos_rps_cpus_enabled == 1) {
+#ifdef DHDTCPACK_SUPPRESS
+			DHD_TRACE(("%s : set ack suppress. TCPACK_SUP_DEFAULT(%d)\n",
+				__FUNCTION__, TCPACK_SUP_DEFAULT));
+			if (dhdp->tcpack_sup_mode != TCPACK_SUP_DEFAULT) {
+				dhd_tcpack_suppress_set(dhdp, TCPACK_SUP_DEFAULT);
+			}
+#endif /* DHDTCPACK_SUPPRESS */
+#if !defined(DHD_LB) && defined(ARGOS_RPS_CPU_CTL)
+>>>>>>> origin/3.18.14.x
 			/* It does not need to configre rps_cpus
 			 * if Load Balance is enabled
 			 */
 			custom_rps_map_clear(argos_rps_ctrl_data.wlan_primary_netdev->_rx);
 			DHD_ERROR(("DHD: %s: Clear RPS_CPUs, speed=%ld\n", __FUNCTION__, speed));
 			OSL_SLEEP(DELAY_TO_CLEAR_RPS_CPUS);
+<<<<<<< HEAD
 #endif /* !DHD_LB */
+=======
+#endif /* !DHD_LB && ARGOS_RPS_CPU_CTL */
+>>>>>>> origin/3.18.14.x
 			argos_rps_ctrl_data.argos_rps_cpus_enabled = 0;
 		}
 	}
@@ -17684,7 +17868,11 @@ argos_status_notifier_p2p_cb(struct notifier_block *notifier,
 	DHD_INFO(("DHD: %s: speed=%ld\n", __FUNCTION__, speed));
 	return argos_status_notifier_wifi_cb(notifier, speed, v);
 }
+<<<<<<< HEAD
 #endif /* ARGOS_CPU_SCHEDULER && ARGOS_RPS_CPU_CTL */
+=======
+#endif /* ARGOS_CPU_SCHEDULER */
+>>>>>>> origin/3.18.14.x
 
 
 #ifdef DHD_DEBUG_PAGEALLOC

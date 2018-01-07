@@ -470,6 +470,28 @@ enum {
 	TCPACK_SUP_HOLD,
 	TCPACK_SUP_LAST_MODE
 };
+<<<<<<< HEAD
+=======
+
+#ifdef ARGOS_CPU_SCHEDULER
+#define TCPACK_SUP_DEFAULT	TCPACK_SUP_OFF
+#ifdef BCMSDIO
+#define TCPACK_SUP_ON		TCPACK_SUP_DELAYTX
+#elif defined(BCMPCIE)
+#define TCPACK_SUP_ON		TCPACK_SUP_HOLD
+#else
+#define TCPACK_SUP_ON		TCPACK_SUP_OFF
+#endif /* BCMSDIO */
+#else
+#ifdef BCMSDIO
+#define TCPACK_SUP_DEFAULT	TCPACK_SUP_DELAYTX
+#elif defined(BCMPCIE)
+#define TCPACK_SUP_DEFAULT	TCPACK_SUP_HOLD
+#else
+#define TCPACK_SUP_DEFAULT	TCPACK_SUP_OFF
+#endif /* BCMSDIO */
+#endif /* ARGOS_CPU_SCHEDULER */
+>>>>>>> origin/3.18.14.x
 #endif /* DHDTCPACK_SUPPRESS */
 
 #if defined(TRAFFIC_MGMT_DWM)
@@ -1909,6 +1931,7 @@ extern uint dhd_force_tx_queueing;
 #endif /* DEFAULT_ASSOC_RETRY_MAX */
 
 #if defined(BCMSDIO) || defined(DISABLE_FRAMEBURST)
+<<<<<<< HEAD
 #define DEFAULT_FRAMEBURST_SET			0
 #else
 #define DEFAULT_FRAMEBURST_SET			1
@@ -1916,6 +1939,15 @@ extern uint dhd_force_tx_queueing;
 
 #ifndef CUSTOM_FRAMEBURST_SET
 #define CUSTOM_FRAMEBURST_SET			DEFAULT_FRAMEBURST_SET
+=======
+#define DEFAULT_FRAMEBURST_SET                 0
+#else
+#define DEFAULT_FRAMEBURST_SET                 1
+#endif /* BCMSDIO */
+
+#ifndef CUSTOM_FRAMEBURST_SET
+#define CUSTOM_FRAMEBURST_SET                  DEFAULT_FRAMEBURST_SET
+>>>>>>> origin/3.18.14.x
 #endif /* CUSTOM_FRAMEBURST_SET */
 
 #ifdef WLTDLS

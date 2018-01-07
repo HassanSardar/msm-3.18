@@ -74,12 +74,15 @@ static struct proc_dir_entry *mfc_proc_entry;
 #define MFC_PROC_INSTANCE_NUMBER	"instance_number"
 #define MFC_PROC_DRM_INSTANCE_NUMBER	"drm_instance_number"
 #define MFC_PROC_FW_STATUS		"fw_status"
+<<<<<<< HEAD
 
 #define MFC_DRM_MAGIC_SIZE	0x10
 #define MFC_DRM_MAGIC_CHUNK0	0x13cdbf16
 #define MFC_DRM_MAGIC_CHUNK1	0x8b803342
 #define MFC_DRM_MAGIC_CHUNK2	0x5e87f4f5
 #define MFC_DRM_MAGIC_CHUNK3	0x3bd05317
+=======
+>>>>>>> origin/3.18.14.x
 #endif
 
 #define MFC_SFR_AREA_COUNT	19
@@ -608,10 +611,17 @@ static void mfc_handle_released_info(struct s5p_mfc_ctx *ctx,
 	if (released_flag) {
 		for (t = 0; t < MFC_MAX_DPBS; t++) {
 			if (released_flag & (1 << t)) {
+<<<<<<< HEAD
 				if (dec->err_sync_flag & (1 << t)) {
 					mfc_debug(2, "Released, but reuse. FD[%d] = %03d\n",
 							t, dec->assigned_fd[t]);
 					dec->err_sync_flag &= ~(1 << t);
+=======
+				if (dec->err_reuse_flag & (1 << t)) {
+					mfc_debug(2, "Released, but reuse. FD[%d] = %03d\n",
+							t, dec->assigned_fd[t]);
+					dec->err_reuse_flag &= ~(1 << t);
+>>>>>>> origin/3.18.14.x
 				} else {
 					mfc_debug(2, "Release FD[%d] = %03d\n",
 							t, dec->assigned_fd[t]);
@@ -766,14 +776,24 @@ static void s5p_mfc_handle_frame_new(struct s5p_mfc_ctx *ctx, unsigned int err)
 	list_for_each_entry(dst_buf, dst_queue_addr, list) {
 		mfc_debug(2, "Listing: %d\n", dst_buf->vb.v4l2_buf.index);
 		/* Check if this is the buffer we're looking for */
+<<<<<<< HEAD
 		mfc_debug(2, "0x%08llx, 0x%08llx",
+=======
+		mfc_debug(2, "0x%08llx, 0x%08llx\n",
+>>>>>>> origin/3.18.14.x
 			(unsigned long long)s5p_mfc_mem_plane_addr(ctx,
 			&dst_buf->vb, 0),(unsigned long long)dspl_y_addr);
 		if (s5p_mfc_mem_plane_addr(ctx, &dst_buf->vb, 0)
 							== dspl_y_addr) {
 			index = dst_buf->vb.v4l2_buf.index;
+<<<<<<< HEAD
 			if (ctx->codec_mode == S5P_FIMV_CODEC_VC1RCV_DEC &&
 				s5p_mfc_err_dspl(err) == S5P_FIMV_ERR_SYNC_POINT_NOT_RECEIVED) {
+=======
+			if ((ctx->codec_mode == S5P_FIMV_CODEC_VC1RCV_DEC &&
+					s5p_mfc_err_dspl(err) == S5P_FIMV_ERR_SYNC_POINT_NOT_RECEIVED) ||
+					(s5p_mfc_err_dspl(err) == S5P_FIMV_ERR_BROKEN_LINK)) {
+>>>>>>> origin/3.18.14.x
 				if (released_flag & (1 << index)) {
 					list_del(&dst_buf->list);
 					dec->ref_queue_cnt--;
@@ -781,10 +801,19 @@ static void s5p_mfc_handle_frame_new(struct s5p_mfc_ctx *ctx, unsigned int err)
 					ctx->dst_queue_cnt++;
 					dec->dpb_status &= ~(1 << index);
 					released_flag &= ~(1 << index);
+<<<<<<< HEAD
 					mfc_debug(2, "SYNC_POINT_NOT_RECEIVED, released.\n");
 				} else {
 					dec->err_sync_flag |= 1 << index;
 					mfc_debug(2, "SYNC_POINT_NOT_RECEIVED, used.\n");
+=======
+					mfc_debug(2, "Corrupted frame(%d), it will be re-used(released)\n",
+							s5p_mfc_err_dspl(err));
+				} else {
+					dec->err_reuse_flag |= 1 << index;
+					mfc_debug(2, "Corrupted frame(%d), it will be re-used(not released)\n",
+							s5p_mfc_err_dspl(err));
+>>>>>>> origin/3.18.14.x
 				}
 				dec->dynamic_used |= released_flag;
 				break;
@@ -950,6 +979,7 @@ static void s5p_mfc_handle_frame_new(struct s5p_mfc_ctx *ctx, unsigned int err)
 	}
 }
 
+<<<<<<< HEAD
 static int s5p_mfc_find_start_code(unsigned char *src_mem, unsigned int remainSize)
 {
 	unsigned int index = 0;
@@ -963,6 +993,8 @@ static int s5p_mfc_find_start_code(unsigned char *src_mem, unsigned int remainSi
 	return -1;
 }
 
+=======
+>>>>>>> origin/3.18.14.x
 static void s5p_mfc_handle_frame_error(struct s5p_mfc_ctx *ctx,
 		unsigned int reason, unsigned int err)
 {
@@ -1248,6 +1280,7 @@ static void s5p_mfc_handle_frame(struct s5p_mfc_ctx *ctx,
 		dec->consumed += s5p_mfc_get_consumed_stream();
 		remained = (unsigned int)(src_buf->vb.v4l2_planes[0].bytesused - dec->consumed);
 
+<<<<<<< HEAD
 		if ((prev_offset == 0) && dec->is_packedpb && remained > STUFF_BYTE &&
 			dec->consumed < src_buf->vb.v4l2_planes[0].bytesused &&
 			s5p_mfc_get_dec_frame_type() ==
@@ -1291,6 +1324,19 @@ static void s5p_mfc_handle_frame(struct s5p_mfc_ctx *ctx,
 							dec->consumed;
 			/* Do not move src buffer to done_list */
 #endif
+=======
+		if ((prev_offset == 0) && (remained > STUFF_BYTE) && (err == 0) &&
+				(src_buf->vb.v4l2_planes[0].bytesused > dec->consumed)) {
+			/* Run MFC again on the same buffer */
+			mfc_debug(2, "Running again the same buffer.\n");
+
+			if (dec->is_packedpb)
+				dec->y_addr_for_pb = (dma_addr_t)s5p_mfc_get_dec_y_addr();
+
+			dec->remained_size = src_buf->vb.v4l2_planes[0].bytesused -
+							dec->consumed;
+			/* Do not move src buffer to done_list */
+>>>>>>> origin/3.18.14.x
 		} else if (s5p_mfc_err_dec(err) == S5P_FIMV_ERR_NON_PAIRED_FIELD) {
 			/*
 			 * For non-paired field, the same buffer need to be
@@ -1339,6 +1385,10 @@ static inline void s5p_mfc_handle_error(struct s5p_mfc_ctx *ctx,
 	struct s5p_mfc_dev *dev;
 	unsigned long flags;
 	struct s5p_mfc_buf *src_buf;
+<<<<<<< HEAD
+=======
+	int index;
+>>>>>>> origin/3.18.14.x
 
 	if (!ctx) {
 		mfc_err("no mfc context to run\n");
@@ -1366,8 +1416,25 @@ static inline void s5p_mfc_handle_error(struct s5p_mfc_ctx *ctx,
 			if (!list_empty(&ctx->src_queue)) {
 				src_buf = list_entry(ctx->src_queue.next,
 						struct s5p_mfc_buf, list);
+<<<<<<< HEAD
 				list_del(&src_buf->list);
 				ctx->src_queue_cnt--;
+=======
+				index = src_buf->vb.v4l2_buf.index;
+				list_del(&src_buf->list);
+				ctx->src_queue_cnt--;
+				/* decoder src buffer CFW UNPROT */
+				if (ctx->is_drm) {
+					if (test_bit(index, &ctx->stream_protect_flag)) {
+						if (s5p_mfc_stream_buf_prot(ctx, src_buf, false))
+							mfc_err_ctx("failed to CFW_UNPROT\n");
+						else
+							clear_bit(index, &ctx->stream_protect_flag);
+					}
+					mfc_debug(2, "[%d] dec src buf un-prot_flag: %#lx\n",
+							index, ctx->stream_protect_flag);
+				}
+>>>>>>> origin/3.18.14.x
 				vb2_buffer_done(&src_buf->vb, VB2_BUF_STATE_DONE);
 			}
 		} else if (err == S5P_FIMV_ERR_HEADER_NOT_FOUND) {
@@ -1392,8 +1459,25 @@ static inline void s5p_mfc_handle_error(struct s5p_mfc_ctx *ctx,
 			if (!list_empty(&ctx->src_queue)) {
 				src_buf = list_entry(ctx->src_queue.next,
 						struct s5p_mfc_buf, list);
+<<<<<<< HEAD
 				list_del(&src_buf->list);
 				ctx->src_queue_cnt--;
+=======
+				index = src_buf->vb.v4l2_buf.index;
+				list_del(&src_buf->list);
+				ctx->src_queue_cnt--;
+				/* decoder src buffer CFW UNPROT */
+				if (ctx->is_drm) {
+					if (test_bit(index, &ctx->stream_protect_flag)) {
+						if (s5p_mfc_stream_buf_prot(ctx, src_buf, false))
+							mfc_err_ctx("failed to CFW_UNPROT\n");
+						else
+							clear_bit(index, &ctx->stream_protect_flag);
+					}
+					mfc_debug(2, "[%d] dec src buf un-prot_flag: %#lx\n",
+							index, ctx->stream_protect_flag);
+				}
+>>>>>>> origin/3.18.14.x
 				vb2_buffer_done(&src_buf->vb, VB2_BUF_STATE_DONE);
 			}
 		}
@@ -1579,6 +1663,21 @@ static irqreturn_t s5p_mfc_irq(int irq, void *priv)
 	case S5P_FIMV_R2H_CMD_COMPLETE_SEQ_RET:
 	case S5P_FIMV_R2H_CMD_ENC_BUFFER_FULL_RET:
 		if (ctx->type == MFCINST_DECODER) {
+<<<<<<< HEAD
+=======
+			if (ctx->state == MFCINST_SPECIAL_PARSING_NAL) {
+				s5p_mfc_clear_int_flags();
+				s5p_mfc_clock_off(dev);
+				spin_lock_irq(&dev->condlock);
+				clear_bit(ctx->num, &dev->ctx_work_bits);
+				spin_unlock_irq(&dev->condlock);
+				s5p_mfc_change_state(ctx, MFCINST_RUNNING);
+				if (clear_hw_bit(ctx) == 0)
+					s5p_mfc_check_and_stop_hw(dev);
+				wake_up_ctx(ctx, reason, err);
+				goto irq_end;
+			}
+>>>>>>> origin/3.18.14.x
 			s5p_mfc_handle_frame(ctx, reason, err);
 		} else if (ctx->type == MFCINST_ENCODER) {
 			if (reason == S5P_FIMV_R2H_CMD_SLICE_DONE_RET) {
@@ -1730,7 +1829,11 @@ static irqreturn_t s5p_mfc_irq(int irq, void *priv)
 		spin_unlock_irq(&dev->condlock);
 	}
 	if (clear_hw_bit(ctx) == 0)
+<<<<<<< HEAD
 		s5p_mfc_check_and_stop_hw(dev);
+=======
+		mfc_err_ctx("hardware bit is already cleared\n");
+>>>>>>> origin/3.18.14.x
 	wake_up_ctx(ctx, reason, err);
 
 	if (dev->has_job) {
@@ -1915,6 +2018,10 @@ static int s5p_mfc_open(struct file *file)
 		ret = exynos_smc(SMC_DCPP_SUPPORT, 0, 0, 0);
 		if (ret != DRMDRV_OK) {
 			dev->is_support_smc = 0;
+<<<<<<< HEAD
+=======
+			mfc_err_ctx("Does not support DCPP(%#x)\n", ret);
+>>>>>>> origin/3.18.14.x
 		} else {
 			dev->is_support_smc = 1;
 			if (!dev->drm_fw_info.ofs) {
@@ -2010,6 +2117,7 @@ err_pwr_enable:
 err_fw_load:
 #ifdef CONFIG_EXYNOS_CONTENT_PATH_PROTECTION
 	if (dev->drm_fw_status) {
+<<<<<<< HEAD
 		dev->is_support_smc = 0;
 		dev->drm_fw_status = 0;
 		if (IS_MFCv10X(dev)) {
@@ -2019,6 +2127,18 @@ err_fw_load:
 					ION_EXYNOS_HEAP_ID_VIDEO_FW);
 			if (ret != DRMDRV_OK)
 				mfc_err_ctx("failed MFC DRM F/W unprot(%#x)\n", ret);
+=======
+		int smc_ret = 0;
+		dev->is_support_smc = 0;
+		dev->drm_fw_status = 0;
+		if (IS_MFCv10X(dev)) {
+			smc_ret = exynos_smc(SMC_DRM_SECBUF_UNPROT,
+					dev->drm_fw_info.phys,
+					dev->fw_region_size,
+					ION_EXYNOS_HEAP_ID_VIDEO_FW);
+			if (smc_ret != DRMDRV_OK)
+				mfc_err_ctx("failed MFC DRM F/W unprot(%#x)\n", smc_ret);
+>>>>>>> origin/3.18.14.x
 		}
 	}
 #endif
@@ -2150,6 +2270,10 @@ static int s5p_mfc_release(struct file *file)
 			goto err_release;
 		}
 
+<<<<<<< HEAD
+=======
+		s5p_mfc_clean_ctx_int_flags(ctx);
+>>>>>>> origin/3.18.14.x
 		s5p_mfc_change_state(ctx, MFCINST_RETURN_INST);
 		spin_lock_irq(&dev->condlock);
 		set_bit(ctx->num, &dev->ctx_work_bits);
@@ -3054,6 +3178,10 @@ static struct platform_driver s5p_mfc_driver = {
 		.owner	= THIS_MODULE,
 		.pm	= &s5p_mfc_pm_ops,
 		.of_match_table = exynos_mfc_match,
+<<<<<<< HEAD
+=======
+		.suppress_bind_attrs = true,
+>>>>>>> origin/3.18.14.x
 	},
 };
 

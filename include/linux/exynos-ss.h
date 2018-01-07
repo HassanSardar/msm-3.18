@@ -15,6 +15,10 @@
 #define EXYNOS_SNAPSHOT_H
 
 #ifdef CONFIG_EXYNOS_SNAPSHOT
+<<<<<<< HEAD
+=======
+#include <asm/ptrace.h>
+>>>>>>> origin/3.18.14.x
 #include "exynos-ss-soc.h"
 
 /* mandatory */
@@ -25,7 +29,11 @@ extern void exynos_ss_suspend(void *fn, void *dev, int en);
 extern void exynos_ss_irq(int irq, void *fn, unsigned int val, int en);
 extern int exynos_ss_try_enable(const char *name, unsigned long long duration);
 extern int exynos_ss_set_enable(const char *name, int en);
+<<<<<<< HEAD
 extern int exynos_ss_get_enable(const char *name);
+=======
+extern int exynos_ss_get_enable(const char *name, bool init);
+>>>>>>> origin/3.18.14.x
 extern int exynos_ss_save_context(void *regs);
 extern int exynos_ss_save_reg(void *regs);
 extern int exynos_ss_dump_panic(char *str, size_t len);
@@ -36,6 +44,10 @@ extern int exynos_ss_set_hardlockup(int);
 extern int exynos_ss_get_hardlockup(void);
 extern unsigned int exynos_ss_get_item_size(char *);
 extern unsigned int exynos_ss_get_item_paddr(char *);
+<<<<<<< HEAD
+=======
+extern void exynos_ss_panic_handler_safe(struct pt_regs *regs);
+>>>>>>> origin/3.18.14.x
 #ifdef CONFIG_EXYNOS_DRAMTEST
 extern int disable_mc_powerdn(void);
 #endif

@@ -55,10 +55,16 @@
 #include <linux/sec_batt.h>
 #endif // CONFIG_BATTERY_SAMSUNG
 
+<<<<<<< HEAD
 #if defined (CONFIG_VBUS_NOTIFIER) && defined (CONFIG_TOUCHKEY_GRIP)
 #include <linux/muic/muic.h>
 #include <linux/muic/muic_notifier.h>
 #include <linux/vbus_notifier.h>
+=======
+#if defined (CONFIG_MUIC_NOTIFIER) && defined (CONFIG_TOUCHKEY_GRIP)
+#include <linux/muic/muic.h>
+#include <linux/muic/muic_notifier.h>
+>>>>>>> origin/3.18.14.x
 #endif
 
 //Chip info
@@ -214,8 +220,13 @@ struct mip4_tk_info {
 	int abnormal_mode;
 	s32 diff;
 	s32 max_diff;
+<<<<<<< HEAD
 #if defined (CONFIG_VBUS_NOTIFIER)
 	struct notifier_block vbus_nb;
+=======
+#if defined (CONFIG_MUIC_NOTIFIER)
+	struct notifier_block cpuidle_muic_nb;
+>>>>>>> origin/3.18.14.x
 #endif	
 #endif
 

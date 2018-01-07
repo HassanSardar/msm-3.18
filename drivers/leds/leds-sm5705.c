@@ -41,7 +41,13 @@ struct sm5705_fled_info {
 static struct sm5705_fled_info *g_sm5705_fled;
 static bool fimc_is_activated = 0;
 static bool assistive_light = false;
+<<<<<<< HEAD
 static bool muic_flash_on_status = false;
+=======
+#if defined(CONFIG_MUIC_UNIVERSAL_SM5705_AFC)
+static bool muic_flash_on_status = false;
+#endif
+>>>>>>> origin/3.18.14.x
 
 extern struct class *camera_class; /*sys/class/camera*/
 extern int sm5705_call_fg_device_id(void);
@@ -566,9 +572,16 @@ static ssize_t sm5705_rear_flash_store(struct device *dev,
 	struct device_attribute *attr, const char *buf, size_t count)
 {
 	struct sm5705_fled_info *sm5705_fled = dev_get_drvdata(dev->parent);
+<<<<<<< HEAD
 	int ret, value_u32;
 
 	if ((buf == NULL) || kstrtouint(buf, 10, &value_u32)) {
+=======
+	int ret, value ;
+	int torch_current = 0;
+
+	if ((buf == NULL) || kstrtouint(buf, 10, &value)) {
+>>>>>>> origin/3.18.14.x
 		return -1;
 	}
 
@@ -579,6 +592,7 @@ static ssize_t sm5705_rear_flash_store(struct device *dev,
 		sm5705_fled = g_sm5705_fled;
 	}
 
+<<<<<<< HEAD
 	dev_info(dev, "%s: value=%d\n", __func__, value_u32);
 
 	switch (value_u32) {
@@ -613,6 +627,51 @@ static ssize_t sm5705_rear_flash_store(struct device *dev,
 	if (IS_ERR_VALUE(ret)) {
 		dev_err(dev, "%s: fail to rear flash file operation:store (value=%d, ret=%d)\n",
 			__func__, value_u32, ret);
+=======
+	dev_info(dev, "%s: %s - value(%d)\n", __func__,
+		value == 0 ? "Torch OFF" : "Torch ON", value);
+
+	if (value == 0) {
+		/* Turn off Torch */
+		assistive_light = false;
+		ret = sm5705_fled_turn_off(sm5705_fled, REAR_FLASH_INDEX);
+	} else if (value == 1) {
+		/* Turn on Torch */
+		assistive_light = true;
+		fimc_is_activated = 0;
+		ret = sm5705_fled_turn_on_torch(sm5705_fled, REAR_FLASH_INDEX, 
+			g_sm5705_fled->pdata->led[REAR_FLASH_INDEX].torch_current_mA);
+	} else if (value == 100) {
+		/* Factory mode Turn on Torch */
+		assistive_light = true;
+		ret = sm5705_fled_turn_on_torch(sm5705_fled, REAR_FLASH_INDEX,
+			g_sm5705_fled->pdata->led[REAR_FLASH_INDEX].factory_current_mA);
+	} else if (1001 <= value && value <= 1010) {
+		/* (value) 1001, 1002, 1004, 1006, 1009 */
+		assistive_light = true;
+		fimc_is_activated = 0;
+		if (value <= 1001)
+			torch_current = 20;
+		else if (value <= 1002)
+			torch_current = 40;
+		else if (value <= 1004)
+			torch_current = 60;
+		else if (value <= 1006)
+			torch_current = 90;
+		else if (value <= 1009)
+			torch_current = 120;
+		else
+			torch_current = 60;
+
+		ret = sm5705_fled_turn_on_torch(sm5705_fled, REAR_FLASH_INDEX, torch_current);
+	} else {
+		dev_info(dev, "%s, Invalid value:%d\n", __func__, value);
+	}
+
+	if (IS_ERR_VALUE(ret)) {
+		dev_err(dev, "%s: fail to rear flash file operation:store (value=%d, ret=%d)\n",
+			__func__, value, ret);
+>>>>>>> origin/3.18.14.x
 	}
 
 	return count;

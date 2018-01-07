@@ -1435,6 +1435,16 @@ static int tmd3725_parse_dt(struct tmd3725_data *taos, struct device *dev)
 	SENSOR_INFO("th_still_det_hi:%d, th_rel_low:%d\n",
 		taos->prox_thd_still_det_hi, taos->prox_thd_rel_low);
 
+<<<<<<< HEAD
+=======
+	if (of_property_read_u32(np, "taos,ppulse", &taos->ppulse) < 0)
+		taos->ppulse = DEFAULT_PPULSE;
+	if (of_property_read_u32(np, "taos,pgcfg1", &taos->pgcfg1) < 0)
+		taos->pgcfg1 = DEFAULT_PGCFG1;
+	SENSOR_INFO("taos,ppulse:%x, taos,pgcfg1:%x\n",
+		taos->ppulse, taos->pgcfg1);
+
+>>>>>>> origin/3.18.14.x
 	if (of_property_read_u32(np, "taos,coef_r", &taos->coef_r) < 0)
 		taos->coef_r = DEFAULT_COEF_R;
 	if (of_property_read_u32(np, "taos,coef_g", &taos->coef_g) < 0)
@@ -1459,8 +1469,11 @@ static int tmd3725_parse_dt(struct tmd3725_data *taos, struct device *dev)
 	taos->als_time = DEFAULT_ATIME;
 	taos->prate = DEFAULT_PRATE;
 	taos->wtime = DEFAULT_WTIME;
+<<<<<<< HEAD
 	taos->ppulse = DEFAULT_PPULSE;
 	taos->pgcfg1 = DEFAULT_PGCFG1;
+=======
+>>>>>>> origin/3.18.14.x
 	taos->als_gain = DEFAULT_AGAIN;
 
 	return 0;

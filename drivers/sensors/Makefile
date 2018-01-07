@@ -28,6 +28,10 @@ obj-$(CONFIG_SENSORS_TMD3725)       += tmd3725.o
 obj-$(CONFIG_SENSORS_STK3013)       += stk3013.o
 # grip_sensor
 obj-$(CONFIG_SENSORS_SX9306)        += sx9306.o
+<<<<<<< HEAD
+=======
+obj-$(CONFIG_SENSORS_SX9306_SUB)    += sx9306_sub.o
+>>>>>>> origin/3.18.14.x
 obj-$(CONFIG_SENSORS_SX9306_WIFI)   += sx9306_wifi.o
 obj-$(CONFIG_SENSORS_SX9310)        += sx9310.o
 obj-$(CONFIG_SENSORS_SX9310_WIFI)   += sx9310_wifi.o

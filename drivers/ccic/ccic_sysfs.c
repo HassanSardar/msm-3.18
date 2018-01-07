@@ -28,7 +28,19 @@
 #include <linux/ccic/usbpd.h>
 #include <linux/ccic/usbpd-s2mu004.h>
 #endif
+<<<<<<< HEAD
 #include <linux/ccic/ccic_alternate.h>
+=======
+#ifdef CONFIG_CCIC_S2MM005
+#include <linux/ccic/s2mm005.h>
+#include <linux/ccic/s2mm005_ext.h>
+#include <linux/ccic/s2mm005_fw.h>
+#include <linux/regulator/consumer.h>
+#endif
+#if defined(CONFIG_CCIC_ALTERNATE_MODE)
+#include <linux/ccic/ccic_alternate.h>
+#endif
+>>>>>>> origin/3.18.14.x
 static ssize_t ccic_cur_ver_show(struct device *dev,
 		struct device_attribute *attr, char *buf)
 {
@@ -280,6 +292,10 @@ static DEVICE_ATTR(ccic_control_option, 0444, NULL, ccic_store_control_option_co
 #ifdef CONFIG_CCIC_S2MM005
 static int ccic_firmware_update_built_in(struct device *dev)
 {
+<<<<<<< HEAD
+=======
+#if 0
+>>>>>>> origin/3.18.14.x
 	struct s2mm005_data *usbpd_data = dev_get_drvdata(dev);
 	struct s2mm005_version chip_swver, fw_swver;
 
@@ -317,6 +333,10 @@ static int ccic_firmware_update_built_in(struct device *dev)
 		return -1;
 	}
 done:
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> origin/3.18.14.x
 	return 0;
 }
 

@@ -265,6 +265,12 @@ struct mms_ts_info {
 	u8 esd_cnt;
 	bool disable_esd;
 
+<<<<<<< HEAD
+=======
+	unsigned int sram_addr_num;
+	u32 sram_addr[8];
+
+>>>>>>> origin/3.18.14.x
 	u8 *print_buf;
 	int *image_buf;
 

@@ -33,6 +33,10 @@ int fled_selected_ch = S2MU005_FLED_OFF;
 #endif
 struct s2mu005_led_data * g_led_datas[S2MU005_LED_MAX];
 #define LED_TURN_OFF -1
+<<<<<<< HEAD
+=======
+#define S2MU005_FLED_DEBUG
+>>>>>>> origin/3.18.14.x
 
 static u8 leds_cur_max[] = {
 	S2MU005_FLASH_OUT_I_1200MA,
@@ -205,6 +209,10 @@ err:
 static void torch_led_on_off(int value)
 {
 	int ret;
+<<<<<<< HEAD
+=======
+	u8 temp;
+>>>>>>> origin/3.18.14.x
 
 	pr_info("%s : value(%d), attach_ta(%d)\n",
 		__func__, value, g_led_datas[S2MU005_FLASH_LED]->attach_ta);	
@@ -217,10 +225,23 @@ static void torch_led_on_off(int value)
 	}
 
 	if (value == 0) { // torch off
+<<<<<<< HEAD
 		ret = s2mu005_update_reg(g_led_datas[S2MU005_FLASH_LED]->i2c,
 			S2MU005_REG_FLED_CTRL1, 0x00, 0x80);
 		if (ret < 0)
 			pr_err("%s : CHGIN_ENGH = 0 fail\n", __func__);
+=======
+		s2mu005_read_reg(g_led_datas[S2MU005_FLASH_LED]->i2c,
+			S2MU005_REG_FLED_CTRL1, &temp);
+		pr_info("%s : 0x%2X read value - 0x%2X\n", __func__,
+			S2MU005_REG_FLED_CTRL1, temp);
+		if ((temp & 0x80) == 0x80) {
+			ret = s2mu005_update_reg(g_led_datas[S2MU005_FLASH_LED]->i2c,
+				S2MU005_REG_FLED_CTRL1, 0x00, 0x80);
+			if (ret < 0)
+				pr_err("%s : CHGIN_ENGH = 0 fail\n", __func__);
+		}
+>>>>>>> origin/3.18.14.x
 	}
 }
 
@@ -492,6 +513,30 @@ out:
 	return ret;
 }
 
+<<<<<<< HEAD
+=======
+#ifdef S2MU005_FLED_DEBUG
+int s2mu005_led_dump_reg(void)
+{
+	struct s2mu005_led_data *led_data = g_led_datas[S2MU005_TORCH_LED];
+	int i =0;
+	u8 temp;
+
+	pr_info("[LED] S2MU005 FLED DEBUG : S\n");
+
+	for (i = 0x2D; i <= 0x3C; i++) {
+		s2mu005_read_reg(led_data->i2c, i, &temp);
+		pr_info("[LED] 0x%02X : 0x%02X \n", i, temp);
+	}
+
+	pr_info("[LED] S2MU005 FLED DEBUG : X\n");
+
+	return 0;
+}
+#endif
+
+
+>>>>>>> origin/3.18.14.x
 #ifdef CONFIG_CAMERA_USE_SOC_SENSOR
 int s2mu005_led_mode_ctrl(int state)
 {
@@ -548,7 +593,11 @@ int s2mu005_led_mode_ctrl(int mode)
 	pr_info("%s : fled_selected_ch(%d), mode = %d\n", __func__,fled_selected_ch, mode);
 	if (fled_selected_ch == S2MU005_FLED_CH1) {
 		/* Rear Camera use gpio control, because of capture timing */
+<<<<<<< HEAD
 		if ( mode == S2MU005_FLED_MODE_MOVIE)
+=======
+		if (mode == S2MU005_FLED_MODE_MOVIE)
+>>>>>>> origin/3.18.14.x
 			torch_led_on_off(1);
 		else if (mode == S2MU005_FLED_MODE_OFF)
 			torch_led_on_off(0);
@@ -565,6 +614,11 @@ int s2mu005_led_mode_ctrl(int mode)
 		case S2MU005_FLED_MODE_PREFLASH:
 			break;
 		case S2MU005_FLED_MODE_FLASH:
+<<<<<<< HEAD
+=======
+			brightness = led_data->front_brightness;
+			value = S2MU005_CH2_TORCH_ON_I2C;
+>>>>>>> origin/3.18.14.x
 			break;
 		case S2MU005_FLED_MODE_MOVIE:
 			torch_led_on_off(1);
@@ -580,12 +634,17 @@ int s2mu005_led_mode_ctrl(int mode)
 	if (ret < 0)
 		goto error_set_bits;
 
+<<<<<<< HEAD
 	if (mode == S2MU005_FLED_MODE_OFF)
 		torch_led_on_off(0);
 
 #ifdef CONFIG_S2MU005_LEDS_I2C
 	ret = s2mu005_update_reg(led_data->i2c, CH_FLASH_TORCH_EN,
 				value, S2MU005_CH2_TORCH_ENABLE_MASK);
+=======
+#ifdef CONFIG_S2MU005_LEDS_I2C
+	ret = s2mu005_write_reg(led_data->i2c, CH_FLASH_TORCH_EN, value);
+>>>>>>> origin/3.18.14.x
 	if (ret < 0)
 		goto error_set_bits;
 #else
@@ -593,6 +652,12 @@ int s2mu005_led_mode_ctrl(int mode)
 	s2mu005_write_reg(led_data->i2c, CH_FLASH_TORCH_EN, value);
 #endif
 
+<<<<<<< HEAD
+=======
+	if (mode == S2MU005_FLED_MODE_OFF)
+		torch_led_on_off(0);
+
+>>>>>>> origin/3.18.14.x
 	return 0;
 
 error_set_bits:
@@ -661,12 +726,23 @@ int s2mu005_led_select_ctrl(int ch)
 		s2mu005_update_reg(led_data->i2c, S2MU005_REG_FLED_CH2_CTRL1,
 			led_data->front_brightness, S2MU005_TORCH_IOUT_MASK);
 	} else {
+<<<<<<< HEAD
 		value = S2MU005_CH1_FLASH_ON_GPIO | S2MU005_CH1_TORCH_ON_GPIO
 			| S2MU005_CH2_TORCH_ON_GPIO;
+=======
+		value = S2MU005_FLASH_TORCH_OFF;
+>>>>>>> origin/3.18.14.x
 		s2mu005_write_reg(led_data->i2c, CH_FLASH_TORCH_EN, value);
 		/* brightness set - Rear pre-flash(default)*/
 		s2mu005_update_reg(led_data->i2c, S2MU005_REG_FLED_CH1_CTRL1,
 			led_data->preflash_brightness, S2MU005_TORCH_IOUT_MASK);
+<<<<<<< HEAD
+=======
+
+#ifdef S2MU005_FLED_DEBUG
+		s2mu005_led_dump_reg();
+#endif
+>>>>>>> origin/3.18.14.x
 	}
 
 	mutex_unlock(&led_data->lock);

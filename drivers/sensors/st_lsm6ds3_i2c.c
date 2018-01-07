@@ -153,7 +153,11 @@ static const struct dev_pm_ops st_lsm6ds3_pm_ops = {
 };
 
 static const struct i2c_device_id st_lsm6ds3_id_table[] = {
+<<<<<<< HEAD
 	{ LSM6DS3_DEV_NAME },
+=======
+	{ DEV_NAME },
+>>>>>>> origin/3.18.14.x
 	{ },
 };
 

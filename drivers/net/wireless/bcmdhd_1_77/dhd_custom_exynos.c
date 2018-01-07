@@ -257,6 +257,10 @@ dhd_wlan_init_gpio(void)
 	}
 #ifdef CONFIG_BCMDHD_PCIE
 	gpio_direction_output(wlan_pwr_on, 1);
+<<<<<<< HEAD
+=======
+	msleep(WIFI_TURNON_DELAY);
+>>>>>>> origin/3.18.14.x
 #else
 	gpio_direction_output(wlan_pwr_on, 0);
 #endif /* CONFIG_BCMDHD_PCIE */
@@ -264,7 +268,10 @@ dhd_wlan_init_gpio(void)
 	if (wlan_dev)
 		gpio_export_link(wlan_dev, "WLAN_REG_ON", wlan_pwr_on);
 
+<<<<<<< HEAD
 	msleep(WIFI_TURNON_DELAY);
+=======
+>>>>>>> origin/3.18.14.x
 #ifdef EXYNOS_PCIE_RC_ONOFF
 	exynos_pcie_poweron(SAMSUNG_PCIE_CH_NUM);
 #endif /* EXYNOS_PCIE_RC_ONOFF */

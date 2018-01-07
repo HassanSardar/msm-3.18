@@ -22,11 +22,14 @@ config LCD_DOZE_MODE
 	tristate "Support DOZE MODE"
 	default n
 
+<<<<<<< HEAD
 config LCD_DOZE_MODE_MDNIE
 	depends on LCD_DOZE_MODE
 	tristate "Support DOZE MODE"
 	default n
 
+=======
+>>>>>>> origin/3.18.14.x
 config DISPLAY_USE_INFO
 	depends on EXYNOS_DECON_LCD
 	tristate "Support display use info logging"
@@ -100,6 +103,13 @@ config PANEL_EA8061S_J7VE
 	depends on EXYNOS_DECON_LCD && EXYNOS_MIPI_DSI
 	tristate "EA8061S Amoled driver"
 
+<<<<<<< HEAD
+=======
+config PANEL_S6D7AA0_GTACTIVE2
+	depends on EXYNOS_DECON_LCD && EXYNOS_MIPI_DSI
+	tristate "S6D7AA0 TFT LCD driver(800 x 1280)"
+
+>>>>>>> origin/3.18.14.x
 config EXYNOS_LCD_PWM_BACKLIGHT
 	depends on EXYNOS_DECON_LCD && EXYNOS_MIPI_DSI
 	tristate "EXYNOS_LCD_PWM_BACKLIGHT"

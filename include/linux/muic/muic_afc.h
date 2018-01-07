@@ -25,9 +25,12 @@
 struct muic_data_t;
 
 /* SM5705 AFC CTRL register */
+<<<<<<< HEAD
 #if defined(CONFIG_MUIC_UNIVERSAL_SM5705_AFC_QC20)
 #define AFCCTRL_ENQC20		 6
 #endif
+=======
+>>>>>>> origin/3.18.14.x
 #define AFCCTRL_DIS_AFC      5
 #define AFCCTRL_VBUS_READ    3
 #define AFCCTRL_DM_RESET     2

@@ -8,5 +8,9 @@
 obj-$(CONFIG_EXYNOS_MIPI_DSI) += dsim.o
 dsim-y += dsim_drv.o dsim_reg_7870.o
 obj-$(CONFIG_EXYNOS_DECON_7870) += decon.o
+<<<<<<< HEAD
 decon-y += decon_core.o decon-int_drv.o decon_helper.o decon_reg_7870.o decon_board.o
+=======
+decon-y += decon_core.o decon-int_drv.o decon_helper.o decon_reg_7870.o decon_board.o decon_notify.o
+>>>>>>> origin/3.18.14.x
 obj-y += panels/

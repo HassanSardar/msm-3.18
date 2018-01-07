@@ -782,6 +782,41 @@ out:
 	return err;
 }
 
+#ifdef CONFIG_MMC_UNIQUE_NUMBER
+static char *mmc_gen_unique_number(struct mmc_card *card)
+{
+	char gen_pnm[3];
+	int i;
+
+	switch (card->cid.manfid) {
+		case 0x02:	/* Sandisk	-> [3][4] */
+		case 0x45:
+			sprintf(gen_pnm, "%.*s", 2, card->cid.prod_name + 3);
+			break;
+		case 0x11:	/* Toshiba	-> [1][2] */
+		case 0x90:	/* Hynix */
+			sprintf(gen_pnm, "%.*s", 2, card->cid.prod_name + 1);
+			break;
+		case 0x13:
+		case 0xFE:	/* Micron 	-> [4][5] */
+			sprintf(gen_pnm, "%.*s", 2, card->cid.prod_name + 4);
+			break;
+		case 0x15:	/* Samsung 	-> [0][1] */
+		default:
+			sprintf(gen_pnm, "%.*s", 2, card->cid.prod_name + 0);
+			break;
+	}
+	/* Convert to Captal */
+	for (i = 0 ; i < 2 ; i++)
+	{
+		if (gen_pnm[i] >= 'a' && gen_pnm[i] <= 'z')
+			gen_pnm[i] -= ('a' - 'A');
+	}
+	return kasprintf(GFP_KERNEL, "C%s%02X%08X%02X",
+		gen_pnm, card->cid.prv, card->cid.serial, UNSTUFF_BITS(card->raw_cid, 8, 8));
+}
+#endif
+
 MMC_DEV_ATTR(cid, "%08x%08x%08x%08x\n", card->raw_cid[0], card->raw_cid[1],
 	card->raw_cid[2], card->raw_cid[3]);
 MMC_DEV_ATTR(csd, "%08x%08x%08x%08x\n", card->raw_csd[0], card->raw_csd[1],
@@ -815,6 +850,9 @@ MMC_DEV_ATTR(erase_type, "MMC_CAP_ERASE %s, type %s, SECURE %s, Sanitize %s\n",
 		(mmc_can_sanitize(card) &&
 		 !(card->quirks & MMC_QUIRK_SEC_ERASE_TRIM_BROKEN)) ?
 		"enabled" : "disabled");
+#ifdef CONFIG_MMC_UNIQUE_NUMBER
+MMC_DEV_ATTR(unique_number, "%s\n", mmc_gen_unique_number(card));
+#endif
 
 static struct attribute *mmc_std_attrs[] = {
 	&dev_attr_cid.attr,
@@ -838,6 +876,9 @@ static struct attribute *mmc_std_attrs[] = {
 	&dev_attr_caps.attr,
 	&dev_attr_caps2.attr,
 	&dev_attr_erase_type.attr,
+#ifdef CONFIG_MMC_UNIQUE_NUMBER
+	&dev_attr_unique_number.attr,
+#endif
 	NULL,
 };
 ATTRIBUTE_GROUPS(mmc_std);
@@ -1958,7 +1999,7 @@ static int mmc_resume(struct mmc_host *host)
 			pr_err("%s: status : 0x%x, err : %d doing resume\n",
 					   mmc_hostname(host), status, err);
 			mmc_power_off(host);
-			mmc_card_set_suspended(host->card);	
+			mmc_card_set_suspended(host->card);
 			err = _mmc_resume(host);
 			return err;
 		}

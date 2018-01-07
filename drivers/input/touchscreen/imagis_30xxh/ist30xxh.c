@@ -1064,7 +1064,11 @@ static int ist30xx_resume(struct device *dev)
 #ifdef CONFIG_TOUCHSCREEN_IMAGIS_LPM_NO_RESET
 	mutex_lock(&data->lock);
 	data->suspend = false;
+<<<<<<< HEAD
 	if (data->spay || data->aod) {
+=======
+	if (data->status.power && (data->spay || data->aod)) {
+>>>>>>> origin/3.18.14.x
 		ist30xx_cmd_gesture(data, IST30XX_DISABLE);
 		mod_timer(&data->event_timer,
 			get_jiffies_64() + EVENT_TIMER_INTERVAL * 2);

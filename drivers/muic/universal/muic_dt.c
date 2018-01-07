@@ -190,7 +190,13 @@ int of_muic_dt(struct i2c_client *i2c, struct muic_platform_data *pdata)
 	struct device_node *np_muic = i2c->dev.of_node;
 	muic_data_t *pmuic = i2c_get_clientdata(i2c);
 	int ret=0;
+<<<<<<< HEAD
 
+=======
+#ifdef CONFIG_MUIC_USB_ID_CTR
+	int muic_usb_id_ctr=0;
+#endif
+>>>>>>> origin/3.18.14.x
 	pr_info("%s\n", __func__);
 
 	if(!np_muic)
@@ -207,6 +213,7 @@ int of_muic_dt(struct i2c_client *i2c, struct muic_platform_data *pdata)
 	pdata->irq_gpio = of_get_named_gpio(np_muic, "muic-universal,irq-gpio", 0);
 	pr_info("%s: irq-gpio: %u\n", __func__, pdata->irq_gpio);
 
+<<<<<<< HEAD
 	muic_gpio_uart_sel = of_get_named_gpio(np_muic, "muic-universal,uart-gpio", 0);
 	ret = gpio_is_valid(muic_gpio_uart_sel);
 	if (!ret) {
@@ -227,6 +234,28 @@ int of_muic_dt(struct i2c_client *i2c, struct muic_platform_data *pdata)
 	}
 
 	pmuic->gpio_uart_sel = muic_gpio_uart_sel;
+=======
+	pmuic->mux_sel = of_get_named_gpio(np_muic, "mux-sel", 0);
+	ret = gpio_is_valid(pmuic->mux_sel);
+	if (!ret) {
+		pr_err("GPIO_MUX_SEL is not valid!!!\n");
+		return ret;
+	}
+	gpio_direction_output(pmuic->mux_sel, 0);
+	pr_info("%s: mux_sel: %u\n", __func__, pmuic->mux_sel);
+
+#ifdef CONFIG_MUIC_USB_ID_CTR
+	muic_usb_id_ctr = of_get_named_gpio(np_muic, "usb-id-ctr", 0);
+	ret = gpio_is_valid(muic_usb_id_ctr);
+	if (!ret) {
+		pr_err("GPIO_USB_ID_CTR is not valid!!!\n");
+		return ret;
+	}
+	pmuic->usb_id_ctr = muic_usb_id_ctr;
+	gpio_direction_output(pmuic->usb_id_ctr, 0);
+	pr_info("%s: usb_id_ctr: %u\n", __func__, pmuic->usb_id_ctr);
+#endif
+>>>>>>> origin/3.18.14.x
 
 	return 0;
 }

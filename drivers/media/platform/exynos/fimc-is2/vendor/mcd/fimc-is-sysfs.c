@@ -1475,6 +1475,14 @@ static ssize_t front_camera_hw_param_show(struct device *dev,
 
 	fimc_is_sec_get_front_hw_param(&ec_param);
 
+<<<<<<< HEAD
+=======
+#if defined(CONFIG_CAMERA_OTPROM_SUPPORT_FRONT)
+	return sprintf(buf, "\"CAMIF_ID\":\"MI_NO\",\"I2CF_AF\":\"%d\","
+		"\"I2CF_SEN\":\"%d\",\"MIPIF_SEN\":\"%d\"\n",
+		ec_param->i2c_af_err_cnt, ec_param->i2c_sensor_err_cnt, ec_param->mipi_sensor_err_cnt);
+#else
+>>>>>>> origin/3.18.14.x
 	if (fimc_is_sec_is_valid_moduleid(front_finfo->module_id)) {
 		return sprintf(buf, "\"CAMIF_ID\":\"%c%c%c%c%cXX%02X%02X%02X\",\"I2CF_AF\":\"%d\","
 			"\"I2CF_SEN\":\"%d\",\"MIPIF_SEN\":\"%d\"\n",
@@ -1487,6 +1495,10 @@ static ssize_t front_camera_hw_param_show(struct device *dev,
 			"\"I2CF_SEN\":\"%d\",\"MIPIF_SEN\":\"%d\"\n",
 			ec_param->i2c_af_err_cnt, ec_param->i2c_sensor_err_cnt, ec_param->mipi_sensor_err_cnt);
 	}
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> origin/3.18.14.x
 }
 
 static ssize_t front_camera_hw_param_store(struct device *dev,

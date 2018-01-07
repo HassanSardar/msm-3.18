@@ -12,13 +12,22 @@
 #include <linux/lcd.h>
 #include <linux/backlight.h>
 #include <linux/of_device.h>
+<<<<<<< HEAD
+=======
+#include <linux/i2c.h>
+#include <linux/module.h>
+>>>>>>> origin/3.18.14.x
 #include <video/mipi_display.h>
 #include "../dsim.h"
 #include "../decon.h"
 #include "../decon_board.h"
 #include "dsim_panel.h"
+<<<<<<< HEAD
 #include <linux/i2c.h>
 #include <linux/module.h>
+=======
+#include "../decon_notify.h"
+>>>>>>> origin/3.18.14.x
 
 #include "td4100_j7pop_param.h"
 
@@ -483,7 +492,11 @@ static int td4100_probe(struct dsim_device *dsim)
 
 	memset(&lcd->fb_notif_panel, 0, sizeof(lcd->fb_notif_panel));
 	lcd->fb_notif_panel.notifier_call = fb_notifier_callback;
+<<<<<<< HEAD
 	fb_register_client(&lcd->fb_notif_panel);
+=======
+	decon_register_notifier(&lcd->fb_notif_panel);
+>>>>>>> origin/3.18.14.x
 
 #if defined(CONFIG_SEC_INCELL)
 	incell_data.blank_unblank = incell_blank_unblank;
@@ -556,7 +569,11 @@ static ssize_t dump_register_show(struct device *dev,
 	struct lcd_info *lcd = dev_get_drvdata(dev);
 	char *pos = buf;
 	u8 reg, len, table;
+<<<<<<< HEAD
 	int ret, i;
+=======
+	int i;
+>>>>>>> origin/3.18.14.x
 	u8 *dump = NULL;
 
 	reg = lcd->dump_info[0];
@@ -568,9 +585,14 @@ static ssize_t dump_register_show(struct device *dev,
 
 	dump = kcalloc(len, sizeof(u8), GFP_KERNEL);
 
+<<<<<<< HEAD
 	if (lcd->state == PANEL_STATE_RESUMED) {
 		ret = dsim_read_hl_data(lcd, reg, len, dump);
 	}
+=======
+	if (lcd->state == PANEL_STATE_RESUMED)
+		dsim_read_hl_data(lcd, reg, len, dump);
+>>>>>>> origin/3.18.14.x
 
 	pos += sprintf(pos, "+ [%02X]\n", reg);
 	for (i = 0; i < len; i++)
@@ -594,7 +616,11 @@ static ssize_t dump_register_store(struct device *dev,
 	unsigned int reg, len, offset;
 	int ret;
 
+<<<<<<< HEAD
 	ret = sscanf(buf, "%x %d %d", &reg, &len, &offset);
+=======
+	ret = sscanf(buf, "%8x %8d %8d", &reg, &len, &offset);
+>>>>>>> origin/3.18.14.x
 
 	if (ret == 2)
 		offset = 0;
@@ -638,7 +664,11 @@ static ssize_t read_show(struct kobject *kobj,
 	struct lcd_info *lcd = container_of(attr, struct lcd_info, dsi_access_r);
 	char *pos = buf;
 	u8 reg, len, param;
+<<<<<<< HEAD
 	int ret, i;
+=======
+	int i;
+>>>>>>> origin/3.18.14.x
 	u8 *dump = NULL;
 	unsigned int data_type;
 
@@ -652,9 +682,14 @@ static ssize_t read_show(struct kobject *kobj,
 
 	dump = kcalloc(len, sizeof(u8), GFP_KERNEL);
 
+<<<<<<< HEAD
 	if (lcd->state == PANEL_STATE_RESUMED) {
 		ret = dsim_read_data(lcd->dsim, data_type, reg, len, dump);
 	}
+=======
+	if (lcd->state == PANEL_STATE_RESUMED)
+		dsim_read_data(lcd->dsim, data_type, reg, len, dump);
+>>>>>>> origin/3.18.14.x
 
 	for (i = 0; i < len; i++)
 		pos += sprintf(pos, "%02x ", dump[i]);
@@ -678,7 +713,11 @@ static ssize_t read_store(struct kobject *kobj,
 	unsigned int data_type, return_packet_type;
 	int ret;
 
+<<<<<<< HEAD
 	ret = sscanf(buf, "%x %x %x %x %x", &data_type, &reg, &param, &return_packet_type, &len);
+=======
+	ret = sscanf(buf, "%8x %8x %8x %8x %8x", &data_type, &reg, &param, &return_packet_type, &len);
+>>>>>>> origin/3.18.14.x
 
 	if (ret != 5)
 		return -EINVAL;

@@ -265,6 +265,31 @@ static const unsigned char SEQ_MTP_READ_HBM_GP_2[] = {
 	LDI_GPARA_HBM_GAMMA_2,
 };
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_DISPLAY_USE_INFO
+
+#define ERR_READ_REG 0xed
+#define ERR_RDNUMED_REG 0x05
+#define ERR_RDDSDR_REG 0x0f
+
+/* Write COMMAND before read */
+static const unsigned char SEQ_VLIN1_MONITOR_ON[] = {
+	ERR_READ_REG,
+	0x40,
+};
+static const unsigned char SEQ_ELVDD_MONITOR_ON[] = {
+	ERR_READ_REG,
+	0x08,
+};
+static const unsigned char SEQ_VLOUT3_MONITOR_ON[] = {
+	ERR_READ_REG,
+	0x04,
+};
+
+#endif
+
+>>>>>>> origin/3.18.14.x
 /***********************************************/
 
 enum {

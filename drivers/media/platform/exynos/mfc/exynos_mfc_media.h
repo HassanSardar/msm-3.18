@@ -121,7 +121,12 @@ enum v4l2_mpeg_mfc51_video_frame_type {
 #define V4L2_MPEG_VIDEO_HEADER_MODE_AT_THE_READY	2
 
 /* new entry for enum v4l2_mpeg_video_multi_slice_mode */
+<<<<<<< HEAD
 #define V4L2_MPEG_VIDEO_MULTI_SLICE_MODE_MAX_MB_ROW	3
+=======
+#define V4L2_MPEG_VIDEO_MULTI_SLICE_MODE_MAX_MB_ROW		3
+#define V4L2_MPEG_VIDEO_MULTI_SLICE_MODE_MAX_FIXED_BYTES	4
+>>>>>>> origin/3.18.14.x
 
 /* new entry for enum v4l2_mpeg_video_h264_profile */
 #define V4L2_MPEG_VIDEO_H264_PROFILE_CONSTRAINED_HIGH	17

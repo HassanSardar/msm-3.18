@@ -132,6 +132,10 @@ struct s2mu005_fuelgauge_data {
 	bool initial_update_of_soc;
 	bool sleep_initial_update_of_soc;
 	struct mutex fg_lock;
+<<<<<<< HEAD
+=======
+	bool wa_flag;	/*Prevent WA_0_issue_at_init1 overlap*/
+>>>>>>> origin/3.18.14.x
 	struct delayed_work isr_work;
 
 	/* register programming */

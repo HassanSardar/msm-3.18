@@ -142,8 +142,11 @@
 #define MAX_RETRY_SET_CPUCORE 5
 #define DPC_CPUCORE 1
 #define RXF_CPUCORE 2
+<<<<<<< HEAD
 #elif defined(CONFIG_SOC_EXYNOS7870) && defined(CONFIG_BCM43455)
 #define ARGOS_TCPACK_CONTROL
+=======
+>>>>>>> origin/3.18.14.x
 #elif defined(CONFIG_MACH_UNIVERSAL5433) || defined(CONFIG_MACH_UNIVERSAL7420) || \
 	defined(CONFIG_SOC_EXYNOS8890) || defined(CONFIG_SOC_EXYNOS8895)
 #undef CUSTOM_SET_CPUCORE
@@ -195,7 +198,13 @@
 #define DHD_LB_SECONDARY_CPUS   (0x0E)
 #endif /* CONFIG_SOC_EXYNOS8890 */
 #else /* !DHD_LB */
+<<<<<<< HEAD
 #define ARGOS_DPC_TASKLET_CTL
+=======
+#ifdef BCMPCIE
+#define ARGOS_DPC_TASKLET_CTL
+#endif /* BCMPCIE */
+>>>>>>> origin/3.18.14.x
 #endif /* !DHD_LB */
 
 #if defined(CONFIG_ARCH_MSM) || defined(CONFIG_SOC_EXYNOS8895)

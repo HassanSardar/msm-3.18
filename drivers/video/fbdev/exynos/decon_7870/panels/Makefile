@@ -17,4 +17,8 @@ obj-$(CONFIG_PANEL_TD4300) += td4300_lcd_ctrl.o
 obj-$(CONFIG_PANEL_TD4100_J7POP) += td4100_j7pop_lcd_ctrl.o
 obj-$(CONFIG_PANEL_S6E8AA5X01)	+= s6e8aa5x01_j5y17_lcd_ctrl.o dynamic_aid.o
 obj-$(CONFIG_PANEL_EA8061S_J7VE) += ea8061_lcd_ctrl.o ea8061s_lcd_ctrl.o dimming_core.o
+<<<<<<< HEAD
+=======
+obj-$(CONFIG_PANEL_S6D7AA0_GTACTIVE2) += s6d7aa0_gtactive2_lcd_ctrl.o
+>>>>>>> origin/3.18.14.x
 

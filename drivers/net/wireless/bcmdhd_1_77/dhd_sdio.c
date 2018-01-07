@@ -2566,8 +2566,13 @@ dhdsdio_sendfromq(dhd_bus_t *bus, uint maxframes)
 		for (i = 0; i < num_pkt; i++) {
 			pkts[i] = pktq_mdeq(&bus->txq, tx_prec_map, &prec_out);
 			if (!pkts[i]) {
+<<<<<<< HEAD
 				DHD_ERROR(("%s: pktq_mlen non-zero when no pkt\n",
 					__FUNCTION__));
+=======
+				DHD_ERROR(("%s: pktq_mlen non-zero when no pkt[%d]\n",
+					__FUNCTION__, i));
+>>>>>>> origin/3.18.14.x
 				ASSERT(0);
 				break;
 			}
@@ -10041,6 +10046,43 @@ concate_revision_bcm43455(dhd_bus_t *bus, char *fw_path, char *nv_path)
 }
 #endif /* SUPPORT_MULTIPLE_CHIP_4345X */
 
+<<<<<<< HEAD
+=======
+static int
+concate_revision_bcm43430(dhd_bus_t *bus,
+		char *fw_path, char *nv_path)
+{
+
+	uint chipver;
+	char chipver_tag[4] = {0, };
+
+	DHD_TRACE(("%s: BCM43430 Multiple Revision Check\n", __FUNCTION__));
+	if (bus->sih->chip != BCM43430_CHIP_ID) {
+		DHD_ERROR(("%s:Chip is not BCM43430\n", __FUNCTION__));
+		return -1;
+	}
+	chipver = bus->sih->chiprev;
+	DHD_ERROR(("CHIP VER = [0x%x]\n", chipver));
+	if (chipver == 0x0) {
+		DHD_ERROR(("----- CHIP bcm4343S -----\n"));
+		strcat(chipver_tag, "_3s");
+	} else if (chipver == 0x1) {
+		DHD_ERROR(("----- CHIP bcm43438 -----\n"));
+	} else if (chipver == 0x2) {
+		DHD_ERROR(("----- CHIP bcm43436L -----\n"));
+		strcat(chipver_tag, "_36");
+	} else {
+		DHD_ERROR(("----- CHIP bcm43430 unknown revision %d -----\n",
+					chipver));
+	}
+
+	strcat(fw_path, chipver_tag);
+	strcat(nv_path, chipver_tag);
+	return 0;
+}
+
+
+>>>>>>> origin/3.18.14.x
 int
 concate_revision(dhd_bus_t *bus, char *fw_path, char *nv_path)
 {
@@ -10089,6 +10131,12 @@ concate_revision(dhd_bus_t *bus, char *fw_path, char *nv_path)
 		res = concate_revision_bcm43455(bus, fw_path, nv_path);
 		break;
 #endif /* SUPPORT_MULTIPLE_CHIP_4345X */
+<<<<<<< HEAD
+=======
+	case BCM43430_CHIP_ID:
+		res = concate_revision_bcm43430(bus, fw_path, nv_path);
+		break;
+>>>>>>> origin/3.18.14.x
 	default:
 		DHD_ERROR(("REVISION SPECIFIC feature is not required\n"));
 		return res;

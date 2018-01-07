@@ -28,9 +28,22 @@
 #include <linux/wakelock.h>
 #include <linux/regulator/consumer.h>
 
+<<<<<<< HEAD
 /* for muic notifier */
 #include <linux/muic/muic.h>
 #include <linux/muic/muic_notifier.h>
+=======
+#if defined(CONFIG_MUIC_NOTIFIER)
+#include <linux/muic/muic.h>
+#include <linux/muic/muic_notifier.h>
+#ifdef CONFIG_CCIC_NOTIFIER
+#include <linux/ccic/ccic_notifier.h>
+#endif
+#endif
+#if defined(CONFIG_USB_TYPEC_MANAGER_NOTIFIER)
+#include <linux/usb/manager/usb_typec_manager_notifier.h>
+#endif
+>>>>>>> origin/3.18.14.x
 
 #include <linux/sensor/sensors_core.h>
 #include "sx9306_wifi_reg.h"
@@ -56,7 +69,11 @@
 #define DIFF_READ_NUM            10
 #define GRIP_LOG_TIME            30 /* sec */
 
+<<<<<<< HEAD
 #define IRQ_PROCESS_CONDITION   (SX9306_IRQSTAT_TOUCH_FLAG	\
+=======
+#define IRQ_PROCESS_CONDITION   (SX9306_IRQSTAT_TOUCH_FLAG \
+>>>>>>> origin/3.18.14.x
 				| SX9306_IRQSTAT_RELEASE_FLAG)
 
 struct sx9306_p {
@@ -69,6 +86,10 @@ struct sx9306_p {
 	struct wake_lock grip_wake_lock;
 	struct mutex read_mutex;
 	struct notifier_block muic_nb;
+<<<<<<< HEAD
+=======
+	struct notifier_block cpuidle_ccic_nb;
+>>>>>>> origin/3.18.14.x
 
 	bool skip_data;
 	bool init_done;
@@ -76,6 +97,10 @@ struct sx9306_p {
 	u8 channel_sub1;
 	u8 enable_csx;
 	u8 normal_th;
+<<<<<<< HEAD
+=======
+	u8 ta_th;
+>>>>>>> origin/3.18.14.x
 	u8 normal_th_buf;
 	int irq;
 	int gpio_nirq;
@@ -91,6 +116,12 @@ struct sx9306_p {
 	u16 freq;
 	atomic_t enable;
 
+<<<<<<< HEAD
+=======
+	int abnormal_mode;
+	int irq_count;
+	s32 max_diff;
+>>>>>>> origin/3.18.14.x
 #ifdef CONFIG_SENSORS_GRIP_CHK_HALLIC
 	u8 hall_flag;
 	unsigned char hall_ic[5];
@@ -101,14 +132,23 @@ struct sx9306_p {
 #ifdef CONFIG_SENSORS_GRIP_CHK_HALLIC
 #define HALLIC_PATH		"/sys/class/sec/sec_key/hall_detect"
 
+<<<<<<< HEAD
 static int sx9306_wifi_check_hallic_state(char *file_path, unsigned char hall_ic_status[])
+=======
+static int sx9306_wifi_check_hallic_state(char *file_path,
+		unsigned char hall_ic_status[])
+>>>>>>> origin/3.18.14.x
 {
 	int iRet = 0;
 	mm_segment_t old_fs;
 	struct file *filep;
 	u8 hall_sysfs[5];
 
+<<<<<<< HEAD
 	memset(hall_sysfs,0, sizeof(hall_sysfs));
+=======
+	memset(hall_sysfs, 0, sizeof(hall_sysfs));
+>>>>>>> origin/3.18.14.x
 
 	old_fs = get_fs();
 	set_fs(KERNEL_DS);
@@ -131,14 +171,23 @@ static int sx9306_wifi_check_hallic_state(char *file_path, unsigned char hall_ic
 			iRet, (int)sizeof(hall_sysfs), hall_sysfs);
 
 		iRet = -EIO;
+<<<<<<< HEAD
 	} else {
 		strncpy(hall_ic_status, hall_sysfs, sizeof(hall_sysfs));
 	}
+=======
+	} else
+		strncpy(hall_ic_status, hall_sysfs, sizeof(hall_sysfs));
+>>>>>>> origin/3.18.14.x
 
 	filp_close(filep, current->files);
 	set_fs(old_fs);
 
+<<<<<<< HEAD
 	exit:
+=======
+exit:
+>>>>>>> origin/3.18.14.x
 	return iRet;
 }
 #endif
@@ -229,7 +278,11 @@ static void sx9306_wifi_initialize_register(struct sx9306_p *data)
 	u8 val = 0;
 	int idx;
 
+<<<<<<< HEAD
 	for (idx = 0; idx < (sizeof(setup_reg) >> 1); idx++) {
+=======
+	for (idx = 0; idx < (int)(sizeof(setup_reg) >> 1); idx++) {
+>>>>>>> origin/3.18.14.x
 		sx9306_wifi_i2c_write(data, setup_reg[idx].reg,
 						setup_reg[idx].val);
 		SENSOR_INFO("Write Reg: 0x%x Value: 0x%x\n",
@@ -267,7 +320,11 @@ static int sx9306_wifi_set_offset_calibration(struct sx9306_p *data)
 	return ret;
 }
 
+<<<<<<< HEAD
 static void send_event(struct sx9306_p *data, u8 state)
+=======
+static void sx9306_wifi_send_event(struct sx9306_p *data, u8 state)
+>>>>>>> origin/3.18.14.x
 {
 	SENSOR_INFO("THD = %d\n", data->normal_th);
 
@@ -363,19 +420,30 @@ static void sx9306_wifi_set_enable(struct sx9306_p *data, u8 enable)
 	if (enable == ON) {
 		sx9306_wifi_i2c_read(data, SX9306_TCHCMPSTAT_REG, &status);
 		SENSOR_INFO("enable(0x%x)\n", status);
+<<<<<<< HEAD
 
 		data->diff_avg = 0;
 		data->diff_cnt = 0;
 
+=======
+		data->diff_avg = 0;
+		data->diff_cnt = 0;
+>>>>>>> origin/3.18.14.x
 		sx9306_wifi_get_data(data);
 
 		if (data->skip_data == true) {
 			input_report_rel(data->input, REL_MISC, 2);
 			input_sync(data->input);
 		} else if (status & (CSX_STATUS_REG << data->channel_main)) {
+<<<<<<< HEAD
 			send_event(data, ACTIVE);
 		} else {
 			send_event(data, IDLE);
+=======
+			sx9306_wifi_send_event(data, ACTIVE);
+		} else {
+			sx9306_wifi_send_event(data, IDLE);
+>>>>>>> origin/3.18.14.x
 		}
 
 		/* make sure no interrupts are pending since enabling irq
@@ -429,7 +497,11 @@ static ssize_t sx9306_wifi_set_offset_calibration_store(struct device *dev,
 
 	if (kstrtoint(buf, 10, &val)) {
 		SENSOR_ERR("Invalid Argument\n");
+<<<<<<< HEAD
 		return -EINVAL;
+=======
+		return count;
+>>>>>>> origin/3.18.14.x
 	}
 
 	if (val)
@@ -438,6 +510,7 @@ static ssize_t sx9306_wifi_set_offset_calibration_store(struct device *dev,
 	return count;
 }
 
+<<<<<<< HEAD
 static ssize_t sx9306_wifi_register_write_store(struct device *dev,
 		struct device_attribute *attr, const char *buf, size_t count)
 {
@@ -451,10 +524,33 @@ static ssize_t sx9306_wifi_register_write_store(struct device *dev,
 
 	sx9306_wifi_i2c_write(data, (unsigned char)regist, (unsigned char)val);
 	SENSOR_INFO("Register(0x%2x) data(0x%2x)\n", regist, val);
+=======
+static ssize_t sx9306_wifi_register_store(struct device *dev,
+		struct device_attribute *attr, const char *buf, size_t count)
+{
+	int regist = 0, val = 0;
+	int idx;
+	struct sx9306_p *data = dev_get_drvdata(dev);
+
+	if (sscanf(buf, "%4x,%4x", &regist, &val) != 2) {
+		SENSOR_ERR("The number of data are wrong\n");
+		return count;
+	}
+
+	for (idx = 0; idx < (int)(sizeof(setup_reg) >> 1); idx++) {
+		if (setup_reg[idx].reg == regist)
+			break;
+	}
+
+	sx9306_wifi_i2c_write(data, (unsigned char)regist, (unsigned char)val);
+	setup_reg[idx].val = val;
+	SENSOR_INFO("Register(0x%4x) data(0x%4x)\n", regist, val);
+>>>>>>> origin/3.18.14.x
 
 	return count;
 }
 
+<<<<<<< HEAD
 static ssize_t sx9306_wifi_register_read_store(struct device *dev,
 		struct device_attribute *attr, const char *buf, size_t count)
 {
@@ -471,6 +567,26 @@ static ssize_t sx9306_wifi_register_read_store(struct device *dev,
 	SENSOR_INFO("Register(0x%2x) data(0x%2x)\n", regist, val);
 
 	return count;
+=======
+static ssize_t sx9306_wifi_register_show(struct device *dev,
+		struct device_attribute *attr, char *buf)
+{
+	unsigned char val = 0;
+	int offset = 0, idx = 0;
+	struct sx9306_p *data = dev_get_drvdata(dev);
+
+	for (idx = 0; idx < (int)(sizeof(setup_reg) >> 1); idx++) {
+		sx9306_wifi_i2c_read(data, setup_reg[idx].reg, &val);
+
+		SENSOR_INFO("Register(0x%4x) data(0x%4x)\n",
+			setup_reg[idx].reg, val);
+
+		offset += snprintf(buf + offset, PAGE_SIZE - offset,
+			"Reg: 0x%4x Value: 0x%4x\n", setup_reg[idx].reg, val);
+	}
+
+	return offset;
+>>>>>>> origin/3.18.14.x
 }
 
 static ssize_t sx9306_wifi_read_data_show(struct device *dev,
@@ -624,7 +740,11 @@ static ssize_t sx9306_wifi_normal_threshold_store(struct device *dev,
 	/* It's for normal touch */
 	if (kstrtoul(buf, 10, &val)) {
 		SENSOR_ERR("Invalid Argument\n");
+<<<<<<< HEAD
 		return -EINVAL;
+=======
+		return count;
+>>>>>>> origin/3.18.14.x
 	}
 
 	SENSOR_INFO("normal threshold %lu\n", val);
@@ -651,7 +771,11 @@ static ssize_t sx9306_wifi_onoff_store(struct device *dev,
 	ret = kstrtou8(buf, 2, &val);
 	if (ret) {
 		SENSOR_ERR("Invalid Argument\n");
+<<<<<<< HEAD
 		return ret;
+=======
+		return count;
+>>>>>>> origin/3.18.14.x
 	}
 
 	if (val == 0) {
@@ -735,6 +859,7 @@ static ssize_t sx9306_wifi_diff_avg_show(struct device *dev,
 	return snprintf(buf, PAGE_SIZE, "%d\n", data->diff_avg);
 }
 
+<<<<<<< HEAD
 static DEVICE_ATTR(menual_calibrate, S_IRUGO | S_IWUSR | S_IWGRP,
 			sx9306_wifi_get_offset_calibration_show,
 			sx9306_wifi_set_offset_calibration_store);
@@ -742,6 +867,62 @@ static DEVICE_ATTR(register_write, S_IWUSR | S_IWGRP,
 			NULL, sx9306_wifi_register_write_store);
 static DEVICE_ATTR(register_read, S_IWUSR | S_IWGRP,
 			NULL, sx9306_wifi_register_read_store);
+=======
+static ssize_t sx9306_wifi_irq_count_show(struct device *dev,
+		struct device_attribute *attr, char *buf)
+{
+	struct sx9306_p *data = dev_get_drvdata(dev);
+
+	int result = 0;
+
+	if (data->irq_count)
+		result = -1;
+
+	SENSOR_INFO("called\n");
+
+	return snprintf(buf, PAGE_SIZE, "%d,%d,%d\n",
+		result, data->irq_count, data->max_diff);
+}
+
+static ssize_t sx9306_wifi_irq_count_store(struct device *dev,
+		struct device_attribute *attr, const char *buf, size_t count)
+{
+	struct sx9306_p *data = dev_get_drvdata(dev);
+
+	u8 onoff;
+	int ret;
+
+	ret = kstrtou8(buf, 10, &onoff);
+	if (ret < 0) {
+		SENSOR_ERR("kstrtou8 failed.(%d)\n", ret);
+		return count;
+	}
+
+	mutex_lock(&data->read_mutex);
+
+	if (onoff == 0) {
+		data->abnormal_mode = OFF;
+	} else if (onoff == 1) {
+		data->abnormal_mode = ON;
+		data->irq_count = 0;
+		data->max_diff = 0;
+	} else {
+		SENSOR_ERR("unknown value %d\n", onoff);
+	}
+
+	mutex_unlock(&data->read_mutex);
+
+	SENSOR_INFO("%d\n", onoff);
+
+	return count;
+}
+
+static DEVICE_ATTR(menual_calibrate, S_IRUGO | S_IWUSR | S_IWGRP,
+			sx9306_wifi_get_offset_calibration_show,
+			sx9306_wifi_set_offset_calibration_store);
+static DEVICE_ATTR(reg, S_IRUGO | S_IWUSR | S_IWGRP,
+			sx9306_wifi_register_show, sx9306_wifi_register_store);
+>>>>>>> origin/3.18.14.x
 static DEVICE_ATTR(readback, S_IRUGO, sx9306_wifi_read_data_show, NULL);
 static DEVICE_ATTR(reset, S_IRUGO, sx9306_wifi_sw_reset_show, NULL);
 
@@ -756,8 +937,12 @@ static DEVICE_ATTR(calibration, S_IRUGO | S_IWUSR | S_IWGRP,
 			sx9306_wifi_calibration_show,
 			sx9306_wifi_calibration_store);
 static DEVICE_ATTR(onoff, S_IRUGO | S_IWUSR | S_IWGRP,
+<<<<<<< HEAD
 			sx9306_wifi_onoff_show,
 			sx9306_wifi_onoff_store);
+=======
+			sx9306_wifi_onoff_show, sx9306_wifi_onoff_store);
+>>>>>>> origin/3.18.14.x
 static DEVICE_ATTR(threshold, S_IRUGO | S_IWUSR | S_IWGRP,
 			sx9306_wifi_threshold_show,
 			sx9306_wifi_threshold_store);
@@ -765,6 +950,7 @@ static DEVICE_ATTR(normal_threshold, S_IRUGO | S_IWUSR | S_IWGRP,
 			sx9306_wifi_normal_threshold_show,
 			sx9306_wifi_normal_threshold_store);
 static DEVICE_ATTR(freq, S_IRUGO | S_IWUSR | S_IWGRP,
+<<<<<<< HEAD
 			sx9306_wifi_freq_show,
 			sx9306_wifi_freq_store);
 
@@ -772,6 +958,16 @@ static struct device_attribute *sensor_attrs[] = {
 	&dev_attr_menual_calibrate,
 	&dev_attr_register_write,
 	&dev_attr_register_read,
+=======
+			sx9306_wifi_freq_show, sx9306_wifi_freq_store);
+static DEVICE_ATTR(irq_count, S_IRUGO | S_IWUSR | S_IWGRP,
+			sx9306_wifi_irq_count_show,
+			sx9306_wifi_irq_count_store);
+
+static struct device_attribute *sensor_attrs[] = {
+	&dev_attr_menual_calibrate,
+	&dev_attr_reg,
+>>>>>>> origin/3.18.14.x
 	&dev_attr_readback,
 	&dev_attr_reset,
 	&dev_attr_name,
@@ -786,6 +982,10 @@ static struct device_attribute *sensor_attrs[] = {
 	&dev_attr_onoff,
 	&dev_attr_calibration,
 	&dev_attr_freq,
+<<<<<<< HEAD
+=======
+	&dev_attr_irq_count,
+>>>>>>> origin/3.18.14.x
 	NULL,
 };
 
@@ -801,7 +1001,11 @@ static ssize_t sx9306_wifi_enable_store(struct device *dev,
 	ret = kstrtou8(buf, 2, &enable);
 	if (ret) {
 		SENSOR_ERR("Invalid Argument\n");
+<<<<<<< HEAD
 		return ret;
+=======
+		return size;
+>>>>>>> origin/3.18.14.x
 	}
 
 	SENSOR_INFO("new_value = %u old_value = %d\n", enable, pre_enable);
@@ -833,7 +1037,11 @@ static ssize_t sx9306_wifi_flush_store(struct device *dev,
 	ret = kstrtou8(buf, 2, &enable);
 	if (ret) {
 		SENSOR_ERR("Invalid Argument\n");
+<<<<<<< HEAD
 		return ret;
+=======
+		return size;
+>>>>>>> origin/3.18.14.x
 	}
 
 	if (enable == 1) {
@@ -867,14 +1075,32 @@ static void sx9306_wifi_touch_process(struct sx9306_p *data, u8 flag)
 	SENSOR_INFO("(0x%x)\n", status);
 	sx9306_wifi_get_data(data);
 
+<<<<<<< HEAD
 	if (data->state == IDLE) {
 		if (status & (CSX_STATUS_REG << data->channel_main))
 			send_event(data, ACTIVE);
+=======
+	if (data->abnormal_mode) {
+		if (status) {
+			if (data->max_diff < data->diff)
+				data->max_diff = data->diff;
+			data->irq_count++;
+		}
+	}
+
+	if (data->state == IDLE) {
+		if (status & (CSX_STATUS_REG << data->channel_main))
+			sx9306_wifi_send_event(data, ACTIVE);
+>>>>>>> origin/3.18.14.x
 		else
 			SENSOR_INFO("already released.\n");
 	} else {
 		if (!(status & (CSX_STATUS_REG << data->channel_main)))
+<<<<<<< HEAD
 			send_event(data, IDLE);
+=======
+			sx9306_wifi_send_event(data, IDLE);
+>>>>>>> origin/3.18.14.x
 		else
 			SENSOR_INFO("still touched\n");
 	}
@@ -891,6 +1117,108 @@ static void sx9306_wifi_process_interrupt(struct sx9306_p *data)
 		sx9306_wifi_touch_process(data, flag);
 }
 
+<<<<<<< HEAD
+=======
+#if defined(CONFIG_CCIC_NOTIFIER) && defined(CONFIG_USB_TYPEC_MANAGER_NOTIFIER)
+static int sx9306_wifi_ccic_handle_notification(struct notifier_block *nb,
+		unsigned long action, void *data)
+{
+	CC_NOTI_USB_STATUS_TYPEDEF usb_status =
+		*(CC_NOTI_USB_STATUS_TYPEDEF *)data;
+
+	struct sx9306_p *pdata =
+		container_of(nb, struct sx9306_p, cpuidle_ccic_nb);
+	static int pre_attach;
+	u8 tmp;
+
+	if (pre_attach == usb_status.attach)
+		return 0;
+	/*
+	 * USB_STATUS_NOTIFY_DETACH = 0,
+	 * USB_STATUS_NOTIFY_ATTACH_DFP = 1, // Host
+	 * USB_STATUS_NOTIFY_ATTACH_UFP = 2, // Device
+	 * USB_STATUS_NOTIFY_ATTACH_DRP = 3, // Dual role
+	 */
+
+	if (pdata->init_done == ON) {
+		switch (usb_status.drp) {
+		case USB_STATUS_NOTIFY_ATTACH_UFP:
+		case USB_STATUS_NOTIFY_ATTACH_DFP:
+		case USB_STATUS_NOTIFY_DETACH:
+			if (usb_status.attach) {
+				SENSOR_INFO("drp = %d attat = %d\n",
+					usb_status.drp, usb_status.attach);
+				tmp = pdata->normal_th;
+				pdata->normal_th = pdata->ta_th;
+				pdata->ta_th = tmp;
+			} else {
+				SENSOR_INFO("drp = %d attat = %d\n",
+					usb_status.drp, usb_status.attach);
+				tmp = pdata->ta_th;
+				pdata->ta_th = pdata->normal_th;
+				pdata->normal_th = tmp;
+			}
+
+			sx9306_wifi_i2c_write(pdata, SX9306_CPS_CTRL6_REG,
+				pdata->normal_th);
+			sx9306_wifi_set_offset_calibration(pdata);
+			break;
+		default:
+			SENSOR_INFO("DRP type : %d\n", usb_status.drp);
+			break;
+		}
+	}
+
+	pre_attach = usb_status.attach;
+
+	return 0;
+}
+#elif defined(CONFIG_MUIC_NOTIFIER)
+static int sx9306_wifi_muic_notifier(struct notifier_block *nb,
+				unsigned long action, void *data)
+{
+	struct sx9306_p *pdata = container_of(nb, struct sx9306_p, muic_nb);
+	muic_attached_dev_t attached_dev = *(muic_attached_dev_t *)data;
+
+	u8 tmp;
+
+	switch (attached_dev) {
+	case ATTACHED_DEV_OTG_MUIC:
+	case ATTACHED_DEV_USB_MUIC:
+	case ATTACHED_DEV_TA_MUIC:
+	case ATTACHED_DEV_AFC_CHARGER_PREPARE_MUIC:
+	case ATTACHED_DEV_AFC_CHARGER_9V_MUIC:
+		if (action == MUIC_NOTIFY_CMD_ATTACH) {
+			SENSOR_INFO("TA/USB is inserted\n");
+			tmp = pdata->normal_th;
+			pdata->normal_th = pdata->ta_th;
+			pdata->ta_th = tmp;
+		} else {
+			SENSOR_INFO("TA/USB is removed\n");
+			tmp = pdata->ta_th;
+			pdata->ta_th = pdata->normal_th;
+			pdata->normal_th = tmp;
+		}
+
+		if (pdata->init_done == ON)
+			sx9306_wifi_set_offset_calibration(pdata);
+		else
+			SENSOR_INFO("not initialized\n");
+		break;
+	default:
+		break;
+	}
+
+	sx9306_wifi_i2c_write(pdata, SX9306_CPS_CTRL6_REG, pdata->normal_th);
+
+	SENSOR_INFO("dev=%d, action=%lu, thd=%d\n", attached_dev, action,
+		pdata->normal_th);
+
+	return NOTIFY_DONE;
+}
+#endif
+
+>>>>>>> origin/3.18.14.x
 static void sx9306_wifi_init_work_func(struct work_struct *work)
 {
 	struct sx9306_p *data = container_of((struct delayed_work *)work,
@@ -906,6 +1234,19 @@ static void sx9306_wifi_init_work_func(struct work_struct *work)
 
 	/* disabling IRQ */
 	sx9306_wifi_i2c_write(data, SX9306_IRQ_ENABLE_REG, 0x00);
+<<<<<<< HEAD
+=======
+
+#if defined(CONFIG_CCIC_NOTIFIER) && defined(CONFIG_USB_TYPEC_MANAGER_NOTIFIER)
+	manager_notifier_register(&data->cpuidle_ccic_nb,
+					sx9306_wifi_ccic_handle_notification,
+					MANAGER_NOTIFY_CCIC_USB);
+#elif defined(CONFIG_MUIC_NOTIFIER)
+	muic_notifier_register(&data->muic_nb, sx9306_wifi_muic_notifier,
+		MUIC_NOTIFY_DEV_CPUIDLE);
+#endif
+
+>>>>>>> origin/3.18.14.x
 	sx9306_wifi_set_debug_work(data, ON);
 }
 
@@ -940,9 +1281,15 @@ static void sx9306_wifi_debug_work_func(struct work_struct *work)
 			sx9306_wifi_set_offset_calibration(data);
 			data->hall_flag = 1;
 		}
+<<<<<<< HEAD
 	}
 	else
 		data->hall_flag = 0;
+=======
+	} else {
+		data->hall_flag = 0;
+	}
+>>>>>>> origin/3.18.14.x
 #endif
 
 	schedule_delayed_work(&data->debug_work, msecs_to_jiffies(1000));
@@ -952,9 +1299,15 @@ static irqreturn_t sx9306_wifi_interrupt_thread(int irq, void *pdata)
 {
 	struct sx9306_p *data = pdata;
 
+<<<<<<< HEAD
 	if (sx9306_wifi_get_nirq_state(data) == 1) {
 		SENSOR_ERR("nirq read high\n");
 	} else {
+=======
+	if (sx9306_wifi_get_nirq_state(data) == 1)
+		SENSOR_ERR("nirq read high\n");
+	else {
+>>>>>>> origin/3.18.14.x
 		wake_lock_timeout(&data->grip_wake_lock, 3 * HZ);
 		schedule_delayed_work(&data->irq_work, msecs_to_jiffies(100));
 	}
@@ -1037,16 +1390,29 @@ static void sx9306_wifi_initialize_variable(struct sx9306_p *data)
 	data->normal_th_buf = data->normal_th;
 }
 
+<<<<<<< HEAD
 static void sx9306_wifi_read_setupreg(struct device_node *dnode, char *str, u8 *val)
 {
 	u32 temp_val;
 	int ret;
+=======
+static void sx9306_wifi_read_setupreg(struct device_node *dnode, char *str,
+				u8 *val)
+{
+	u32 temp_val;
+	int ret;
+
+>>>>>>> origin/3.18.14.x
 	ret = of_property_read_u32(dnode, str, &temp_val);
 	if (!ret) {
 		*val = (u8)temp_val;
 		SENSOR_INFO("Read from DT [%s][%02x]\n", str, temp_val);
 	}
 }
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/3.18.14.x
 static int sx9306_wifi_parse_dt(struct sx9306_p *data, struct device *dev)
 {
 	struct device_node *node = dev->of_node;
@@ -1064,6 +1430,7 @@ static int sx9306_wifi_parse_dt(struct sx9306_p *data, struct device *dev)
 		return -ENODEV;
 	}
 
+<<<<<<< HEAD
 	sx9306_wifi_read_setupreg(node, "sx9306_wifi-i2c,ctrl0", &setup_reg[SX9306_CTRL0_IDX].val);
 	sx9306_wifi_read_setupreg(node, "sx9306_wifi-i2c,ctrl1", &setup_reg[SX9306_CTRL1_IDX].val);
 	sx9306_wifi_read_setupreg(node, "sx9306_wifi-i2c,ctrl2", &setup_reg[SX9306_CTRL2_IDX].val);
@@ -1081,15 +1448,61 @@ static int sx9306_wifi_parse_dt(struct sx9306_p *data, struct device *dev)
 	if (!ret) {
 		data->normal_th = (u8)temp_val;
 	} else {
+=======
+	sx9306_wifi_read_setupreg(node, "sx9306_wifi-i2c,ctrl0",
+		&setup_reg[SX9306_CTRL0_IDX].val);
+	sx9306_wifi_read_setupreg(node, "sx9306_wifi-i2c,ctrl1",
+		&setup_reg[SX9306_CTRL1_IDX].val);
+	sx9306_wifi_read_setupreg(node, "sx9306_wifi-i2c,ctrl2",
+		&setup_reg[SX9306_CTRL2_IDX].val);
+	sx9306_wifi_read_setupreg(node, "sx9306_wifi-i2c,ctrl3",
+		&setup_reg[SX9306_CTRL3_IDX].val);
+	sx9306_wifi_read_setupreg(node, "sx9306_wifi-i2c,ctrl4",
+		&setup_reg[SX9306_CTRL4_IDX].val);
+	sx9306_wifi_read_setupreg(node, "sx9306_wifi-i2c,ctrl5",
+		&setup_reg[SX9306_CTRL5_IDX].val);
+	sx9306_wifi_read_setupreg(node, "sx9306_wifi-i2c,ctrl6",
+		&setup_reg[SX9306_CTRL6_IDX].val);
+	sx9306_wifi_read_setupreg(node, "sx9306_wifi-i2c,ctrl7",
+		&setup_reg[SX9306_CTRL7_IDX].val);
+	sx9306_wifi_read_setupreg(node, "sx9306_wifi-i2c,ctrl8",
+		&setup_reg[SX9306_CTRL8_IDX].val);
+	sx9306_wifi_read_setupreg(node, "sx9306_wifi-i2c,ctrl9",
+		&setup_reg[SX9306_CTRL9_IDX].val);
+	sx9306_wifi_read_setupreg(node, "sx9306_wifi-i2c,ctrl10",
+		&setup_reg[SX9306_CTRL10_IDX].val);
+
+	ret = of_property_read_u32(node, "sx9306_wifi-i2c,normal-thd",
+				&temp_val);
+	if (!ret)
+		data->normal_th = (u8)temp_val;
+	else {
+>>>>>>> origin/3.18.14.x
 		SENSOR_ERR("failed to get thd from dt. set as default.\n");
 		data->normal_th = DEFAULT_NORMAL_TH;
 	}
 
+<<<<<<< HEAD
 	ret = of_property_read_u32(node, "sx9306_wifi-i2c,ch-main",
 						&temp_val);
 	if (!ret) {
 		data->channel_main = (u8)temp_val;
 	} else {
+=======
+	ret = of_property_read_u32(node, "sx9306_wifi-i2c,ta-thd", &temp_val);
+	if (!ret)
+		data->ta_th = (u8)temp_val;
+	else {
+		SENSOR_ERR("failed to get ta thd from dt. set as default.\n");
+		data->ta_th = data->normal_th;
+	}
+
+	ret = of_property_read_u32(node, "sx9306_wifi-i2c,ch-main",
+						&temp_val);
+	if (!ret)
+		data->channel_main = (u8)temp_val;
+	else {
+>>>>>>> origin/3.18.14.x
 		SENSOR_ERR("failed to get main channel. set as default.\n");
 		data->channel_main = 0;
 	}
@@ -1097,9 +1510,15 @@ static int sx9306_wifi_parse_dt(struct sx9306_p *data, struct device *dev)
 
 	ret = of_property_read_u32(node, "sx9306_wifi-i2c,ch-sub1",
 						&temp_val);
+<<<<<<< HEAD
 	if (!ret) {
 		data->channel_sub1 = (u8)temp_val;
 	} else {
+=======
+	if (!ret)
+		data->channel_sub1 = (u8)temp_val;
+	else {
+>>>>>>> origin/3.18.14.x
 		SENSOR_INFO("failed to get sub channel. set as no sub.\n");
 		data->channel_sub1 = 0xff;
 	}
@@ -1109,6 +1528,7 @@ static int sx9306_wifi_parse_dt(struct sx9306_p *data, struct device *dev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int sx9306_wifi_muic_notifier(struct notifier_block *nb,
 				unsigned long action, void *data)
 {
@@ -1195,6 +1615,8 @@ int sx9306_wifi_regulator_on(struct sx9306_p *data, bool onoff)
 }
 #endif
 
+=======
+>>>>>>> origin/3.18.14.x
 static int sx9306_wifi_probe(struct i2c_client *client,
 			const struct i2c_device_id *id)
 {
@@ -1233,10 +1655,13 @@ static int sx9306_wifi_probe(struct i2c_client *client,
 		goto exit_setup_pin;
 	}
 
+<<<<<<< HEAD
 #if defined(CONFIG_SENSORS_SX9306_REGULATOR_ONOFF)
 	sx9306_wifi_regulator_on(data, true);
 #endif
 
+=======
+>>>>>>> origin/3.18.14.x
 	/* read chip id */
 	ret = sx9306_wifi_i2c_write(data, SX9306_SOFTRESET_REG,
 						SX9306_SOFTRESET);
@@ -1252,9 +1677,16 @@ static int sx9306_wifi_probe(struct i2c_client *client,
 	INIT_DELAYED_WORK(&data->debug_work, sx9306_wifi_debug_work_func);
 
 	data->irq = gpio_to_irq(data->gpio_nirq);
+<<<<<<< HEAD
 	ret = request_threaded_irq(data->irq, NULL,
 			sx9306_wifi_interrupt_thread,
 			IRQF_TRIGGER_FALLING | IRQF_ONESHOT | IRQF_NO_SUSPEND,
+=======
+	/* add IRQF_NO_SUSPEND option in case of Spreadtrum AP */
+	ret = request_threaded_irq(data->irq, NULL,
+			sx9306_wifi_interrupt_thread,
+			IRQF_TRIGGER_FALLING | IRQF_ONESHOT,
+>>>>>>> origin/3.18.14.x
 			"sx9306_wifi_irq", data);
 	if (ret < 0) {
 		SENSOR_ERR("failed to set request_threaded_irq %d (%d)\n",
@@ -1274,10 +1706,14 @@ static int sx9306_wifi_probe(struct i2c_client *client,
 		goto exit_grip_sensor_register;
 	}
 
+<<<<<<< HEAD
 	muic_notifier_register(&data->muic_nb, sx9306_wifi_muic_notifier, MUIC_NOTIFY_DEV_CPUIDLE);
 
 	schedule_delayed_work(&data->init_work, msecs_to_jiffies(300));
 
+=======
+	schedule_delayed_work(&data->init_work, msecs_to_jiffies(300));
+>>>>>>> origin/3.18.14.x
 	SENSOR_INFO("done\n");
 
 	return 0;
@@ -1290,11 +1726,16 @@ exit_grip_sensor_register:
 exit_input_init:
 	free_irq(data->irq, data);
 exit_request_threaded_irq:
+<<<<<<< HEAD
 	gpio_free(data->gpio_nirq);
 exit_chip_reset:
 #if defined(CONFIG_SENSORS_SX9306_REGULATOR_ONOFF)
 	sx9306_wifi_regulator_on(data, false);
 #endif
+=======
+exit_chip_reset:
+	gpio_free(data->gpio_nirq);
+>>>>>>> origin/3.18.14.x
 exit_setup_pin:
 exit_of_node:
 	mutex_destroy(&data->read_mutex);
@@ -1307,6 +1748,7 @@ exit:
 
 static int sx9306_wifi_remove(struct i2c_client *client)
 {
+<<<<<<< HEAD
 	struct sx9306_p *data = (struct sx9306_p *)i2c_get_clientdata(client);
 
 	if (atomic_read(&data->enable) == ON)
@@ -1331,6 +1773,9 @@ static int sx9306_wifi_remove(struct i2c_client *client)
 
 	kfree(data);
 
+=======
+	SENSOR_INFO("\n");
+>>>>>>> origin/3.18.14.x
 	return 0;
 }
 

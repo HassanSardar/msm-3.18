@@ -110,6 +110,34 @@ try_read:
 	return ret;
 }
 
+<<<<<<< HEAD
+=======
+static int ea8061_read_id(struct lcd_info *lcd)
+{
+	struct panel_private *priv = &lcd->dsim->priv;
+	int ret = 0;
+	int i = 0;
+
+	priv->lcdConnected = PANEL_CONNECTED;
+
+	dsim_write_hl_data(lcd, SEQ_EA8061_READ_ID, ARRAY_SIZE(SEQ_EA8061_READ_ID));
+	ret = dsim_read_hl_data(lcd, EA8061_READ_RX_REG, EA8061_ID_LEN, lcd->id);
+	if (ret != EA8061_ID_LEN) {
+		dev_err(&lcd->ld->dev, "%s: can't find connected panel. check panel connection\n", __func__);
+		priv->lcdConnected = PANEL_DISCONNEDTED;
+		goto exit;
+	}
+
+	dev_info(&lcd->ld->dev, "READ ID : ");
+	for (i = 0; i < EA8061_ID_LEN; i++)
+		dev_info(&lcd->ld->dev, "%02x, ", lcd->id[i]);
+	dev_info(&lcd->ld->dev, "\n");
+
+exit:
+	return ret;
+}
+
+>>>>>>> origin/3.18.14.x
 #ifdef CONFIG_PANEL_AID_DIMMING
 static unsigned int get_actual_br_value(struct lcd_info *lcd, int index)
 {
@@ -794,6 +822,11 @@ static int ea8061_init(struct lcd_info *lcd)
 
 	usleep_range(5000, 6000);
 
+<<<<<<< HEAD
+=======
+	ea8061_read_id(lcd);
+
+>>>>>>> origin/3.18.14.x
 	ret = dsim_write_hl_data(lcd, SEQ_TEST_KEY_ON_F0, ARRAY_SIZE(SEQ_TEST_KEY_ON_F0));
 	if (ret < 0) {
 		dev_err(&lcd->ld->dev, "%s: failed to write CMD : SEQ_TEST_KEY_ON_F0\n", __func__);
@@ -1128,7 +1161,11 @@ static ssize_t dump_register_show(struct device *dev,
 	struct lcd_info *lcd = dev_get_drvdata(dev);
 	char *pos = buf;
 	u8 reg, len, offset;
+<<<<<<< HEAD
 	int ret, i;
+=======
+	int i;
+>>>>>>> origin/3.18.14.x
 	u8 *dump = NULL;
 	unsigned char read_reg[] = {
 		EA8061_READ_TX_REG,
@@ -1151,7 +1188,11 @@ static ssize_t dump_register_show(struct device *dev,
 			dev_err(&lcd->ld->dev, "failed to write test on f0 command.\n");
 
 		dsim_write_hl_data(lcd, read_reg, ARRAY_SIZE(read_reg));
+<<<<<<< HEAD
 		ret = dsim_read_hl_data(lcd, EA8061_READ_RX_REG, len, dump);
+=======
+		dsim_read_hl_data(lcd, EA8061_READ_RX_REG, len, dump);
+>>>>>>> origin/3.18.14.x
 
 		if (dsim_write_hl_data(lcd, SEQ_TEST_KEY_OFF_F0, ARRAY_SIZE(SEQ_TEST_KEY_OFF_F0)) < 0)
 			dev_err(&lcd->ld->dev, "failed to write test off f0 command.\n");
@@ -1179,7 +1220,11 @@ static ssize_t dump_register_store(struct device *dev,
 	unsigned int reg, len, offset;
 	int ret;
 
+<<<<<<< HEAD
 	ret = sscanf(buf, "%x %d %d", &reg, &len, &offset);
+=======
+	ret = sscanf(buf, "%8x %8d %8d", &reg, &len, &offset);
+>>>>>>> origin/3.18.14.x
 
 	if (ret == 2)
 		offset = 0;

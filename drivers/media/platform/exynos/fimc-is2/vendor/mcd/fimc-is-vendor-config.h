@@ -37,6 +37,13 @@
 #include "fimc-is-vendor-config_j7pop.h"
 #elif defined(CONFIG_CAMERA_J7VE)
 #include "fimc-is-vendor-config_j7ve.h"
+<<<<<<< HEAD
+=======
+#elif defined(CONFIG_CAMERA_GTACTIVE2)
+#include "fimc-is-vendor-config_gtactive2.h"
+#elif defined(CONFIG_CAMERA_GRANDPPIRIS)
+#include "fimc-is-vendor-config_grandppiris.h"
+>>>>>>> origin/3.18.14.x
 #else
 #include "fimc-is-vendor-config_joshua.h"
 #endif

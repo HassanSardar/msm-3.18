@@ -962,7 +962,11 @@ dhd_force_disable_singlcore_scan(dhd_pub_t *dhd)
 }
 #endif /* FORCE_DISABLE_SINGLECORE_SCAN */
 
+<<<<<<< HEAD
 #if defined(ARGOS_CPU_SCHEDULER)
+=======
+#if defined(ARGOS_CPU_SCHEDULER) && defined(CONFIG_SCHED_HMP)
+>>>>>>> origin/3.18.14.x
 void
 set_irq_cpucore(unsigned int irq, cpumask_var_t default_cpu_mask,
 	cpumask_var_t affinity_cpu_mask)

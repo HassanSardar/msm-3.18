@@ -58,7 +58,11 @@ struct lcd_info {
 
 	/* temporary sysfs to panel parameter tuning */
 	unsigned int			write_disable;
+<<<<<<< HEAD
 	unsigned int			tp_mode;
+=======
+	int			tp_mode;
+>>>>>>> origin/3.18.14.x
 };
 
 
@@ -257,7 +261,11 @@ write_exit:
 	return ret;
 }
 
+<<<<<<< HEAD
 static int hx8279d_read_id(struct lcd_info *lcd)
+=======
+static int hx8279d_get_id(struct lcd_info *lcd)
+>>>>>>> origin/3.18.14.x
 {
 	int i = 0;
 	struct panel_private *priv = &lcd->dsim->priv;
@@ -282,6 +290,44 @@ read_exit:
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+
+static int hx8279d_read_id(struct lcd_info *lcd)
+{
+	int i = 0, ret = 0;
+	struct panel_private *priv = &lcd->dsim->priv;
+	char buf = 0;
+
+	dev_info(&lcd->ld->dev, "MDD : %s was called\n", __func__);
+
+	if (lcdtype == 0) {
+		priv->lcdConnected = PANEL_DISCONNEDTED;
+		goto read_exit;
+	}
+
+	priv->lcdConnected = PANEL_CONNECTED;
+
+	ret = dsim_read_hl_data(lcd, HX8279D_ID_REG, 1, &lcd->id[0]);
+	ret = dsim_read_hl_data(lcd, HX8279D_ID_REG + 1, 1, &lcd->id[1]);
+	ret = dsim_read_hl_data(lcd, HX8279D_ID_REG + 2, 1, &lcd->id[2]);
+	ret = dsim_read_hl_data(lcd, HX8279D_DUAL_REG, 1, &buf);
+
+	if (ret <= 0)
+		priv->lcdConnected = PANEL_DISCONNEDTED;
+
+	lcd->id[2] = lcd->id[2] + buf;
+
+	dev_info(&lcd->ld->dev, "READ ID : ");
+	for (i = 0; i < 3; i++)
+		dev_info(&lcd->ld->dev, "%02x, ", lcd->id[i]);
+	dev_info(&lcd->ld->dev, "\n");
+
+read_exit:
+	return 0;
+}
+
+>>>>>>> origin/3.18.14.x
 static int hx8279d_displayon(struct lcd_info *lcd)
 {
 	int ret = 0;
@@ -365,6 +411,17 @@ static int hx8279d_init(struct lcd_info *lcd)
 		goto init_err;
 	}
 
+<<<<<<< HEAD
+=======
+	ret = dsim_write_hl_data(lcd, SEQ_TABLE_0, ARRAY_SIZE(SEQ_TABLE_0));
+	if (ret < 0) {
+		dev_err(&lcd->ld->dev, "%s: failed to write CMD : SEQ_TABLE_5\n", __func__);
+		goto init_err;
+	}
+
+	hx8279d_read_id(lcd);
+
+>>>>>>> origin/3.18.14.x
 	if (lcdtype == BOE_PANEL_ID) {
 		dev_info(&lcd->ld->dev, "%s: BOE PANEL. [0x%x]\n", __func__, lcdtype);
 		ret = dsi_write_table(lcd, SEQ_CMD_TABLE, ARRAY_SIZE(SEQ_CMD_TABLE));
@@ -444,7 +501,11 @@ static int hx8279d_probe(struct dsim_device *dsim)
 	if (ret)
 		dev_err(&lcd->ld->dev, "%s: %d: of_property_read_u32_duty_outdoor\n", __func__, __LINE__);
 
+<<<<<<< HEAD
 	hx8279d_read_id(lcd);
+=======
+	hx8279d_get_id(lcd);
+>>>>>>> origin/3.18.14.x
 
 	return ret;
 }
@@ -476,7 +537,11 @@ static ssize_t dump_register_show(struct device *dev,
 	struct lcd_info *lcd = dev_get_drvdata(dev);
 	char *pos = buf;
 	u8 reg, len, table;
+<<<<<<< HEAD
 	int ret, i;
+=======
+	int i;
+>>>>>>> origin/3.18.14.x
 	u8 *dump = NULL;
 
 	reg = lcd->dump_info[0];
@@ -490,9 +555,15 @@ static ssize_t dump_register_show(struct device *dev,
 
 	if (lcd->state == PANEL_STATE_RESUMED) {
 		if (table)
+<<<<<<< HEAD
 			ret = dsim_read_hl_data_offset(lcd, reg, len, dump, table);
 		else
 			ret = dsim_read_hl_data(lcd, reg, len, dump);
+=======
+			dsim_read_hl_data_offset(lcd, reg, len, dump, table);
+		else
+			dsim_read_hl_data(lcd, reg, len, dump);
+>>>>>>> origin/3.18.14.x
 	}
 
 	pos += sprintf(pos, "+ [%02X]\n", reg);
@@ -517,7 +588,11 @@ static ssize_t dump_register_store(struct device *dev,
 	unsigned int reg, len, offset;
 	int ret;
 
+<<<<<<< HEAD
 	ret = sscanf(buf, "%x %d %d", &reg, &len, &offset);
+=======
+	ret = sscanf(buf, "%8x %8d %8d", &reg, &len, &offset);
+>>>>>>> origin/3.18.14.x
 
 	if (ret == 2)
 		offset = 0;
@@ -545,11 +620,18 @@ static ssize_t porch_change_store(struct device *dev,
 	struct dsim_device *dsim = lcd->dsim;
 	unsigned int hfp, hbp, hsa, vfp, vbp, vsa;
 	unsigned long vclk;
+<<<<<<< HEAD
 	int ret;
 	struct decon_device *decon = NULL;
 	decon = (struct decon_device *)dsim->decon;
 
 	ret = sscanf(buf, "%lu %d %d %d %d %d %d", &vclk, &hbp, &hfp, &hsa, &vbp, &vfp, &vsa);
+=======
+	struct decon_device *decon = NULL;
+	decon = (struct decon_device *)dsim->decon;
+
+	sscanf(buf, "%8lu %8d %8d %8d %8d %8d %8d", &vclk, &hbp, &hfp, &hsa, &vbp, &vfp, &vsa);
+>>>>>>> origin/3.18.14.x
 
 	dev_info(dev, "%s: input: vclk:%lu hbp:%d hfp:%d hsa:%d vbp:%d vfp:%d vsa:%d\n",
 		__func__, vclk, hbp, hfp, hsa, vbp, vfp, vsa);
@@ -583,9 +665,14 @@ static ssize_t clk_change_store(struct device *dev,
 {
 	struct lcd_info *lcd = dev_get_drvdata(dev);
 	unsigned int p, m, s;
+<<<<<<< HEAD
 	int ret;
 
 	ret = sscanf(buf, "%d %d %d", &p, &m, &s);
+=======
+
+	sscanf(buf, "%8d %8d %8d", &p, &m, &s);
+>>>>>>> origin/3.18.14.x
 
 	dev_info(dev, "%s: p:%d m:%d s:%d\n", __func__, p, m, s);
 
@@ -600,10 +687,16 @@ static ssize_t tp_change_store(struct device *dev,
 	struct device_attribute *attr, const char *buf, size_t size)
 {
 	struct lcd_info *lcd = dev_get_drvdata(dev);
+<<<<<<< HEAD
 	unsigned int mode;
 	int ret;
 
 	ret = sscanf(buf, "%d", &mode);
+=======
+	int mode;
+
+	sscanf(buf, "%8d", &mode);
+>>>>>>> origin/3.18.14.x
 
 	if (mode < 0 || mode > 2)
 		mode = 0;
@@ -626,7 +719,11 @@ static ssize_t write_register_store(struct device *dev,
 
 	pos = (char *)buf;
 	while ((token = strsep(&pos, " ")) != NULL) {
+<<<<<<< HEAD
 		ret = sscanf(token, "%x", &data);
+=======
+		ret = sscanf(token, "%8x", &data);
+>>>>>>> origin/3.18.14.x
 		if (ret) {
 			seqbuf[count] = data;
 			count++;
@@ -766,10 +863,13 @@ static ssize_t temperature_show(struct device *dev,
 static ssize_t temperature_store(struct device *dev,
 	struct device_attribute *attr, const char *buf, size_t size)
 {
+<<<<<<< HEAD
 	int value, rc = 0;
 
 	rc = kstrtoint(buf, 10, &value);
 
+=======
+>>>>>>> origin/3.18.14.x
 	return size;
 }
 

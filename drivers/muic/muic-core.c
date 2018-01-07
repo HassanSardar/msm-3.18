@@ -32,6 +32,13 @@
 #include <linux/muic/muic_notifier.h>
 #endif /* CONFIG_MUIC_NOTIFIER */
 
+<<<<<<< HEAD
+=======
+#if defined(CONFIG_CCIC_NOTIFIER)
+#include <linux/ccic/ccic_notifier.h>
+#endif
+
+>>>>>>> origin/3.18.14.x
 #ifdef CONFIG_SWITCH
 static struct switch_dev switch_dock = {
 	.name = "dock",

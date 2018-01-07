@@ -24,6 +24,10 @@
 #include <linux/moduleparam.h>
 #include <linux/platform_device.h>
 #include <linux/of_gpio.h>
+<<<<<<< HEAD
+=======
+#include <asm/neon.h>
+>>>>>>> origin/3.18.14.x
 #include <media/v4l2-ctrls.h>
 #include <media/v4l2-device.h>
 #include <media/v4l2-subdev.h>
@@ -86,8 +90,18 @@ int sensor_module_init(struct v4l2_subdev *subdev, u32 val)
 		err("fimc_is_resource_get is fail");
 		goto p_err;
 	}
+<<<<<<< HEAD
 
 	ret = register_sensor_itf((void *)&sensor_peri->sensor_interface);
+=======
+#ifdef ENABLE_FPSIMD_FOR_USER
+	fpsimd_get();
+	ret = register_sensor_itf((void *)&sensor_peri->sensor_interface);
+	fpsimd_put();
+#else
+	ret = register_sensor_itf((void *)&sensor_peri->sensor_interface);
+#endif
+>>>>>>> origin/3.18.14.x
 	if (ret < 0) {
 		goto p_err;
 	}

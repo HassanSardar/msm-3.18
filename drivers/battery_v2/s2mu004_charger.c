@@ -240,6 +240,10 @@ static void s2mu004_enable_charger_switch(
 				s2mu004_analog_ivr_switch(charger, DISABLE);
 			}
 #endif
+<<<<<<< HEAD
+=======
+			mdelay(30);
+>>>>>>> origin/3.18.14.x
 			s2mu004_update_reg(charger->i2c, S2MU004_CHG_CTRL0, BUCK_MODE, REG_MODE_MASK);
 
 			/* async on */

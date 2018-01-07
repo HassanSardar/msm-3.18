@@ -224,6 +224,12 @@ void mdev_handle_ccic_detach(muic_data_t *pmuic)
 #if defined(CONFIG_MUIC_HV)
 	hv_do_detach(pmuic->phv);
 #endif
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_MUIC_USB_ID_CTR
+	gpio_direction_output(pmuic->usb_id_ctr, 0);
+#endif
+>>>>>>> origin/3.18.14.x
 	if (pdesc->ccic_evt_rprd) {
 		/* FIXME : pvendor
 		if (pvendor && pvendor->enable_chgdet)
@@ -578,6 +584,17 @@ static int mdev_handle_factory_jig(muic_data_t *pmuic, int rid, int vbus)
 		break;
 	case RID_523K:
 	case RID_619K:
+<<<<<<< HEAD
+=======
+/* 
+ * control USB_ID_CTR to get uart logs
+ * set USB_ID_CTR = 1, then MUIC adc value is 150k
+ * sm5705 muic need vbus or adc value for changing uart path
+ */
+#ifdef CONFIG_MUIC_USB_ID_CTR
+		gpio_direction_output(pmuic->usb_id_ctr, 1);
+#endif
+>>>>>>> origin/3.18.14.x
 		mdev_com_to(pmuic, MUIC_PATH_UART_AP);
 		break;
 	default:

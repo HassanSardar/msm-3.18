@@ -55,6 +55,26 @@ static struct fimc_is_sensor_cfg config_module_3l2[] = {
 	FIMC_IS_SENSOR_CFG(1008, 568, 120, 19, 6, CSI_DATA_LANES_4),
 };
 
+<<<<<<< HEAD
+=======
+static struct fimc_is_sensor_cfg config_module_3l2_setB[] = {
+	/* 4144x3106@30fps */
+	FIMC_IS_SENSOR_CFG(4144, 3106, 30, 24, 0, CSI_DATA_LANES_4),
+	/* 4144x2332@30fps */
+	FIMC_IS_SENSOR_CFG(4144, 2332, 30, 24, 1, CSI_DATA_LANES_4),
+	/* 2072x1552@15fps */
+	FIMC_IS_SENSOR_CFG(2072, 1552, 15, 24, 2, CSI_DATA_LANES_4),
+	/* 2072x1552@30fps */
+	FIMC_IS_SENSOR_CFG(2072, 1552, 30, 24, 3, CSI_DATA_LANES_4),
+	/* 2072x1166@60fps */
+	FIMC_IS_SENSOR_CFG(2072, 1166, 60, 24, 4, CSI_DATA_LANES_4),
+	/* 1008x754@120fps */
+	FIMC_IS_SENSOR_CFG(1008, 754, 120, 24, 5, CSI_DATA_LANES_4),
+	/* 1008x568@120fps */
+	FIMC_IS_SENSOR_CFG(1008, 568, 120, 24, 6, CSI_DATA_LANES_4),
+};
+
+>>>>>>> origin/3.18.14.x
 static struct fimc_is_vci vci_module_3l2[] = {
 	{
 		.pixelformat = V4L2_PIX_FMT_SBGGR10,
@@ -256,6 +276,11 @@ int sensor_module_3l2_probe(struct platform_device *pdev)
 	struct sensor_open_extended *ext;
 	struct exynos_platform_fimc_is_module *pdata;
 	struct device *dev;
+<<<<<<< HEAD
+=======
+	struct device_node *dnode;
+	char const *setfile;
+>>>>>>> origin/3.18.14.x
 
 	BUG_ON(!fimc_is_dev);
 
@@ -266,6 +291,10 @@ int sensor_module_3l2_probe(struct platform_device *pdev)
 	}
 
 	dev = &pdev->dev;
+<<<<<<< HEAD
+=======
+	dnode = dev->of_node;
+>>>>>>> origin/3.18.14.x
 
 	fimc_is_sensor_module_parse_dt(pdev, sensor_module_3l2_power_setpin);
 
@@ -307,8 +336,24 @@ int sensor_module_3l2_probe(struct platform_device *pdev)
 	module->sensor_maker = "SLSI";
 	module->sensor_name = "S5K3L2";
 	module->setfile_name = "setfile_3l2.bin";
+<<<<<<< HEAD
 	module->cfgs = ARRAY_SIZE(config_module_3l2);
 	module->cfg = config_module_3l2;
+=======
+	if (of_property_read_string(dnode, "setfile", &setfile)) {
+		probe_info("setfile index read fail, take default setfile!!");
+		setfile = "default";
+	}
+	if (strcmp(setfile, "setB") == 0) {
+		probe_info("%s setfile_B\n", __func__);
+		module->cfgs = ARRAY_SIZE(config_module_3l2_setB);
+		module->cfg = config_module_3l2_setB;
+	} else {
+		probe_info("%s setfile_A\n", __func__);
+		module->cfgs = ARRAY_SIZE(config_module_3l2);
+		module->cfg = config_module_3l2;
+	}
+>>>>>>> origin/3.18.14.x
 	module->ops = NULL;
 	/* Sensor peri */
 	module->private_data = kzalloc(sizeof(struct fimc_is_device_sensor_peri), GFP_KERNEL);

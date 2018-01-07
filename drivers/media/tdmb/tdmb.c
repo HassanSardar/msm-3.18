@@ -147,11 +147,31 @@ static void tdmb_set_config_poweron(void)
 			__func__, dt_pdata->tdmb_en, rc);
 		return;
 	}
+<<<<<<< HEAD
 	if (dt_pdata->tdmb_lna_en > 0) {
 		rc = gpio_request(dt_pdata->tdmb_en, "gpio_tdmb_lna_en");
 		if (rc < 0) {
 			DPRINTK("%s: gpio %d request failed (%d)\n",
 				__func__, dt_pdata->tdmb_lna_en, rc);
+=======
+	if (dt_pdata->tdmb_1p2_en > 0) {
+		rc = gpio_request(dt_pdata->tdmb_1p2_en, "gpio_tdmb_1p2_en");
+		if (rc < 0) {
+			DPRINTK("%s: gpio %d request failed (%d)\n",
+				__func__, dt_pdata->tdmb_1p2_en, rc);
+			gpio_free(dt_pdata->tdmb_en);
+			return;
+		}
+	}
+	if (dt_pdata->tdmb_lna_en > 0) {
+		rc = gpio_request(dt_pdata->tdmb_lna_en, "gpio_tdmb_lna_en");
+		if (rc < 0) {
+			DPRINTK("%s: gpio %d request failed (%d)\n",
+				__func__, dt_pdata->tdmb_lna_en, rc);
+			gpio_free(dt_pdata->tdmb_en);
+			if (dt_pdata->tdmb_1p2_en > 0)
+				gpio_free(dt_pdata->tdmb_1p2_en);			
+>>>>>>> origin/3.18.14.x
 			return;
 		}
 	}
@@ -161,6 +181,11 @@ static void tdmb_set_config_poweron(void)
 			DPRINTK("%s: gpio %d request failed (%d)\n",
 				__func__, dt_pdata->tdmb_irq, rc);
 			gpio_free(dt_pdata->tdmb_en);
+<<<<<<< HEAD
+=======
+			if (dt_pdata->tdmb_1p2_en > 0)
+				gpio_free(dt_pdata->tdmb_1p2_en);
+>>>>>>> origin/3.18.14.x
 			if (dt_pdata->tdmb_lna_en > 0)
 				gpio_free(dt_pdata->tdmb_lna_en);
 			return;
@@ -169,6 +194,11 @@ static void tdmb_set_config_poweron(void)
 	if (pinctrl_select_state(dt_pdata->tdmb_pinctrl, dt_pdata->pwr_on)) {
 		DPRINTK("%s: Failed to configure tdmb_on\n", __func__);
 		gpio_free(dt_pdata->tdmb_en);
+<<<<<<< HEAD
+=======
+		if (dt_pdata->tdmb_1p2_en > 0)
+			gpio_free(dt_pdata->tdmb_1p2_en);
+>>>>>>> origin/3.18.14.x
 		if (dt_pdata->tdmb_lna_en > 0)
 			gpio_free(dt_pdata->tdmb_lna_en);
 		if (dt_pdata->tdmb_use_irq)
@@ -183,6 +213,11 @@ static void tdmb_set_config_poweroff(void)
 		DPRINTK("%s: Failed to configure tdmb_off\n", __func__);
 
 	gpio_free(dt_pdata->tdmb_en);
+<<<<<<< HEAD
+=======
+	if (dt_pdata->tdmb_1p2_en > 0)
+		gpio_free(dt_pdata->tdmb_1p2_en);
+>>>>>>> origin/3.18.14.x
 	if (dt_pdata->tdmb_lna_en > 0)
 		gpio_free(dt_pdata->tdmb_lna_en);
 	if (dt_pdata->tdmb_use_irq)
@@ -198,10 +233,25 @@ static void tdmb_gpio_on(void)
 	tdmb_set_config_poweron();
 
 	gpio_direction_output(dt_pdata->tdmb_en, 0);
+<<<<<<< HEAD
 	if (dt_pdata->tdmb_lna_en > 0)
 		gpio_direction_output(dt_pdata->tdmb_lna_en, 1);
 	usleep_range(1000, 1000);
 	gpio_direction_output(dt_pdata->tdmb_en, 1);
+=======
+
+	usleep_range(1000, 1000);
+
+	if (dt_pdata->tdmb_1p2_en > 0) {
+		gpio_direction_output(dt_pdata->tdmb_1p2_en, 1);
+		usleep_range(200, 200);
+	}
+
+	gpio_direction_output(dt_pdata->tdmb_en, 1);
+	if (dt_pdata->tdmb_lna_en > 0)
+		gpio_direction_output(dt_pdata->tdmb_lna_en, 1);
+
+>>>>>>> origin/3.18.14.x
 	usleep_range(25000, 25000);
 
 	if (dt_pdata->tdmb_use_rst) {
@@ -219,6 +269,11 @@ static void tdmb_gpio_off(void)
 	tdmb_vreg_onoff(false);
 #endif
 	gpio_direction_output(dt_pdata->tdmb_en, 0);
+<<<<<<< HEAD
+=======
+	if (dt_pdata->tdmb_1p2_en > 0)
+		gpio_direction_output(dt_pdata->tdmb_1p2_en, 0);
+>>>>>>> origin/3.18.14.x
 	if (dt_pdata->tdmb_lna_en > 0)
 		gpio_direction_output(dt_pdata->tdmb_lna_en, 0);
 
@@ -1001,6 +1056,13 @@ static struct tdmb_dt_platform_data *get_tdmb_dt_pdata(struct device *dev)
 		DPRINTK("Failed to get is valid tdmb_en\n");
 		goto alloc_err;
 	}
+<<<<<<< HEAD
+=======
+	pdata->tdmb_1p2_en = of_get_named_gpio(dev->of_node, "tdmb_1p2_en", 0);
+	if (!gpio_is_valid(pdata->tdmb_1p2_en)) {
+		DPRINTK("Failed to get is valid tdmb_1p2_en\n");
+	}
+>>>>>>> origin/3.18.14.x
 	pdata->tdmb_lna_en = of_get_named_gpio(dev->of_node, "tdmb_lna_en", 0);
 	if (!gpio_is_valid(pdata->tdmb_lna_en)) {
 		DPRINTK("Failed to get is valid tdmb_lna_en\n");

@@ -135,6 +135,33 @@ static int dsim_read_hl_data_offset(struct lcd_info *lcd, u8 addr, u32 size, u8 
 	return ret;
 }
 
+<<<<<<< HEAD
+=======
+static int ea8061s_read_id(struct lcd_info *lcd)
+{
+	struct panel_private *priv = &lcd->dsim->priv;
+	int ret = 0;
+	int i = 0;
+
+	priv->lcdConnected = PANEL_CONNECTED;
+
+	ret = dsim_read_hl_data(lcd, ID_REG, ID_LEN, lcd->id);
+	if (ret < 0) {
+		priv->lcdConnected = PANEL_DISCONNEDTED;
+		dev_err(&lcd->ld->dev, "%s: fail\n", __func__);
+		goto exit;
+	}
+
+	dev_info(&lcd->ld->dev, "READ ID : ");
+	for (i = 0; i < ID_LEN; i++)
+		dev_info(&lcd->ld->dev, "%02x, ", lcd->id[i]);
+	dev_info(&lcd->ld->dev, "\n");
+
+exit:
+	return ret;
+}
+
+>>>>>>> origin/3.18.14.x
 #ifdef CONFIG_PANEL_AID_DIMMING
 static unsigned int get_actual_br_value(struct lcd_info *lcd, int index)
 {
@@ -239,9 +266,13 @@ static void dsim_panel_set_elvss(struct lcd_info *lcd)
 {
 	u8 *elvss = NULL;
 	u8 elvss_val[ELVSS_READ_SIZE + 1] = { 0xB6, };
+<<<<<<< HEAD
 	int real_br = 0;
 
 	real_br = get_actual_br_value(lcd, lcd->br_index);
+=======
+
+>>>>>>> origin/3.18.14.x
 	elvss = get_elvss_from_index(lcd, lcd->br_index, lcd->acl_enable);
 
 	if (elvss == NULL) {
@@ -274,9 +305,12 @@ static void dsim_panel_set_elvss(struct lcd_info *lcd)
 static int dsim_panel_set_acl(struct lcd_info *lcd, int force)
 {
 	int ret = 0, level = ACL_STATUS_15P;
+<<<<<<< HEAD
 	int brightness = 0;
 
 	brightness = lcd->bd->props.brightness;
+=======
+>>>>>>> origin/3.18.14.x
 
 	if (lcd->siop_enable || LEVEL_IS_HBM(lcd->brightness))
 		goto acl_update;
@@ -831,6 +865,11 @@ static int ea8061s_init(struct lcd_info *lcd)
 		goto init_exit;
 	}
 
+<<<<<<< HEAD
+=======
+	ea8061s_read_id(lcd);
+
+>>>>>>> origin/3.18.14.x
 	/* common setting */
 	ret = dsim_write_hl_data(lcd, SEQ_HSYNC_GEN_ON, ARRAY_SIZE(SEQ_HSYNC_GEN_ON));
 	if (ret < 0) {
@@ -1223,7 +1262,11 @@ static ssize_t dump_register_show(struct device *dev,
 	struct lcd_info *lcd = dev_get_drvdata(dev);
 	char *pos = buf;
 	u8 reg, len, offset;
+<<<<<<< HEAD
 	int ret, i;
+=======
+	int i;
+>>>>>>> origin/3.18.14.x
 	u8 *dump = NULL;
 
 	reg = lcd->dump_info[0];
@@ -1242,9 +1285,15 @@ static ssize_t dump_register_show(struct device *dev,
 			dev_err(&lcd->ld->dev, "failed to write test on fc command.\n");
 
 		if (offset)
+<<<<<<< HEAD
 			ret = dsim_read_hl_data_offset(lcd, reg, len, dump, offset);
 		else
 			ret = dsim_read_hl_data(lcd, reg, len, dump);
+=======
+			dsim_read_hl_data_offset(lcd, reg, len, dump, offset);
+		else
+			dsim_read_hl_data(lcd, reg, len, dump);
+>>>>>>> origin/3.18.14.x
 
 		if (dsim_write_hl_data(lcd, SEQ_TEST_KEY_OFF_FC, ARRAY_SIZE(SEQ_TEST_KEY_OFF_FC)) < 0)
 			dev_err(&lcd->ld->dev, "failed to write test off fc command.\n");
@@ -1274,7 +1323,11 @@ static ssize_t dump_register_store(struct device *dev,
 	unsigned int reg, len, offset;
 	int ret;
 
+<<<<<<< HEAD
 	ret = sscanf(buf, "%x %d %d", &reg, &len, &offset);
+=======
+	ret = sscanf(buf, "%8x %8d %8d", &reg, &len, &offset);
+>>>>>>> origin/3.18.14.x
 
 	if (ret == 2)
 		offset = 0;

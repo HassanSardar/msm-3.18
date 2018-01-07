@@ -180,8 +180,17 @@ struct mdnie_info {
 	int white_balance_r;
 	int white_balance_g;
 	int white_balance_b;
+<<<<<<< HEAD
 	unsigned int disable_trans_dimming;
 	unsigned int night_mode_level;
+=======
+	int white_ldu_r;
+	int white_ldu_g;
+	int white_ldu_b;
+	unsigned int disable_trans_dimming;
+	unsigned int night_mode_level;
+	unsigned int ldu;
+>>>>>>> origin/3.18.14.x
 
 	struct mdnie_table table_buffer;
 	mdnie_t sequence_buffer[256];
@@ -195,6 +204,7 @@ extern uintptr_t mdnie_request_table(char *path, struct mdnie_table *s);
 extern ssize_t attr_store_for_each(struct class *cls, const char *name, const char *buf, size_t size);
 extern struct class *get_mdnie_class(void);
 
+<<<<<<< HEAD
 #ifdef CONFIG_LCD_DOZE_MODE_MDNIE
 extern struct mdnie_info *doze_mdnie;
 extern int mdnie_enable(struct mdnie_info *mdnie);
@@ -202,4 +212,6 @@ extern int mdnie_disable(struct mdnie_info *mdnie);
 extern void mdnie_update(struct mdnie_info *mdnie);
 #endif
 
+=======
+>>>>>>> origin/3.18.14.x
 #endif /* __MDNIE_H__ */

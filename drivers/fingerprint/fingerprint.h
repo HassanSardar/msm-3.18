@@ -31,12 +31,27 @@ enum {
 	SENSOR_VIPER,
 	SENSOR_RAPTOR,
 	SENSOR_EGIS,
+<<<<<<< HEAD
 };
 
 #define SENSOR_STATUS_SIZE 5
 static char sensor_status[SENSOR_STATUS_SIZE][8] ={"unknown", "failed",
 	"viper", "raptor", "egis"};
 
+=======
+	SENSOR_VIPER_WOG,
+};
+
+#define SENSOR_STATUS_SIZE 6
+static char sensor_status[SENSOR_STATUS_SIZE][10] ={"unknown", "failed",
+	"viper", "raptor", "egis", "viper_wog"};
+
+/* For Finger Detect Mode */
+enum {
+	DETECT_NORMAL = 0,
+	DETECT_ADM,			// Always on Detect Mode
+};
+>>>>>>> origin/3.18.14.x
 
 #ifdef CONFIG_SENSORS_FINGERPRINT_DUALIZATION
 extern int FP_CHECK; /* extern variable */
@@ -47,6 +62,19 @@ extern int FP_CHECK; /* extern variable */
 #define MC_FC_FP_PM_RESUME ((uint32_t)(0x83000022))
 #define MC_FC_FP_CS_SET ((uint32_t)(0x83000027))
 #define MC_FC_FP_PM_SUSPEND_CS_HIGH ((uint32_t)(0x83000028))
+<<<<<<< HEAD
+=======
+#define MC_FC_FP_PM_SUSPEND_RETAIN ((uint32_t)(0x83000026))
+
+/* using for awake the samsung FP daemon */
+extern bool fp_lockscreen_mode;
+#ifdef CONFIG_SENSORS_FP_LOCKSCREEN_MODE
+/* input/Keyboard/gpio_keys.c */
+extern bool wakeup_by_key(void);
+/* export variable for signaling */
+EXPORT_SYMBOL(fp_lockscreen_mode);
+#endif
+>>>>>>> origin/3.18.14.x
 
 extern int fpsensor_goto_suspend;
 EXPORT_SYMBOL(fpsensor_goto_suspend);

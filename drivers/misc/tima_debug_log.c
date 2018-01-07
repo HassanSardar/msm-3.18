@@ -16,9 +16,17 @@
 
 #ifdef CONFIG_TIMA_RKP
 #include <linux/rkp_entry.h>
+<<<<<<< HEAD
 #ifdef CONFIG_KNOX_KAP
 extern int boot_mode_security;
 #endif
+=======
+/*
+#ifdef CONFIG_KNOX_KAP
+extern int boot_mode_security;
+#endif
+*/
+>>>>>>> origin/3.18.14.x
 #endif
 
 #define	SECURE_LOG	0
@@ -167,9 +175,17 @@ static int __init sec_tima_log_setup(char *str)
 	pr_info("tima :%s, base:%lx, size:%x \n", __func__,base, size);
 	
 	tima_debug_logging_start = base;
+<<<<<<< HEAD
 #ifdef CONFIG_KNOX_KAP
 	if (!boot_mode_security) goto out;
 #endif	
+=======
+	/*
+#ifdef CONFIG_KNOX_KAP
+	if (!boot_mode_security) goto out;
+#endif	
+	*/
+>>>>>>> origin/3.18.14.x
 	if( !tima_setup_rkp_mem())  goto out; 
 
 	return 1;

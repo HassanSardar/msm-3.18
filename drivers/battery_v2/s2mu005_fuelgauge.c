@@ -162,7 +162,11 @@ static void WA_0_issue_at_init(struct s2mu005_fuelgauge_data *fuelgauge)
 	s2mu005_write_reg_byte(fuelgauge->i2c, 0x27, temp);
 
 	s2mu005_read_reg_byte(fuelgauge->i2c, 0x26, &temp_REG26);
+<<<<<<< HEAD
 	s2mu005_write_reg_byte(fuelgauge->i2c, 0x26, 0xFF);
+=======
+	s2mu005_write_reg_byte(fuelgauge->i2c, 0x26, 0xF7);
+>>>>>>> origin/3.18.14.x
 
 	/* avgvbat factor value set to 0xFF  */
 	s2mu005_read_reg_byte(fuelgauge->i2c, 0x40, &v_40);
@@ -229,7 +233,11 @@ static void WA_0_issue_at_init(struct s2mu005_fuelgauge_data *fuelgauge)
 
 	/* restore current register */
 	s2mu005_write_reg_byte(fuelgauge->i2c, 0x27, temp_REG27);
+<<<<<<< HEAD
 	s2mu005_write_reg_byte(fuelgauge->i2c, 0x26, temp_REG26);
+=======
+	s2mu005_write_reg_byte(fuelgauge->i2c, 0x26, 0xF6);
+>>>>>>> origin/3.18.14.x
 
 	/* recovery 0x52 and 0x53 */
 	s2mu005_read_reg_byte(fuelgauge->i2c, 0x53, &temp1);
@@ -302,6 +310,16 @@ static void WA_0_issue_at_init1(struct s2mu005_fuelgauge_data *fuelgauge, int ta
 	/* Step 1: [Surge test]  get UI voltage (0.1mV)*/
 	UI_volt = target_ocv * 10;
 
+<<<<<<< HEAD
+=======
+	if(fuelgauge->wa_flag == true)
+	{
+		pr_info("%s: %s is overlapped\n", __func__, __func__);
+		return;
+	}
+	fuelgauge->wa_flag = true;
+
+>>>>>>> origin/3.18.14.x
 	/* avgvbat factor value set to 0xFF  */
 	s2mu005_read_reg_byte(fuelgauge->i2c, 0x40, &v_40);
 	s2mu005_write_reg_byte(fuelgauge->i2c, 0x40, 0xFF);
@@ -313,7 +331,11 @@ static void WA_0_issue_at_init1(struct s2mu005_fuelgauge_data *fuelgauge, int ta
 	s2mu005_write_reg_byte(fuelgauge->i2c, 0x27, temp);
 
 	s2mu005_read_reg_byte(fuelgauge->i2c, 0x26, &temp_REG26);
+<<<<<<< HEAD
 	s2mu005_write_reg_byte(fuelgauge->i2c, 0x26, 0xFF);
+=======
+	s2mu005_write_reg_byte(fuelgauge->i2c, 0x26, 0xF7);
+>>>>>>> origin/3.18.14.x
 
 	s2mu005_write_reg_byte(fuelgauge->i2c, 0x1E, 0x0F);
 	msleep(50);
@@ -329,7 +351,11 @@ static void WA_0_issue_at_init1(struct s2mu005_fuelgauge_data *fuelgauge, int ta
 	/* Step 4: [Surge test] */
 	s2mu005_read_reg_byte(fuelgauge->i2c, 0x53, &v_53);
 	s2mu005_read_reg_byte(fuelgauge->i2c, 0x52, &v_52);
+<<<<<<< HEAD
 	pr_info("%s: v_53(0x%x), v_52(0x%x)\n", __func__, v_53, v_52);
+=======
+	pr_info("%s: Read v_53(0x%x), v_52(0x%x)\n", __func__, v_53, v_52);
+>>>>>>> origin/3.18.14.x
 
 	a = (v_53 & 0x0F) << 8;
 	a += v_52;
@@ -377,7 +403,11 @@ static void WA_0_issue_at_init1(struct s2mu005_fuelgauge_data *fuelgauge, int ta
 
 	/* restore current register */
 	s2mu005_write_reg_byte(fuelgauge->i2c, 0x27, temp_REG27);
+<<<<<<< HEAD
 	s2mu005_write_reg_byte(fuelgauge->i2c, 0x26, temp_REG26);
+=======
+	s2mu005_write_reg_byte(fuelgauge->i2c, 0x26, 0xF6);
+>>>>>>> origin/3.18.14.x
 
 	pr_info("%s: S2MU005 VBAT : %d\n", __func__, s2mu005_get_vbat(fuelgauge) * 10);
 
@@ -388,8 +418,19 @@ static void WA_0_issue_at_init1(struct s2mu005_fuelgauge_data *fuelgauge, int ta
 	s2mu005_write_reg_byte(fuelgauge->i2c, 0x53, temp1);
 	s2mu005_write_reg_byte(fuelgauge->i2c, 0x52, v_52);
 
+<<<<<<< HEAD
 	/* restore monout avgvbat factor value */
 	s2mu005_write_reg_byte(fuelgauge->i2c, 0x40, v_40);
+=======
+	s2mu005_read_reg_byte(fuelgauge->i2c, 0x53, &v_53);
+	s2mu005_read_reg_byte(fuelgauge->i2c, 0x52, &v_52);
+	pr_info("%s: Restored v_53(0x%x), v_52(0x%x)\n", __func__, v_53, v_52);
+
+	/* restore monout avgvbat factor value */
+	s2mu005_write_reg_byte(fuelgauge->i2c, 0x40, v_40);
+
+	fuelgauge->wa_flag = false;
+>>>>>>> origin/3.18.14.x
 }
 
 
@@ -493,7 +534,11 @@ static void s2mu005_restart_gauging(struct s2mu005_fuelgauge_data *fuelgauge)
 	s2mu005_write_reg_byte(fuelgauge->i2c, 0x27, temp);
 
 	s2mu005_read_reg_byte(fuelgauge->i2c, 0x26, &temp_REG26);
+<<<<<<< HEAD
 	s2mu005_write_reg_byte(fuelgauge->i2c, 0x26, 0xFF);
+=======
+	s2mu005_write_reg_byte(fuelgauge->i2c, 0x26, 0xF7);
+>>>>>>> origin/3.18.14.x
 
 	/* avgvbat factor value set to 0xFF  */
 	s2mu005_read_reg_byte(fuelgauge->i2c, 0x40, &v_40);
@@ -506,7 +551,11 @@ static void s2mu005_restart_gauging(struct s2mu005_fuelgauge_data *fuelgauge)
 	msleep(300);
 
 	s2mu005_write_reg_byte(fuelgauge->i2c, 0x27, temp_REG27);
+<<<<<<< HEAD
 	s2mu005_write_reg_byte(fuelgauge->i2c, 0x26, temp_REG26);
+=======
+	s2mu005_write_reg_byte(fuelgauge->i2c, 0x26, 0xF6);
+>>>>>>> origin/3.18.14.x
 
 	s2mu005_read_reg_byte(fuelgauge->i2c, 0x27, &temp);
 	pr_info("%s: 0x27 : %02x \n", __func__,temp);

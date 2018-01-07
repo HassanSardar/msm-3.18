@@ -17,6 +17,10 @@
 #include "../dsim.h"
 #include "dsim_panel.h"
 #include "../decon.h"
+<<<<<<< HEAD
+=======
+#include "../decon_notify.h"
+>>>>>>> origin/3.18.14.x
 
 #include "s6e3aa2_ams474kf09_param.h"
 
@@ -95,6 +99,10 @@ struct lcd_info {
 
 	struct lcd_device		*ld;
 	struct backlight_device		*bd;
+<<<<<<< HEAD
+=======
+	struct device			svc_dev;
+>>>>>>> origin/3.18.14.x
 	struct dynamic_aid_param_t	daid;
 
 	unsigned char			elvss_table[IBRIGHTNESS_HBM_MAX][TEMP_MAX][ELVSS_CMD_CNT];
@@ -151,6 +159,7 @@ static int pinctrl_enable(struct lcd_info *lcd, int enable)
 	return ret;
 }
 
+<<<<<<< HEAD
 static int fb_notifier_callback(struct notifier_block *self,
 			unsigned long event, void *data)
 {
@@ -183,6 +192,8 @@ static int fb_notifier_callback(struct notifier_block *self,
 	return 0;
 }
 
+=======
+>>>>>>> origin/3.18.14.x
 static int dsim_write_hl_data(struct lcd_info *lcd, const u8 *cmd, u32 cmdSize)
 {
 	int ret;
@@ -1011,7 +1022,13 @@ static int s6e3aa2_exit(struct lcd_info *lcd)
 	/* 5. Wait 150ms */
 	msleep(150);
 
+<<<<<<< HEAD
 	lcd->current_alpm = ALPM_OFF;
+=======
+#ifdef CONFIG_LCD_DOZE_MODE
+	lcd->current_alpm = ALPM_OFF;
+#endif
+>>>>>>> origin/3.18.14.x
 exit:
 	return ret;
 }
@@ -1098,14 +1115,84 @@ exit:
 	return ret;
 }
 
+<<<<<<< HEAD
+=======
+static int fb_notifier_callback(struct notifier_block *self,
+			unsigned long event, void *data)
+{
+	struct fb_event *evdata = data;
+	struct lcd_info *lcd = NULL;
+	int fb_blank;
+
+	switch (event) {
+	case FB_EVENT_BLANK:
+	case FB_EARLY_EVENT_BLANK:
+		break;
+	default:
+		return NOTIFY_DONE;
+	}
+
+	lcd = container_of(self, struct lcd_info, fb_notifier);
+
+	fb_blank = *(int *)evdata->data;
+
+	dev_info(&lcd->ld->dev, "%s: %02lx, %d\n", __func__, event, fb_blank);
+
+	if (evdata->info->node != 0)
+		return 0;
+
+	if (event == FB_EARLY_EVENT_BLANK && fb_blank == FB_BLANK_POWERDOWN)
+		pinctrl_enable(lcd, 0);
+	else if (event == FB_EVENT_BLANK && fb_blank == FB_BLANK_UNBLANK)
+		pinctrl_enable(lcd, 1);
+
+	return 0;
+}
+
+static int s6e3aa2_register_notifier(struct lcd_info *lcd)
+{
+	int ret = 0;
+	struct device_node *np;
+	struct platform_device *pdev;
+
+	np = of_find_node_with_property(NULL, "lcd_info");
+	np = of_parse_phandle(np, "lcd_info", 0);
+	pdev = of_platform_device_create(np, NULL, lcd->dsim->dev);
+
+	lcd->pins = devm_pinctrl_get(&pdev->dev);
+	if (IS_ERR(lcd->pins)) {
+		dev_info(&lcd->ld->dev, "%s: devm_pinctrl_get\n", __func__);
+		goto exit;
+	}
+
+	lcd->pins_state[0] = pinctrl_lookup_state(lcd->pins, "off");
+	lcd->pins_state[1] = pinctrl_lookup_state(lcd->pins, "on");
+	if (IS_ERR_OR_NULL(lcd->pins_state[0]) || IS_ERR_OR_NULL(lcd->pins_state[1])) {
+		dev_info(&lcd->ld->dev, "%s: pinctrl_lookup_state\n", __func__);
+		goto exit;
+	}
+
+	lcd->fb_notifier.notifier_call = fb_notifier_callback;
+	decon_register_notifier(&lcd->fb_notifier);
+
+	dev_info(&lcd->ld->dev, "%s: done\n", __func__);
+
+exit:
+	return ret;
+}
+
+>>>>>>> origin/3.18.14.x
 static int s6e3aa2_probe(struct dsim_device *dsim)
 {
 	int ret = 0;
 	struct panel_private *priv = &dsim->priv;
 	struct lcd_info *lcd = dsim->priv.par;
 	unsigned char mtp[LDI_LEN_MTP] = {0, };
+<<<<<<< HEAD
 	struct device_node *np;
 	struct platform_device *pdev;
+=======
+>>>>>>> origin/3.18.14.x
 
 	dev_info(&lcd->ld->dev, "%s: was called\n", __func__);
 
@@ -1146,6 +1233,7 @@ static int s6e3aa2_probe(struct dsim_device *dsim)
 
 	dsim_panel_set_brightness(lcd, 1);
 
+<<<<<<< HEAD
 	np = of_find_node_with_property(NULL, "lcd_info");
 	np = of_parse_phandle(np, "lcd_info", 0);
 	pdev = of_platform_device_create(np, NULL, dsim->dev);
@@ -1166,6 +1254,8 @@ static int s6e3aa2_probe(struct dsim_device *dsim)
 	lcd->fb_notifier.notifier_call = fb_notifier_callback;
 	fb_register_client(&lcd->fb_notifier);
 
+=======
+>>>>>>> origin/3.18.14.x
 	dev_info(&lcd->ld->dev, "%s: done\n", __func__);
 exit:
 	return ret;
@@ -1614,7 +1704,11 @@ static ssize_t dump_register_store(struct device *dev,
 	unsigned int reg, len, offset;
 	int ret;
 
+<<<<<<< HEAD
 	ret = sscanf(buf, "%x %d %d", &reg, &len, &offset);
+=======
+	ret = sscanf(buf, "%8x %8d %8d", &reg, &len, &offset);
+>>>>>>> origin/3.18.14.x
 
 	if (ret == 2)
 		offset = 0;
@@ -1735,7 +1829,14 @@ static ssize_t alpm_doze_store(struct device *dev,
 	struct dsim_device *dsim = lcd->dsim;
 	struct decon_device *decon = dsim->decon;
 
+<<<<<<< HEAD
 	ret = sscanf(buf, "%9d", &value);
+=======
+	ret = sscanf(buf, "%8d", &value);
+
+	if (ret < 0)
+		return ret;
+>>>>>>> origin/3.18.14.x
 
 	dev_info(dev, "%s: %d\n", __func__, value);
 
@@ -1762,6 +1863,10 @@ static ssize_t alpm_doze_store(struct device *dev,
 			mutex_unlock(&lcd->lock);
 		}
 		call_panel_ops(dsim, displayon, dsim);
+<<<<<<< HEAD
+=======
+		s6e3aa2_displayon(lcd);
+>>>>>>> origin/3.18.14.x
 		break;
 	case ALPM_ON_LOW:
 	case HLPM_ON_LOW:
@@ -1792,7 +1897,14 @@ static ssize_t alpm_doze_store(struct device *dev,
 	struct dsim_device *dsim = lcd->dsim;
 	struct decon_device *decon = dsim->decon;
 
+<<<<<<< HEAD
 	ret = sscanf(buf, "%9d", &value);
+=======
+	ret = sscanf(buf, "%8d", &value);
+
+	if (ret < 0)
+		return ret;
+>>>>>>> origin/3.18.14.x
 
 	dev_info(dev, "%s: %d\n", __func__, value);
 
@@ -1846,6 +1958,10 @@ static DEVICE_ATTR(dump_register, 0644, dump_register_show, dump_register_store)
 static DEVICE_ATTR(adaptive_control, 0664, adaptive_control_show, adaptive_control_store);
 static DEVICE_ATTR(lux, 0644, lux_show, lux_store);
 static DEVICE_ATTR(octa_id, 0444, octa_id_show, NULL);
+<<<<<<< HEAD
+=======
+static DEVICE_ATTR(SVC_OCTA, 0444, cell_id_show, NULL);
+>>>>>>> origin/3.18.14.x
 
 static struct attribute *lcd_sysfs_attributes[] = {
 	&dev_attr_lcd_type.attr,
@@ -1873,6 +1989,40 @@ static const struct attribute_group lcd_sysfs_attr_group = {
 	.attrs = lcd_sysfs_attributes,
 };
 
+<<<<<<< HEAD
+=======
+static void lcd_init_svc(struct lcd_info *lcd)
+{
+	struct device *dev = &lcd->svc_dev;
+	struct kobject *top_kobj = &lcd->ld->dev.kobj.kset->kobj;
+	struct kernfs_node *kn = kernfs_find_and_get(top_kobj->sd, "svc");
+	struct kobject *svc_kobj = NULL;
+	char *buf, *path = NULL;
+	int ret = 0;
+
+	svc_kobj = kn ? kn->priv : kobject_create_and_add("svc", top_kobj);
+	if (!svc_kobj)
+		return;
+
+	buf = kzalloc(PATH_MAX, GFP_KERNEL);
+	if (buf) {
+		path = kernfs_path(svc_kobj->sd, buf, PATH_MAX);
+		dev_info(&lcd->ld->dev, "%s: %s %s\n",
+		    __func__, path, !kn ? "create" : "");
+		kfree(buf);
+	}
+
+	dev->kobj.parent = svc_kobj;
+	dev_set_name(dev, "OCTA");
+	dev_set_drvdata(dev, lcd);
+	ret = device_register(dev);
+	ret = device_create_file(dev, &dev_attr_SVC_OCTA);
+
+	if (kn)
+		kernfs_put(kn);
+}
+
+>>>>>>> origin/3.18.14.x
 static void lcd_init_sysfs(struct lcd_info *lcd)
 {
 	int ret = 0;
@@ -1880,6 +2030,11 @@ static void lcd_init_sysfs(struct lcd_info *lcd)
 	ret = sysfs_create_group(&lcd->ld->dev.kobj, &lcd_sysfs_attr_group);
 	if (ret < 0)
 		dev_err(&lcd->ld->dev, "failed to add lcd sysfs\n");
+<<<<<<< HEAD
+=======
+
+	lcd_init_svc(lcd);
+>>>>>>> origin/3.18.14.x
 }
 
 
@@ -1967,6 +2122,11 @@ static int dsim_panel_probe(struct dsim_device *dsim)
 	lcd->mdnie_class = get_mdnie_class();
 #endif
 
+<<<<<<< HEAD
+=======
+	s6e3aa2_register_notifier(lcd);
+
+>>>>>>> origin/3.18.14.x
 	dev_info(&lcd->ld->dev, "%s: %s: done\n", kbasename(__FILE__), __func__);
 probe_err:
 	return ret;

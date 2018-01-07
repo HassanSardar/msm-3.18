@@ -710,6 +710,43 @@ static int mms_alert_handler_esd(struct mms_ts_info *info, u8 *rbuf)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+/*
+ * Alert event handler - SRAM failure
+ */
+static int mms_alert_handler_sram(struct mms_ts_info *info, u8 *data)
+{
+	int i;
+
+	dev_dbg(&info->client->dev, "%s [START]\n", __func__);
+
+	info->sram_addr_num = (unsigned int) (data[0] | (data[1] << 8));
+	dev_info(&info->client->dev, "%s - sram_addr_num [%d]\n", __func__, info->sram_addr_num);
+
+	if (info->sram_addr_num > 8) {
+		dev_err(&info->client->dev, "%s [ERROR] sram_addr_num [%d]\n", __func__, info->sram_addr_num);
+		goto error;
+	}
+
+	for (i = 0; i < info->sram_addr_num; i++) {
+		info->sram_addr[i] = data[2 + 4 * i] | (data[2 + 4 * i + 1] << 8) | (data[2 + 4 * i + 2] << 16) | (data[2 + 4 * i + 3] << 24);
+		dev_info(&info->client->dev, "%s - sram_addr #%d [0x%08X]\n", __func__, i, info->sram_addr[i]);
+	}
+	for (i = info->sram_addr_num; i < 8; i++) {
+		info->sram_addr[i] = 0;
+		dev_info(&info->client->dev, "%s - sram_addr #%d [0x%08X]\n", __func__, i, info->sram_addr[i]);
+	}
+
+	dev_dbg(&info->client->dev, "%s [DONE]\n", __func__);
+	return 0;
+
+error:
+	dev_err(&info->client->dev, "%s [ERROR]\n", __func__);
+	return 1;
+}
+
+>>>>>>> origin/3.18.14.x
 #ifdef CONFIG_VBUS_NOTIFIER
 int mms_charger_attached(struct mms_ts_info *info, bool status)
 {
@@ -854,6 +891,14 @@ static irqreturn_t mms_interrupt(int irq, void *dev_id)
 				input_info(true, &client->dev, "%s: [Gesture] Spay, flag%x\n",
 						__func__, info->lowpower_flag);
 			}
+<<<<<<< HEAD
+=======
+		} else if (alert_type == MIP_ALERT_SRAM_FAILURE) {
+			//SRAM failure
+			if (mms_alert_handler_sram(info, &rbuf[2])) {
+				goto ERROR;
+			}
+>>>>>>> origin/3.18.14.x
 		} else {
 			tsp_debug_err(true, &client->dev, "%s [ERROR] Unknown alert type [%d]\n",
 				__func__, alert_type);

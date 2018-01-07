@@ -660,7 +660,11 @@ s32 fc8180_init(HANDLE handle)
 	bbm_write(handle, 0x00b0, 0x03);
 	bbm_write(handle, 0x00b4, 0x00);
 	bbm_write(handle, 0x00b5, 0x00);
+<<<<<<< HEAD
 	bbm_write(handle, 0x00b6, 0x01);
+=======
+	bbm_write(handle, 0x00b6, 0x04);
+>>>>>>> origin/3.18.14.x
 	bbm_write(handle, 0x00b9, 0x00);
 	bbm_write(handle, 0x00ba, 0x01);
 

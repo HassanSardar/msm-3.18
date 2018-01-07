@@ -163,7 +163,12 @@ int fimc_is_lib_vra_invoke_contol_event(struct fimc_is_lib_vra *lib_vra)
 
 	if (in_interrupt()) {
 		spin_lock(&lib_vra->ctl_lock);
+<<<<<<< HEAD
 		status = lib_vra->itf_func.on_control_task_event(lib_vra->fr_work_heap);
+=======
+		status = CALL_VRAOP(lib_vra, on_control_task_event,
+					lib_vra->fr_work_heap);
+>>>>>>> origin/3.18.14.x
 		if (status) {
 			err_lib("on_control_task_event is fail (%#x)", status);
 			spin_unlock(&lib_vra->ctl_lock);
@@ -172,7 +177,12 @@ int fimc_is_lib_vra_invoke_contol_event(struct fimc_is_lib_vra *lib_vra)
 		spin_unlock(&lib_vra->ctl_lock);
 	} else {
 		spin_lock_irqsave(&lib_vra->ctl_lock, lib_vra->ctl_irq_flag);
+<<<<<<< HEAD
 		status = lib_vra->itf_func.on_control_task_event(lib_vra->fr_work_heap);
+=======
+		status = CALL_VRAOP(lib_vra, on_control_task_event,
+					lib_vra->fr_work_heap);
+>>>>>>> origin/3.18.14.x
 		if (status) {
 			err_lib("on_control_task_event is fail (%#x)", status);
 			spin_unlock_irqrestore(&lib_vra->ctl_lock, lib_vra->ctl_irq_flag);
@@ -197,7 +207,12 @@ int fimc_is_lib_vra_invoke_fwalgs_event(struct fimc_is_lib_vra *lib_vra)
 
 	if (in_interrupt()) {
 		spin_lock(&lib_vra->algs_lock);
+<<<<<<< HEAD
 		status = lib_vra->itf_func.on_fw_algs_task_event(lib_vra->fr_work_heap);
+=======
+		status = CALL_VRAOP(lib_vra, on_fw_algs_task_event,
+					lib_vra->fr_work_heap);
+>>>>>>> origin/3.18.14.x
 		if (status) {
 			err_lib("on_fw_algs_task_event is fail (%#x)", status);
 			spin_unlock(&lib_vra->algs_lock);
@@ -206,7 +221,12 @@ int fimc_is_lib_vra_invoke_fwalgs_event(struct fimc_is_lib_vra *lib_vra)
 		spin_unlock(&lib_vra->algs_lock);
 	} else {
 		spin_lock_irqsave(&lib_vra->algs_lock, lib_vra->algs_irq_flag);
+<<<<<<< HEAD
 		status = lib_vra->itf_func.on_fw_algs_task_event(lib_vra->fr_work_heap);
+=======
+		status = CALL_VRAOP(lib_vra, on_fw_algs_task_event,
+					lib_vra->fr_work_heap);
+>>>>>>> origin/3.18.14.x
 		if (status) {
 			err_lib("on_fw_algs_task_event is fail (%#x)", status);
 			spin_unlock_irqrestore(&lib_vra->algs_lock, lib_vra->algs_irq_flag);
@@ -249,9 +269,15 @@ int fimc_is_lib_vra_init_task(struct fimc_is_lib_vra *lib_vra)
 		err_lib("lib_vra->task_vra.task is NULL");
 		return -ENOMEM;
 	}
+<<<<<<< HEAD
 
 	fpsimd_set_as_user(lib_vra->task_vra.task);
 
+=======
+#ifdef ENABLE_FPSIMD_FOR_USER
+	fpsimd_set_task_using(lib_vra->task_vra.task);
+#endif
+>>>>>>> origin/3.18.14.x
 	param.sched_priority = TASK_VRA_PRIORITY;
 	ret = sched_setscheduler_nocheck(lib_vra->task_vra.task,
 		SCHED_FIFO, &param);
@@ -344,9 +370,17 @@ int fimc_is_lib_vra_alloc_memory(struct fimc_is_lib_vra *lib_vra, ulong dma_addr
 	alloc_info->max_sensors = VRA_TOTAL_SENSORS;
 	alloc_info->max_tr_res_frames = 5;
 
+<<<<<<< HEAD
 	status = lib_vra->itf_func.ex_get_memory_sizes(&lib_vra->alloc_info,
 			&lib_vra->fr_work_size, &lib_vra->frame_desc_size,
 			&lib_vra->dma_out_size);
+=======
+	status = CALL_VRAOP(lib_vra, ex_get_memory_sizes,
+				&lib_vra->alloc_info,
+				&lib_vra->fr_work_size,
+				&lib_vra->frame_desc_size,
+				&lib_vra->dma_out_size);
+>>>>>>> origin/3.18.14.x
 	if (status) {
 		err_lib("ex_get_memory_sizes is fail (%d)", status);
 		return -ENOMEM;
@@ -471,9 +505,18 @@ int fimc_is_lib_vra_init_frame_work(struct fimc_is_lib_vra *lib_vra,
 	fr_work_info.fr_work_init = lib_vra->fr_work_init;
 	fr_work_info.fr_work_heap = lib_vra->fr_work_heap;
 	fr_work_info.fr_work_size = lib_vra->fr_work_size;
+<<<<<<< HEAD
 	status = lib_vra->itf_func.vra_frame_work_init(&fr_work_info,
 			&lib_vra->alloc_info, &lib_vra->dma_out,
 			VRA_DICO_API_VERSION);
+=======
+
+	status = CALL_VRAOP(lib_vra, vra_frame_work_init,
+				&fr_work_info,
+				&lib_vra->alloc_info,
+				&lib_vra->dma_out,
+				VRA_DICO_API_VERSION);
+>>>>>>> origin/3.18.14.x
 	if (status) {
 		err_lib("vra_frame_work_init is fail(0x%x)", status);
 		ret = -EINVAL;
@@ -530,9 +573,17 @@ int fimc_is_lib_vra_init_frame_desc(struct fimc_is_lib_vra *lib_vra, u32 instanc
 		lib_vra->frame_desc[instance].u_before_v = true;
 	}
 
+<<<<<<< HEAD
 	status = lib_vra->itf_func.vra_sensor_init(lib_vra->frame_desc_heap[instance],
 			lib_vra->frame_desc_size,
 			&lib_vra->frame_desc[instance], VRA_TRM_ROI_TRACK);
+=======
+	status = CALL_VRAOP(lib_vra, vra_sensor_init,
+				lib_vra->frame_desc_heap[instance],
+				lib_vra->frame_desc_size,
+				&lib_vra->frame_desc[instance],
+				VRA_TRM_ROI_TRACK);
+>>>>>>> origin/3.18.14.x
 	if (status) {
 		err_lib("[%d]vra_sensor_init is fail(%#x)", instance, status);
 		return -EINVAL;
@@ -632,8 +683,14 @@ int fimc_is_lib_vra_set_orientation(struct fimc_is_lib_vra *lib_vra,
 	dbg_lib("[%d]scaler_orientation(%d), vra_orientation(%d)\n", instance,
 		scaler_orientation, vra_orientation);
 
+<<<<<<< HEAD
 	status = lib_vra->itf_func.set_orientation(lib_vra->frame_desc_heap[instance],
 			vra_orientation);
+=======
+	status = CALL_VRAOP(lib_vra, set_orientation,
+				lib_vra->frame_desc_heap[instance],
+				vra_orientation);
+>>>>>>> origin/3.18.14.x
 	if (status) {
 		err_lib("[%d]set_orientation fail (%#x)", instance, status);
 		return -EINVAL;
@@ -659,8 +716,14 @@ int fimc_is_lib_vra_new_frame(struct fimc_is_lib_vra *lib_vra,
 	input_dma_buf = buffer;
 #endif
 
+<<<<<<< HEAD
 	status = lib_vra->itf_func.on_new_frame(lib_vra->frame_desc_heap[instance],
 			lib_vra->fr_index, 0, input_dma_buf);
+=======
+	status = CALL_VRAOP(lib_vra, on_new_frame,
+				lib_vra->frame_desc_heap[instance],
+				lib_vra->fr_index, 0, input_dma_buf);
+>>>>>>> origin/3.18.14.x
 	if (status == VRA_ERR_NEW_FR_PREV_REQ_NOT_HANDLED ||
 		status == VRA_ERR_NEW_FR_NEXT_EXIST ||
 		status == VRA_BUSY ||
@@ -683,7 +746,11 @@ int fimc_is_lib_vra_handle_interrupt(struct fimc_is_lib_vra *lib_vra, u32 id)
 	}
 
 	spin_lock(&lib_vra->intr_lock);
+<<<<<<< HEAD
 	result = lib_vra->itf_func.on_interrupt(lib_vra->fr_work_heap, id);
+=======
+	result = CALL_VRAOP(lib_vra, on_interrupt, lib_vra->fr_work_heap, id);
+>>>>>>> origin/3.18.14.x
 	if (result) {
 		err_lib("on_interrupt is fail (%#x)", result);
 		spin_unlock(&lib_vra->intr_lock);
@@ -726,7 +793,12 @@ int fimc_is_lib_vra_stop(struct fimc_is_lib_vra *lib_vra)
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	result = lib_vra->itf_func.frame_work_abort(lib_vra->fr_work_heap, true);
+=======
+	result = CALL_VRAOP(lib_vra, frame_work_abort,
+				lib_vra->fr_work_heap, true);
+>>>>>>> origin/3.18.14.x
 	if (result) {
 		err_lib("frame_work_abort is fail (%#x)", result);
 		return -EINVAL;
@@ -753,7 +825,11 @@ int fimc_is_lib_vra_destory_object(struct fimc_is_lib_vra *lib_vra, u32 instance
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	result = lib_vra->itf_func.frame_work_terminate(lib_vra->fr_work_heap);
+=======
+	result = CALL_VRAOP(lib_vra, frame_work_terminate, lib_vra->fr_work_heap);
+>>>>>>> origin/3.18.14.x
 	if (result) {
 		err_lib("frame_work_terminate is fail (%#x)", result);
 		return -EINVAL;
@@ -991,7 +1067,17 @@ void fimc_is_lib_vra_os_funcs(void)
 	funcs.lib_assert       = fimc_is_lib_vra_assert;
 	funcs.lib_in_interrupt = fimc_is_lib_in_interrupt;
 
+<<<<<<< HEAD
 	((vra_set_os_funcs_t)VRA_LIB_ADDR)((void *)&funcs);
+=======
+#ifdef ENABLE_FPSIMD_FOR_USER
+	fpsimd_get();
+	((vra_set_os_funcs_t)VRA_LIB_ADDR)((void *)&funcs);
+	fpsimd_put();
+#else
+	((vra_set_os_funcs_t)VRA_LIB_ADDR)((void *)&funcs);
+#endif
+>>>>>>> origin/3.18.14.x
 }
 
 void fimc_is_lib_vra_check_size(struct api_vra_input_desc *frame_desc, struct vra_param *param, u32 fcount)
@@ -1035,7 +1121,12 @@ int fimc_is_lib_vra_test_input(struct fimc_is_lib_vra *lib_vra, u32 instance)
 
 	info_lib("lib_vra_test_input: DMA_TEST_BY_IMAGE\n");
 
+<<<<<<< HEAD
 	status = lib_vra->itf_func.set_input(lib_vra->frame_desc_heap[instance],
+=======
+	status = CALL_VRAOP(lib_vra, set_input,
+				lib_vra->frame_desc_heap[instance],
+>>>>>>> origin/3.18.14.x
 				&lib_vra->frame_desc[instance],
 				VRA_KEEP_TR_DATA_BASE);
 	if (status) {
@@ -1088,9 +1179,16 @@ int fimc_is_lib_vra_otf_input(struct fimc_is_lib_vra *lib_vra,
 		break;
 	}
 
+<<<<<<< HEAD
 	status = lib_vra->itf_func.set_input(lib_vra->frame_desc_heap[instance],
 			&lib_vra->frame_desc[instance],
 			VRA_KEEP_TR_DATA_BASE);
+=======
+	status = CALL_VRAOP(lib_vra, set_input,
+				lib_vra->frame_desc_heap[instance],
+				&lib_vra->frame_desc[instance],
+				VRA_KEEP_TR_DATA_BASE);
+>>>>>>> origin/3.18.14.x
 	if (status) {
 		err_lib("[%d]set_input is fail(%#x)", instance, status);
 		return -EINVAL;
@@ -1153,9 +1251,16 @@ int fimc_is_lib_vra_dma_input(struct fimc_is_lib_vra *lib_vra,
 			= param->dma_input.height *
 			frame_desc->dram.line_ofs_fst_plane;
 
+<<<<<<< HEAD
 	status = lib_vra->itf_func.set_input(lib_vra->frame_desc_heap[instance],
 			&lib_vra->frame_desc[instance],
 			VRA_KEEP_TR_DATA_BASE);
+=======
+	status = CALL_VRAOP(lib_vra, set_input,
+				lib_vra->frame_desc_heap[instance],
+				&lib_vra->frame_desc[instance],
+				VRA_KEEP_TR_DATA_BASE);
+>>>>>>> origin/3.18.14.x
 	if (status) {
 		err_lib("[%d]set_input is fail(%#x)", instance, status);
 		return -EINVAL;
@@ -1214,17 +1319,29 @@ int fimc_is_lib_vra_apply_tune(struct fimc_is_lib_vra *lib_vra,
 	info_tune  = &tune.api_tune;
 	info_frame = &tune.frame_lock;
 
+<<<<<<< HEAD
 	cnt = lib_vra->itf_func.set_parameter(lib_vra->fr_work_heap,
 			lib_vra->frame_desc_heap[instance],
 			&tune.api_tune);
+=======
+	cnt = CALL_VRAOP(lib_vra, set_parameter, lib_vra->fr_work_heap,
+				lib_vra->frame_desc_heap[instance],
+				&tune.api_tune);
+>>>>>>> origin/3.18.14.x
 	if (cnt) {
 		err_lib("[%d]set_parameter is fail, cnt(%d)", instance, cnt);
 		ret = -EINVAL;
 		goto debug_info;
 	}
 
+<<<<<<< HEAD
 	cnt = lib_vra->itf_func.get_parameter(lib_vra->fr_work_heap,
 			lib_vra->frame_desc_heap[instance], &dbg_tune, &dbg_orientation);
+=======
+	cnt = CALL_VRAOP(lib_vra, get_parameter, lib_vra->fr_work_heap,
+				lib_vra->frame_desc_heap[instance],
+				&dbg_tune, &dbg_orientation);
+>>>>>>> origin/3.18.14.x
 	if (cnt) {
 		err_lib("[%d]get_parameter is fail, cnt(%d)", instance, cnt);
 		info_tune = &dbg_tune;

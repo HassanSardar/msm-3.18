@@ -1199,6 +1199,31 @@ out:
 }
 
 /**
+<<<<<<< HEAD
+=======
+ * Command : Check SRAM failure
+ */
+static void cmd_check_sram(void *device_data)
+{
+	struct mms_ts_info *info = (struct mms_ts_info *)device_data;
+	char buf[64] = { 0 };
+	int val;
+
+	cmd_clear_result(info);
+
+	val = (int) info->sram_addr[0];
+
+	sprintf(buf, "%d", val);
+	cmd_set_result(info, buf, strnlen(buf, sizeof(buf)));
+
+	info->cmd_state = CMD_STATUS_OK;
+
+	tsp_debug_dbg(true, &info->client->dev, "%s - cmd[%s] state[%d]\n",
+		__func__, buf, info->cmd_state);
+}
+
+/**
+>>>>>>> origin/3.18.14.x
  * Command : Unknown cmd
  */
 static void cmd_unknown_cmd(void *device_data)
@@ -1281,6 +1306,10 @@ static struct mms_cmd mms_commands[] = {
 	{MMS_CMD("aod_enable", aod_enable),},
 	{MMS_CMD("set_aod_rect", set_aod_rect),},
 	{MMS_CMD("get_aod_rect", get_aod_rect),},
+<<<<<<< HEAD
+=======
+	{MMS_CMD("check_sram", cmd_check_sram),},
+>>>>>>> origin/3.18.14.x
 	{MMS_CMD(NAME_OF_UNKNOWN_CMD, cmd_unknown_cmd),},
 };
 

@@ -40,7 +40,11 @@
 /* CCIC notifier call sequence,
  * largest priority number device will be called first. */
 typedef enum {
+<<<<<<< HEAD
 /* MUIC */
+=======
+/* MUIC */	
+>>>>>>> origin/3.18.14.x
 	MANAGER_NOTIFY_MUIC_NONE = 0,
 	MANAGER_NOTIFY_MUIC_DOCK,
 	MANAGER_NOTIFY_MUIC_MHL,
@@ -49,15 +53,25 @@ typedef enum {
 	MANAGER_NOTIFY_MUIC_CHARGER,
 	MANAGER_NOTIFY_MUIC_CPUIDLE,
 	MANAGER_NOTIFY_MUIC_CPUFREQ,
+<<<<<<< HEAD
+=======
+	MANAGER_NOTIFY_MUIC_TIMEOUT_OPEN_DEVICE,
+>>>>>>> origin/3.18.14.x
 
 /* CCIC */
 	MANAGER_NOTIFY_CCIC_INITIAL = 20,
 	MANAGER_NOTIFY_CCIC_MUIC,
 	MANAGER_NOTIFY_CCIC_USB,
 	MANAGER_NOTIFY_CCIC_BATTERY,
+<<<<<<< HEAD
 	MANAGER_NOTIFY_CCIC_PDIC,
 	MANAGER_NOTIFY_CCIC_CCIC,
 
+=======
+	MANAGER_NOTIFY_CCIC_DP,
+	MANAGER_NOTIFY_CCIC_USBDP,
+	MANAGER_NOTIFY_CCIC_SENSORHUB,
+>>>>>>> origin/3.18.14.x
 
 /* VBUS */
 	MANAGER_NOTIFY_VBUS_USB = 30,
@@ -76,7 +90,19 @@ typedef enum {
 	PD_TA_TYPE,
 } pd_usb_state_t;
 
+<<<<<<< HEAD
 typedef struct {
+=======
+#if defined(CONFIG_VBUS_NOTIFIER)
+typedef enum {
+	EVENT_LOAD = 0,
+	EVENT_CANCEL,
+} muic_fake_event;
+#endif
+
+typedef struct
+{
+>>>>>>> origin/3.18.14.x
 	uint64_t src:4;
 	uint64_t dest:4;
 	uint64_t id:8;
@@ -86,28 +112,58 @@ typedef struct {
 	void *pd;
 } MANAGER_NOTI_TYPEDEF;
 
+<<<<<<< HEAD
 typedef struct _manager_data_t {
+=======
+typedef struct _manager_data_t
+{
+>>>>>>> origin/3.18.14.x
 	struct blocking_notifier_head manager_muic_notifier;
 	struct blocking_notifier_head manager_ccic_notifier;
 	struct notifier_block ccic_nb;
 	struct notifier_block muic_nb;
+<<<<<<< HEAD
 /*	struct notifier_block usb_nb; */
 /*	struct notifier_block batter_nb; */
+=======
+//	struct notifier_block usb_nb;
+//	struct notifier_block batter_nb;
+>>>>>>> origin/3.18.14.x
 #if defined(CONFIG_VBUS_NOTIFIER)
 	struct notifier_block vbus_nb;
 #endif
 
+<<<<<<< HEAD
 /*	struct workqueue_struct *typec_manager_wq; */
 	struct delayed_work cable_check_work;
 	struct delayed_work muic_noti_work;
+=======
+	struct delayed_work manager_init_work;
+//	struct workqueue_struct *typec_manager_wq;
+	struct delayed_work cable_check_work;
+	struct delayed_work muic_noti_work;
+	struct delayed_work rtctime_update_work;
+#if defined(CONFIG_VBUS_NOTIFIER)
+	struct delayed_work vbus_noti_work;
+#endif
+>>>>>>> origin/3.18.14.x
 
 	int muic_action;
 	int muic_cable_type;
 	int muic_data_refresh;
 	int muic_attach_state_without_ccic;
+<<<<<<< HEAD
 	int vbus_state;
 
 	int ccic_attach_state;	/* USB_STATUS_NOTIFY_DETACH, UFP, DFP, DRP, NO_USB */
+=======
+#if defined(CONFIG_VBUS_NOTIFIER)
+	int muic_fake_event_wq_processing;
+#endif
+	int vbus_state;
+
+	int ccic_attach_state;	// USB_STATUS_NOTIFY_DETACH, UFP, DFP, DRP, NO_USB
+>>>>>>> origin/3.18.14.x
 	int ccic_drp_state;
 	int ccic_rid_state;
 	int cable_type;
@@ -117,17 +173,38 @@ typedef struct _manager_data_t {
 	int water_det;
 	int is_UFPS;
 	void *pd;
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin/3.18.14.x
 	int water_count;
 	int dry_count;
 	int usb210_count;
 	int usb310_count;
+<<<<<<< HEAD
 } manager_data_t;
+=======
+	int waterChg_count;
+	unsigned long waterDet_duration;
+	unsigned long waterDet_time;
+	unsigned long dryDet_time;
+	int dp_attach_state;
+	int dp_cable_type;
+	int dp_hpd_state;
+	int dp_is_connect;
+	int dp_hs_connect;
+	int dp_check_done;
+}manager_data_t;
+>>>>>>> origin/3.18.14.x
 
 
 #define MANAGER_NOTIFIER_BLOCK(name)	\
 	struct notifier_block (name)
 
+<<<<<<< HEAD
+=======
+extern void manager_notifier_usbdp_support(void);
+>>>>>>> origin/3.18.14.x
 extern void manager_notifier_test(void *);
 
 
